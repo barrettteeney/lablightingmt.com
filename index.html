@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="canonical" href="https://lablightingmt.com/">
+<meta property="og:title" content="Lab Lighting | Permanent Architectural Lighting, Flathead Valley MT">
+<meta property="og:description" content="Permanent, app-controlled LED lighting for Flathead Valley homes. Free design visit. Kalispell, Montana.">
+<meta property="og:url" content="https://lablightingmt.com/">
+<meta property="og:type" content="website">
+<title>LAB Lighting — Permanent Architectural Lighting | Flathead Valley, MT</title>
+<meta name="description" content="Permanent architectural LED lighting for Flathead Valley homes. Color-matched track, 16 million colors, app controlled, 10-year warranty. Kalispell, Whitefish, Columbia Falls, Bigfork.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--carbon:#151515;--ink:#0d0d0d;--white:#F6F3EE;--tan:#B9A184;--red:#C5322D;--line:rgba(246,243,238,.14);
+--f:"Montserrat",-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--f);background:var(--carbon);color:var(--white);line-height:1.62;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+img{max-width:100%;display:block}
+.wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+.eyebrow{font-size:10px;letter-spacing:.34em;text-transform:uppercase;color:var(--tan);font-weight:600;display:flex;align-items:center;gap:14px}
+.eyebrow::after{content:"";height:1px;flex:1;background:var(--line);max-width:130px}
+h1,h2,h3{font-weight:700;letter-spacing:-.015em;line-height:1.08}
+h2{font-size:clamp(28px,5vw,44px);margin:16px 0 18px}
+h3{font-size:18.5px;letter-spacing:0;line-height:1.32}
+p{color:rgba(246,243,238,.76)}
+section{padding:88px 0;border-top:1px solid var(--line)}
+.btn{display:inline-flex;align-items:center;gap:10px;background:var(--red);color:#fff;text-decoration:none;font-weight:600;font-size:12px;letter-spacing:.14em;text-transform:uppercase;padding:15px 26px;border:0;cursor:pointer;transition:.18s}
+.btn:hover{filter:brightness(1.12)}
+.btn.ghost{background:transparent;border:1px solid var(--line);color:var(--white)}
+.btn.ghost:hover{border-color:var(--tan);color:var(--tan)}
+header{position:sticky;top:0;z-index:60;background:rgba(21,21,21,.93);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.bar{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:14px 24px;max-width:1180px;margin:0 auto}
+.logo{line-height:1;text-decoration:none;color:inherit}
+.logo .m{font-weight:700;font-size:26px;letter-spacing:.02em}
+.logo .m .c{position:relative}
+.logo .m .c::after{content:"";position:absolute;left:0;right:0;top:52%;height:.075em;background:var(--carbon);transform:translateY(-50%)}
+.logo .s{font-size:8px;letter-spacing:.52em;margin-top:4px;text-indent:.52em;opacity:.9}
+nav{display:flex;gap:24px;align-items:center}
+nav a{color:rgba(246,243,238,.72);text-decoration:none;font-size:11px;letter-spacing:.16em;text-transform:uppercase;font-weight:500}
+nav a:hover{color:var(--white)}
+@media(max-width:940px){nav{display:none}}
+.hero{position:relative;min-height:92vh;display:flex;align-items:flex-end;border-top:0}
+.hero .bg{position:absolute;inset:0;width:100%;height:100%;
+ background:
+  repeating-linear-gradient(135deg,rgba(246,243,238,.028) 0 2px,transparent 2px 9px),
+  radial-gradient(120% 90% at 70% 15%,rgba(185,161,132,.20) 0%,rgba(185,161,132,.05) 42%,transparent 70%),
+  linear-gradient(160deg,#1d1d1d 0%,#151515 55%,#101010 100%)}
+.hero .heroglow{position:absolute;left:0;right:0;top:34%;height:1px;background:linear-gradient(90deg,transparent,rgba(246,243,238,.55),rgba(185,161,132,.5),transparent);box-shadow:0 0 26px 5px rgba(246,224,180,.16)}
+.hero .herolbl{position:absolute;right:26px;top:96px;text-align:right;z-index:3}
+.hero .herolbl b{display:block;font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:var(--tan);font-weight:600}
+.hero .herolbl span{display:block;font-size:11px;letter-spacing:.14em;color:rgba(246,243,238,.4);margin-top:7px}
+.hero::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(21,21,21,.74) 0%,rgba(21,21,21,.3) 42%,rgba(21,21,21,.95) 100%)}
+.hero .wrap{position:relative;z-index:2;padding-bottom:74px;padding-top:130px}
+.hero h1{font-size:clamp(44px,9vw,88px)}
+.hero .rule{width:64px;height:2px;background:var(--tan);margin:22px 0 16px}
+.hero .desc{font-size:11px;letter-spacing:.3em;text-transform:uppercase;opacity:.88}
+.hero p.lead{max-width:580px;margin-top:20px;font-size:17px;color:rgba(246,243,238,.86)}
+.cta{display:flex;gap:14px;margin-top:32px;flex-wrap:wrap}
+.chips{display:flex;gap:10px;flex-wrap:wrap;margin-top:40px}
+.chip{border:1px solid var(--line);padding:9px 14px;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:rgba(246,243,238,.84);background:rgba(21,21,21,.42)}
+.grid{display:grid;gap:18px}
+.g2{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+.g3{grid-template-columns:repeat(auto-fit,minmax(265px,1fr))}
+.g4{grid-template-columns:repeat(auto-fit,minmax(215px,1fr))}
+.card{border:1px solid var(--line);padding:28px 24px;background:rgba(246,243,238,.025)}
+.card .n{font-size:10px;letter-spacing:.24em;color:var(--tan);font-weight:600;margin-bottom:14px}
+.card p{font-size:14px;margin-top:10px}
+.card ul{margin-top:14px;padding-left:16px;font-size:13px;color:rgba(246,243,238,.68)}
+.card li{margin-bottom:5px}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center}
+@media(max-width:880px){.split{grid-template-columns:1fr;gap:34px}}
+.split img{border:1px solid var(--line)}
+.steps .step{display:flex;gap:22px;padding:24px 0;border-bottom:1px solid var(--line)}
+.steps .step:last-child{border-bottom:0}
+.step .num{font-weight:700;font-size:13px;color:var(--tan);min-width:34px;letter-spacing:.1em}
+.step p{font-size:14px;margin-top:6px}
+.specs{display:grid;grid-template-columns:repeat(auto-fit,minmax(168px,1fr));gap:1px;background:var(--line);border:1px solid var(--line)}
+.spec{background:var(--carbon);padding:24px 20px}
+.spec .v{font-size:25px;font-weight:700;letter-spacing:-.02em}
+.spec .k{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:rgba(246,243,238,.55);margin-top:8px}
+.tier{border:1px solid var(--line);padding:30px 26px;background:rgba(246,243,238,.025);position:relative}
+.tier.feature{border-color:var(--tan);background:rgba(185,161,132,.07)}
+.tier .t{font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:var(--tan);font-weight:600}
+.tier .price{font-size:40px;font-weight:700;margin:14px 0 4px;letter-spacing:-.03em}
+.tier .price span{font-size:14px;font-weight:500;opacity:.6;letter-spacing:0}
+.tier ul{list-style:none;margin-top:16px;font-size:13.5px;color:rgba(246,243,238,.72)}
+.tier li{padding:7px 0;border-top:1px solid var(--line)}
+.badge{position:absolute;top:-1px;right:-1px;background:var(--red);color:#fff;font-size:9px;letter-spacing:.2em;text-transform:uppercase;padding:6px 12px;font-weight:600}
+.est{border:1px solid var(--line);background:rgba(246,243,238,.03);padding:34px 30px}
+.field{margin-bottom:20px}
+.field label{display:block;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--tan);font-weight:600;margin-bottom:9px}
+.field input,.field select{width:100%;background:var(--ink);border:1px solid var(--line);color:var(--white);font-family:var(--f);font-size:15px;padding:13px 14px;outline:none}
+.field input:focus,.field select:focus{border-color:var(--tan)}
+.out{border-top:1px solid var(--line);margin-top:26px;padding-top:24px}
+.out .big{font-size:clamp(30px,6vw,44px);font-weight:700;letter-spacing:-.02em}
+.out .sm{font-size:12px;color:rgba(246,243,238,.6);margin-top:8px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:14px 12px;border-bottom:1px solid var(--line)}
+th{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--tan);font-weight:600}
+td.y{color:var(--white)}
+td.n{color:rgba(246,243,238,.45)}
+.towns{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px}
+.town{border:1px solid var(--line);padding:8px 13px;font-size:12px;letter-spacing:.06em;color:rgba(246,243,238,.8)}
+.town.home{border-color:var(--tan);color:var(--tan)}
+details{border-bottom:1px solid var(--line);padding:18px 0}
+summary{cursor:pointer;font-weight:600;font-size:15.5px;list-style:none;display:flex;justify-content:space-between;gap:16px}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";color:var(--tan);font-weight:400;font-size:20px;line-height:1}
+details[open] summary::after{content:"–"}
+details p{margin-top:12px;font-size:14px}
+.scenes{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;margin-top:28px}
+.scene{position:relative;border:1px solid var(--line);overflow:hidden}
+.scene span{position:absolute;left:0;right:0;bottom:0;padding:16px 14px;font-size:10px;letter-spacing:.2em;text-transform:uppercase;background:linear-gradient(transparent,rgba(21,21,21,.92))}
+.note{font-size:11px;letter-spacing:.08em;color:rgba(246,243,238,.45);margin-top:16px;line-height:1.7}
+.phone{width:268px;max-width:100%;border:1px solid var(--line);border-radius:30px;background:var(--ink);padding:14px 12px 20px;margin:0 auto;box-shadow:0 30px 80px rgba(0,0,0,.6)}
+.phone .notch{width:74px;height:5px;border-radius:5px;background:rgba(246,243,238,.25);margin:2px auto 16px}
+.phone .ph-h{font-size:9px;letter-spacing:.3em;color:var(--tan);text-transform:uppercase;padding:0 8px;margin-bottom:12px}
+.phone .zone{display:flex;align-items:center;justify-content:space-between;padding:11px 10px;border:1px solid var(--line);margin-bottom:8px;font-size:12px}
+.dot{width:12px;height:12px;border-radius:50%;box-shadow:0 0 12px currentColor}
+.toggle{width:30px;height:17px;border-radius:12px;background:rgba(246,243,238,.16);position:relative}
+.toggle.on{background:var(--red)}
+.toggle::after{content:"";position:absolute;top:2.5px;left:3px;width:12px;height:12px;border-radius:50%;background:var(--white)}
+.toggle.on::after{left:auto;right:3px}
+.swatches{display:flex;gap:6px;padding:10px 8px 4px;flex-wrap:wrap}
+.sw{width:22px;height:22px;border-radius:50%}
+.profiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin-top:26px}
+.prof{border:1px solid var(--line);padding:18px 14px;text-align:center;background:rgba(246,243,238,.02)}
+.prof svg{margin:0 auto 12px}
+.prof .pn{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:rgba(246,243,238,.8)}
+.band{position:relative;padding:98px 0;border-top:1px solid var(--line)}
+.band img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.band::after{content:"";position:absolute;inset:0;background:rgba(21,21,21,.8)}
+.band .wrap{position:relative;z-index:2;text-align:center}
+.band h2{max-width:720px;margin:14px auto 18px}
+footer{background:var(--ink);padding:62px 0 40px;border-top:1px solid var(--line)}
+.fgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:34px}
+footer h4{font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:var(--tan);font-weight:600;margin-bottom:14px}
+footer p,footer a{font-size:13px;color:rgba(246,243,238,.62);text-decoration:none;display:block;margin-bottom:7px}
+footer a:hover{color:var(--white)}
+.fbot{margin-top:46px;padding-top:22px;border-top:1px solid var(--line);display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:rgba(246,243,238,.4)}
+.ph{color:var(--red);font-weight:600}
+.phbox{position:relative;border:1px solid var(--line);background:
+ repeating-linear-gradient(135deg,rgba(246,243,238,.028) 0 2px,transparent 2px 9px),
+ radial-gradient(120% 90% at 70% 15%,rgba(185,161,132,.20) 0%,rgba(185,161,132,.05) 42%,transparent 70%),
+ linear-gradient(160deg,#1d1d1d 0%,#151515 55%,#101010 100%);
+ display:flex;align-items:center;justify-content:center;min-height:300px;overflow:hidden}
+.phbox .lbl{position:relative;z-index:2;text-align:center;padding:24px}
+.phbox .lbl b{display:block;font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:var(--tan);font-weight:600}
+.phbox .lbl span{display:block;font-size:11px;letter-spacing:.14em;color:rgba(246,243,238,.45);margin-top:9px}
+.phbox .glow{position:absolute;left:0;right:0;top:34%;height:1px;background:linear-gradient(90deg,transparent,rgba(246,243,238,.55),rgba(185,161,132,.5),transparent);box-shadow:0 0 26px 5px rgba(246,224,180,.16)}
+.scene .phbox{min-height:210px}
+.certs{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}
+.cert{border:1px solid var(--line);padding:8px 12px;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:rgba(246,243,238,.65)}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="bar">
+    <a href="#top" class="logo"><img src="logo-light.png" alt="Lab Lighting" height="38" style="display:block;height:38px;width:auto"></a>
+    <nav>
+      <a href="#services">Services</a><a href="#system">System</a><a href="#scenes">Scenes</a><a href="#app">App</a><a href="#process">Process</a><a href="#pricing">Pricing</a><a href="#coverage">Coverage</a><a href="#faq">FAQ</a>
+    </nav>
+    <a href="#quote" class="btn">Plan Your Lighting</a>
+  </div>
+</header>
+
+<div class="hero" id="top">
+  <div class="bg heroph" aria-hidden="true"><div class="heroglow"></div></div>
+  <div class="wrap">
+    <h1>Light by<br>Design.</h1>
+    <div class="rule"></div>
+    <div class="desc">Permanent Architectural Lighting</div>
+    <p class="lead">Invisible by day. Architectural by night. Color-matched track and individually controlled LEDs, installed once along your roofline — warm white every evening, team colors on game day, full holiday scenes in December, all from your phone.</p>
+    <div class="cta">
+      <a href="#quote" class="btn">Get My Estimate</a>
+      <a href="#system" class="btn ghost">See the System</a>
+    </div>
+    <div class="chips">
+      <div class="chip">10-Year Parts Warranty</div>
+      <div class="chip">Rated to −40°</div>
+      <div class="chip">No Electrician Required</div>
+      <div class="chip">Installed in One Day</div>
+      <div class="chip">Flathead Valley Owned</div>
+    </div>
+  </div>
+</div>
+
+<section id="services">
+  <div class="wrap">
+    <div class="eyebrow">01 — What We Do</div>
+    <h2>Architectural lighting, not Christmas lights.</h2>
+    <p style="max-width:640px;margin-bottom:34px">Permanent lighting is a finish on your home, like gutters or trim. Ours disappears during the day and reveals the architecture at night — every night of the year, not six weeks in December.</p>
+    <div class="grid g4">
+      <div class="card"><div class="n">RESIDENTIAL</div><h3>Rooflines &amp; Eaves</h3><p>Color-matched aluminum track along fascia and soffit with every wire concealed inside it.</p><ul><li>11 track profiles</li><li>100+ track colors</li><li>Hidden wire runs</li></ul></div>
+      <div class="card"><div class="n">LANDSCAPE</div><h3>Downlights &amp; Grounds</h3><p>Soffit downlights and landscape zones that wash stone, timber and planting beds in warm light.</p><ul><li>Soffit downlights</li><li>Tree and bed lighting</li><li>Pathway safety light</li></ul></div>
+      <div class="card"><div class="n">EXPANSION</div><h3>Decks, Pergolas &amp; Steps</h3><p>The same system extended to outdoor living space, railings, fencing and stairways.</p><ul><li>Independent zones</li><li>Step lighting</li><li>Added any time</li></ul></div>
+      <div class="card"><div class="n">SUPPORT</div><h3>Service &amp; Scenes</h3><p>App setup on your phone, your first scenes built with you, and a real person to call after.</p><ul><li>1-year labor warranty</li><li>Replaceable bulbs</li><li>Removal &amp; reinstall</li></ul></div>
+    </div>
+  </div>
+</section>
+
+<section id="system">
+  <div class="wrap">
+    <div class="eyebrow">02 — The System</div>
+    <div class="split" style="margin-top:16px">
+      <div>
+        <h2>Engineered for Montana winters.</h2>
+        <p>Low-voltage 24V lighting that plugs into a standard exterior outlet — typically no electrician, no trenching, no rewiring. The whole system draws less power than a single 60-watt bulb for every hundred lights.</p>
+        <p style="margin-top:14px">Each bulb is a single point of light with a dedicated warm-white LED and 90+ CRI color rendering, so white reads as true warm white with no color fringing. Everything is sealed against the weather, and the aluminum track shields the LEDs from snow, ice and UV.</p>
+        <div class="certs">
+          <div class="cert">UL 2108 Listed</div><div class="cert">CSA C22.2 Certified</div><div class="cert">Class 2 Low Voltage</div>
+        </div>
+        <div class="cta"><a href="#quote" class="btn ghost">Ask About Your Home</a></div>
+      </div>
+      <div class="phbox" style="min-height:360px"><div class="glow"></div></div>
+    </div>
+    <div class="specs" style="margin-top:44px">
+      <div class="spec"><div class="v">24V</div><div class="k">Low voltage, Class 2</div></div>
+      <div class="spec"><div class="v">8&quot;</div><div class="k">LED spacing</div></div>
+      <div class="spec"><div class="v">16M+</div><div class="k">Colors per bulb</div></div>
+      <div class="spec"><div class="v">90+</div><div class="k">CRI color rendering</div></div>
+      <div class="spec"><div class="v">50,000 hr</div><div class="k">≈20 years nightly</div></div>
+      <div class="spec"><div class="v">−40°</div><div class="k">Cold weather rated</div></div>
+    </div>
+  </div>
+</section>
+
+<section id="scenes">
+  <div class="wrap">
+    <div class="eyebrow">03 — Scenes</div>
+    <h2>One system. Every night of the year.</h2>
+    <p style="max-width:620px">Warm white is the default and the reason most people buy it. Everything else is there when you want it: Halloween, Diwali, the Fourth, a birthday, a rivalry weekend, or the two weeks in December when the whole street drives by slowly.</p>
+    <div class="scenes">
+      <div class="scene"><div class="phbox" style="background:radial-gradient(120% 80% at 50% 20%,rgba(246,227,192,.30),rgba(21,21,21,.2) 60%),linear-gradient(160deg,#20201d,#141414)"><div class="glow"></div><div class="lbl"><b>Warm White</b></div></div><span>Warm White · Everyday</span></div>
+      <div class="scene"><div class="phbox" style="background:radial-gradient(120% 80% at 50% 20%,rgba(197,50,45,.42),rgba(21,21,21,.2) 60%),linear-gradient(160deg,#1f1414,#141414)"><div class="glow" style="background:linear-gradient(90deg,transparent,rgba(240,90,80,.8),transparent);box-shadow:0 0 26px 5px rgba(197,50,45,.25)"></div><div class="lbl"><b>Game Day</b></div></div><span>Game Day · Team Colors</span></div>
+      <div class="scene"><div class="phbox" style="background:radial-gradient(90% 80% at 22% 25%,rgba(60,170,95,.40),transparent 60%),radial-gradient(90% 80% at 78% 25%,rgba(197,50,45,.42),transparent 60%),linear-gradient(160deg,#141a16,#141414)"><div class="glow" style="background:linear-gradient(90deg,rgba(60,170,95,.7),transparent,rgba(240,90,80,.75));box-shadow:0 0 26px 5px rgba(90,140,90,.18)"></div><div class="lbl"><b>Holiday</b></div></div><span>December · Holiday</span></div>
+      <div class="scene"><div class="phbox" style="background:radial-gradient(120% 80% at 50% 20%,rgba(90,140,255,.34),rgba(21,21,21,.2) 60%),linear-gradient(160deg,#151a24,#141414)"><div class="glow" style="background:linear-gradient(90deg,transparent,rgba(140,180,255,.8),transparent);box-shadow:0 0 26px 5px rgba(90,140,255,.2)"></div><div class="lbl"><b>Blue Accent</b></div></div><span>Blue Hour · Accent</span></div>
+    </div>
+  </div>
+</section>
+
+<section id="app">
+  <div class="wrap">
+    <div class="eyebrow">04 — Control</div>
+    <div class="split" style="margin-top:16px">
+      <div>
+        <h2>Your whole exterior, one screen.</h2>
+        <p>Run the system from the app on any phone or tablet, or from a web browser anywhere in the world. Set it to follow sunset and sunrise, schedule scenes by date, or split the house into zones and light them independently.</p>
+        <div class="grid g2" style="margin-top:26px">
+          <div class="card" style="padding:20px"><div class="n">ZONES</div><p style="margin:0">Roofline, garage wing, deck and landscape controlled separately or together.</p></div>
+          <div class="card" style="padding:20px"><div class="n">SCHEDULES</div><p style="margin:0">Sunset-to-midnight automatically, or set dates for holidays months ahead.</p></div>
+          <div class="card" style="padding:20px"><div class="n">REMOTE</div><p style="margin:0">Cloud connected — change scenes from the lake, the lodge or the airport.</p></div>
+          <div class="card" style="padding:20px"><div class="n">PRESETS</div><p style="margin:0">Build your own or pull from a shared library of community scenes.</p></div>
+        </div>
+      </div>
+      <div class="phone">
+        <div class="notch"></div>
+        <div class="ph-h">Zones</div>
+        <div class="zone"><span style="display:flex;align-items:center;gap:10px"><i class="dot" style="background:#F6E3C0;color:#F6E3C0"></i>Roofline</span><span class="toggle on"></span></div>
+        <div class="zone"><span style="display:flex;align-items:center;gap:10px"><i class="dot" style="background:#F2D9AE;color:#F2D9AE"></i>Garage Wing</span><span class="toggle on"></span></div>
+        <div class="zone"><span style="display:flex;align-items:center;gap:10px"><i class="dot" style="background:#B9A184;color:#B9A184"></i>Deck &amp; Rail</span><span class="toggle on"></span></div>
+        <div class="zone"><span style="display:flex;align-items:center;gap:10px"><i class="dot" style="background:#5C6B8A;color:#5C6B8A"></i>Landscape</span><span class="toggle"></span></div>
+        <div class="ph-h" style="margin-top:16px">Scenes</div>
+        <div class="swatches">
+          <i class="sw" style="background:#F6E3C0"></i><i class="sw" style="background:#C5322D"></i><i class="sw" style="background:#2E8B57"></i><i class="sw" style="background:#4169E1"></i><i class="sw" style="background:#E8862B"></i><i class="sw" style="background:#7A4FBF"></i><i class="sw" style="background:#F6F3EE"></i>
+        </div>
+        <div class="zone" style="margin-top:14px;justify-content:center;border-color:rgba(197,50,45,.6);color:#E8938F">Sunset → 11:30 PM</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="track">
+  <div class="wrap">
+    <div class="eyebrow">05 — The Track</div>
+    <h2>Matched to your house, not to a catalog.</h2>
+    <p style="max-width:640px">The track is the part nobody should notice. Eleven profiles cover every fascia, soffit and trim condition, and the aluminum is finished in over a hundred colors so it disappears into the house in daylight.</p>
+    <div class="profiles">
+      <div class="prof">
+        <svg width="84" height="48" viewBox="0 0 84 48"><path d="M8 8h68v10H24v22H8z" fill="none" stroke="#B9A184" stroke-width="2.5"/><circle cx="16" cy="30" r="4" fill="#F6E3C0"/></svg>
+        <div class="pn">Undermount 5/8&quot;</div>
+      </div>
+      <div class="prof">
+        <svg width="84" height="48" viewBox="0 0 84 48"><path d="M8 8h68v10H30v22H8z" fill="none" stroke="#B9A184" stroke-width="2.5"/><circle cx="18" cy="30" r="4.5" fill="#F6E3C0"/></svg>
+        <div class="pn">Undermount 1-5/8&quot;</div>
+      </div>
+      <div class="prof">
+        <svg width="84" height="48" viewBox="0 0 84 48"><path d="M10 6v36h20V6" fill="none" stroke="#B9A184" stroke-width="2.5"/><path d="M30 24h44" stroke="#B9A184" stroke-width="2.5"/><circle cx="20" cy="30" r="4.5" fill="#F6E3C0"/></svg>
+        <div class="pn">Face Mount</div>
+      </div>
+      <div class="prof">
+        <svg width="84" height="48" viewBox="0 0 84 48"><path d="M12 10l24 14-24 14z" fill="none" stroke="#B9A184" stroke-width="2.5"/><path d="M36 24h40" stroke="#B9A184" stroke-width="2.5"/><circle cx="21" cy="24" r="4.5" fill="#F6E3C0"/></svg>
+        <div class="pn">Angled 30° / 45°</div>
+      </div>
+      <div class="prof">
+        <svg width="84" height="48" viewBox="0 0 84 48"><path d="M14 8v32h26V8" fill="none" stroke="#B9A184" stroke-width="2.5"/><circle cx="27" cy="30" r="5" fill="#F6E3C0"/><path d="M40 20h34" stroke="#B9A184" stroke-width="2.5"/></svg>
+        <div class="pn">U-Channel</div>
+      </div>
+      <div class="prof">
+        <svg width="84" height="48" viewBox="0 0 84 48"><rect x="10" y="14" width="30" height="20" rx="2" fill="none" stroke="#C5322D" stroke-width="2.5"/><path d="M46 24h30" stroke="#B9A184" stroke-width="2.5" stroke-dasharray="4 4"/><circle cx="25" cy="24" r="4.5" fill="#F6E3C0"/></svg>
+        <div class="pn">Custom Profile</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="process">
+  <div class="wrap">
+    <div class="eyebrow">06 — How It Works</div>
+    <h2>Four steps, one install, done for good.</h2>
+    <div class="steps" style="margin-top:26px">
+      <div class="step"><div class="num">01</div><div><h3>Measure &amp; Design</h3><p>We measure your roofline, photograph the fascia, and match the track profile and color to your trim. You get a written quote with exact footage, zones and an install window — at no charge and with no obligation.</p></div></div>
+      <div class="step"><div class="num">02</div><div><h3>Order Color-Matched Materials</h3><p>Track and components are cut and finished for your specific home. A 50% deposit reserves your date and covers the order; the balance is due only once the system is installed and working.</p></div></div>
+      <div class="step"><div class="num">03</div><div><h3>Install</h3><p>Most homes take a single day. The control box mounts in the garage, track fastens to fascia or soffit — never through roofing — and every wire runs concealed with sealed penetrations.</p></div></div>
+      <div class="step"><div class="num">04</div><div><h3>Set Up &amp; Walk Through</h3><p>We load the app on your phone, connect your zones, build your first scenes and schedules with you, and make sure you can run it yourself before we leave.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<section id="why">
+  <div class="wrap">
+    <div class="eyebrow">07 — Why Permanent</div>
+    <h2>Pay once instead of every December.</h2>
+    <p style="max-width:640px">Seasonal installation runs $2.50–$5.00 per foot every year for about six weeks of use. A permanent system is one install that runs every night for two decades, and it typically pays for itself against hired seasonal crews within several years.</p>
+    <table style="margin-top:26px">
+      <tr><th>&nbsp;</th><th>LAB Lighting</th><th>Seasonal Hanging</th><th>Store-Bought Kits</th></tr>
+      <tr><td>Cost pattern</td><td class="y">One time</td><td class="n">Every single year</td><td class="n">Replaced every few seasons</td></tr>
+      <tr><td>Visible in daylight</td><td class="y">Color-matched track</td><td class="n">Clips and sagging wire</td><td class="n">Plastic clips, loose cord</td></tr>
+      <tr><td>Used year round</td><td class="y">Every night</td><td class="n">About six weeks</td><td class="n">Occasionally</td></tr>
+      <tr><td>Color control</td><td class="y">16M colors, zones, schedules</td><td class="n">Whatever was hung</td><td class="n">Basic app, no zones</td></tr>
+      <tr><td>Warranty</td><td class="y">10-year parts</td><td class="n">Season only</td><td class="n">Limited</td></tr>
+      <tr><td>Ladder time for you</td><td class="y">None, ever</td><td class="n">None</td><td class="n">Two weekends a year</td></tr>
+    </table>
+  </div>
+</section>
+
+<section id="pricing">
+  <div class="wrap">
+    <div class="eyebrow">08 — Pricing</div>
+    <h2>Priced by the foot. No mystery numbers.</h2>
+    <p style="max-width:640px;margin-bottom:32px">Every quote is based on measured linear feet and the difficulty of the house. You see the tier, the footage and the total before anything is ordered.</p>
+    <div class="grid g3">
+      <div class="tier"><div class="t">Tier 01</div><div class="price">$30<span> / ft</span></div><p style="font-size:13.5px">Single story, straightforward access, standard track profile, simple roofline.</p><ul><li>Color-matched standard track</li><li>App setup and scene building</li><li>1-year labor warranty</li></ul></div>
+      <div class="tier feature"><div class="badge">Most Homes</div><div class="t">Tier 02</div><div class="price">$35<span> / ft</span></div><p style="font-size:13.5px">Two story, or single story with multiple peaks, dormers and corners.</p><ul><li>Everything in Tier 01</li><li>Multi-zone layout</li><li>Fall-protection install</li></ul></div>
+      <div class="tier"><div class="t">Tier 03</div><div class="price">$40<span> / ft</span></div><p style="font-size:13.5px">Steep pitch, difficult access, heavy corner count, or premium and custom track profiles.</p><ul><li>Everything in Tier 02</li><li>Lift access when required</li><li>Custom profile options</li></ul></div>
+    </div>
+    <div class="grid g3" style="margin-top:18px">
+      <div class="card"><div class="n">WHAT MOVES YOUR PRICE</div><h3>Four things, and you can see all of them</h3><p>Footage is the big one, then height and access, then corner and peak count, then track profile. A 150-foot single story with clean runs prices very differently from 150 feet broken across six dormers — same footage, twice the work. Ask us to walk the tiers with you at the measurement; there is no hidden math.</p></div>
+      <div class="card"><div class="n">PAYMENT</div><h3>Half down, half when it works</h3><p>A 50% deposit reserves your install date and covers your color-matched materials. The balance is due the day the system is finished and running — not before.</p></div>
+      <div class="card"><div class="n">WHAT IT COSTS TO RUN</div><h3>About $8 a year in electricity</h3><p>Each bulb draws 0.3 watts. A typical 150-foot roofline is roughly 225 bulbs — about 68 watts for the whole house, less than one old porch bulb. Running five hours a night, every night, that is roughly 120 kWh a year, or about eight dollars at Flathead Electric's current residential rate.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="quote">
+  <div class="wrap">
+    <div class="eyebrow">09 — Instant Estimate</div>
+    <div class="split" style="margin-top:16px;align-items:start">
+      <div>
+        <h2>Get a number in ten seconds.</h2>
+        <p>Enter your roofline length and the shape of your home for a real range based on our published per-foot pricing. Final pricing comes after we measure, and nothing is ordered until you approve the written quote.</p>
+        <p style="margin-top:16px;font-size:13.5px">Not sure of your footage? Most single-story homes run 100–160 feet across the front and sides. Two-story homes with a garage wing typically run 160–260 feet. We measure it for you at no charge.</p>
+        <div class="chips" style="margin-top:26px">
+          <div class="chip">Free Measurement</div><div class="chip">Written Quote</div><div class="chip">3-Day Right to Cancel</div>
+        </div>
+      </div>
+      <div class="est">
+        <div class="field"><label for="ft">Roofline Length (linear feet)</label><input id="ft" type="number" min="40" max="900" step="5" value="150"></div>
+        <div class="field"><label for="tier">Home Type</label>
+          <select id="tier">
+            <option value="30">Single story, simple roofline</option>
+            <option value="35" selected>Two story, or several peaks and corners</option>
+            <option value="40">Steep pitch, hard access, or custom track</option>
+          </select>
+        </div>
+        <div class="field"><label for="zones">Additional Zones</label>
+          <select id="zones">
+            <option value="0">Roofline only</option>
+            <option value="40">Add deck or patio (~40 ft)</option>
+            <option value="80">Add deck and pergola (~80 ft)</option>
+            <option value="120">Whole exterior package (~120 ft)</option>
+          </select>
+        </div>
+        <div class="out">
+          <div class="big" id="est">$5,250</div>
+          <div class="sm" id="detail">150 ft at $35/ft · 50% deposit of $2,625 reserves your install date</div>
+          <a href="#contact" class="btn" style="margin-top:22px">Book My Measurement</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="coverage">
+  <div class="wrap">
+    <div class="eyebrow">10 — Where We Work</div>
+    <div class="split" style="margin-top:16px">
+      <div>
+        <h2>Kalispell based. The whole Flathead Valley.</h2>
+        <p>We work the Flathead Valley and everything within about fifty miles of Kalispell — from Eureka down to Polson, and from Marion east to the Swan. No travel surcharge anywhere in that range.</p>
+        <div class="towns">
+          <div class="town home">Kalispell — Home Base</div>
+          <div class="town">Whitefish</div><div class="town">Columbia Falls</div><div class="town">Bigfork</div><div class="town">Lakeside</div><div class="town">Somers</div><div class="town">Evergreen</div><div class="town">Creston</div><div class="town">Kila</div><div class="town">Marion</div><div class="town">Hungry Horse</div><div class="town">Martin City</div><div class="town">Coram</div><div class="town">West Glacier</div><div class="town">Olney</div><div class="town">Ferndale</div><div class="town">Swan Lake</div><div class="town">Rollins</div><div class="town">Elmo</div><div class="town">Polson</div><div class="town">Ronan</div><div class="town">Eureka</div>
+        </div>
+        <p class="note">Just outside the fifty-mile line? Ask anyway — larger projects and neighboring homes booked together are often worth the drive.</p>
+      </div>
+      <svg viewBox="0 0 380 380" style="width:100%;max-width:380px;margin:0 auto">
+        <defs><radialGradient id="g" cx="50%" cy="50%"><stop offset="0%" stop-color="#B9A184" stop-opacity=".22"/><stop offset="100%" stop-color="#B9A184" stop-opacity="0"/></radialGradient></defs>
+        <circle cx="190" cy="190" r="175" fill="url(#g)"/>
+        <circle cx="190" cy="190" r="175" fill="none" stroke="#B9A184" stroke-opacity=".35" stroke-dasharray="3 6"/>
+        <circle cx="190" cy="190" r="112" fill="none" stroke="#B9A184" stroke-opacity=".28" stroke-dasharray="3 6"/>
+        <circle cx="190" cy="190" r="52" fill="none" stroke="#C5322D" stroke-opacity=".6"/>
+        <circle cx="190" cy="190" r="6" fill="#C5322D"/>
+        <text x="190" y="176" fill="#F6F3EE" font-family="Montserrat" font-size="11" font-weight="700" text-anchor="middle">KALISPELL</text>
+        <text x="190" y="256" fill="#B9A184" font-family="Montserrat" font-size="9" letter-spacing="2" text-anchor="middle">FLATHEAD VALLEY</text>
+        <text x="190" y="314" fill="rgba(246,243,238,.55)" font-family="Montserrat" font-size="9" letter-spacing="2" text-anchor="middle">25 MILES</text>
+        <text x="190" y="374" fill="rgba(246,243,238,.45)" font-family="Montserrat" font-size="9" letter-spacing="2" text-anchor="middle">50 MILES</text>
+        <circle cx="160" cy="140" r="3" fill="#F6F3EE"/><text x="168" y="138" fill="rgba(246,243,238,.7)" font-family="Montserrat" font-size="8">Whitefish</text>
+        <circle cx="214" cy="228" r="3" fill="#F6F3EE"/><text x="222" y="231" fill="rgba(246,243,238,.7)" font-family="Montserrat" font-size="8">Bigfork</text>
+        <circle cx="205" cy="290" r="3" fill="#F6F3EE"/><text x="213" y="293" fill="rgba(246,243,238,.7)" font-family="Montserrat" font-size="8">Polson</text>
+        <circle cx="112" cy="206" r="3" fill="#F6F3EE"/><text x="56" y="209" fill="rgba(246,243,238,.7)" font-family="Montserrat" font-size="8">Marion</text>
+        <circle cx="252" cy="140" r="3" fill="#F6F3EE"/><text x="258" y="143" fill="rgba(246,243,238,.7)" font-family="Montserrat" font-size="8">Columbia Falls</text>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="wrap">
+    <div class="eyebrow">11 — Questions</div>
+    <h2>Straight answers.</h2>
+    <div style="margin-top:22px">
+      <details open><summary>Will it look like Christmas lights in July?</summary><p>No. In daylight the track is color-matched to your fascia and reads as trim. At night the default is a refined warm white that lights the architecture. Color scenes are there when you want them and off the rest of the time.</p></details>
+      <details><summary>How much power does it use?</summary><p>Very little. The system runs on 24 volts and uses less energy than a single 60-watt bulb for every hundred lights.</p></details>
+      <details><summary>Does it damage my roof or fascia?</summary><p>Track mounts to fascia or soffit with screws. We do not penetrate roofing or shingles. Mounting holes are small and are a normal part of any exterior installation.</p></details>
+      <details><summary>Do I need an electrician?</summary><p>Usually not. The system is low-voltage and plugs into a standard exterior outlet. If your home needs a new outlet we will tell you before the job and coordinate a licensed electrician.</p></details>
+      <details><summary>Where does the control box go?</summary><p>Most often inside the garage, out of the weather and easy to reach. We confirm the location with you before install day.</p></details>
+      <details><summary>Can I control it when I'm away?</summary><p>Yes. The system is cloud connected, so you can change scenes or schedules from the app or a web browser anywhere with internet.</p></details>
+      <details><summary>What if a bulb fails in year six?</summary><p>Parts are covered by a 10-year manufacturer warranty and we handle the claim. Individual bulbs are replaceable, so a failure is a small fix rather than a new system. Our workmanship is covered for one year; service visits outside those terms are a flat trip fee plus parts, quoted before we come out.</p></details>
+      <details><summary>Can it survive Montana winters?</summary><p>It is rated to −40° and sealed against water. The aluminum track also shields the LEDs from ice, snow load and UV, which is a large part of why permanent systems outlast clipped-on lights.</p></details>
+      <details><summary>Can you install in the winter?</summary><p>Sometimes, weather permitting. We do not work on icy or snow-covered roofs. Most winter customers sign in the off-season, lock in pricing, and install in early spring.</p></details>
+      <details><summary>What if I replace my roof or paint later?</summary><p>We remove and reinstall the system around roofing or painting work for a quoted flat rate. Nothing gets thrown away.</p></details>
+      <details><summary>Will my HOA allow it?</summary><p>Usually yes, because the track is color-matched and nearly invisible in daylight and the lighting can be set to a single warm white. If your HOA requires approval, we will provide track color samples and specifications for your submission.</p></details>
+      <details><summary>How long does installation take?</summary><p>Most homes are a single day. Larger properties and multi-zone packages may take two.</p></details>
+    </div>
+  </div>
+</section>
+
+<section id="about">
+  <div class="wrap split">
+    <div class="phbox" style="min-height:340px"><div class="glow"></div></div>
+    <div>
+      <div class="eyebrow">12 — About</div>
+      <h2>Owner-operated, valley based.</h2>
+      <p>LAB Lighting is a small, owner-run operation in Kalispell. The person who measures your home is the person who installs it and the person who answers the phone when you have a question three years from now.</p>
+      <p style="margin-top:14px">We chose one system and learned it completely rather than carrying five brands we half understand. Every install is straight track, hidden wire, sealed penetrations and a clean site — because every roofline we finish is the only advertising that matters.</p>
+      <div class="cta"><a href="#quote" class="btn ghost">Start With an Estimate</a></div>
+    </div>
+  </div>
+</section>
+
+<footer id="contact">
+  <div class="wrap">
+    <div class="fgrid">
+      <div>
+        <div class="logo" style="margin-bottom:16px"><img src="logo-light.png" alt="Lab Lighting" style="display:block;height:44px;width:auto"></div>
+        <p>Light by Design.</p><p>Permanent Architectural Lighting</p><p>Kalispell, Montana</p>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <p><a href="tel:+14069553400">(406) 955-3400</a></p>
+        <p><a href="mailto:info@lablightingmt.com">info@lablightingmt.com</a></p>
+        <p>Text or call for a free measurement</p>
+      </div>
+      <div>
+        <h4>Service Area</h4>
+        <p>Kalispell &amp; Evergreen</p><p>Whitefish · Columbia Falls</p><p>Bigfork · Lakeside · Somers</p><p>Within 50 miles of Kalispell</p>
+      </div>
+      <div>
+        <h4>Company</h4>
+        <a href="#services">Services</a><a href="#pricing">Pricing</a><a href="#process">Process</a><a href="#faq">FAQ</a>
+      </div>
+    </div>
+    <div class="fbot"><span>LAB Lighting · Kalispell, MT</span><span>Light by Design.</span></div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var ft=document.getElementById('ft'),tier=document.getElementById('tier'),zones=document.getElementById('zones'),
+      est=document.getElementById('est'),det=document.getElementById('detail');
+  function money(n){return '$'+Math.round(n).toLocaleString('en-US');}
+  function calc(){
+    var f=Math.max(0,parseFloat(ft.value)||0)+parseFloat(zones.value||0);
+    var r=parseFloat(tier.value), total=f*r;
+    est.textContent=money(total);
+    det.textContent=f.toFixed(0)+' ft at $'+r+'/ft · 50% deposit of '+money(total/2)+' reserves your install date';
+  }
+  [ft,tier,zones].forEach(function(el){el.addEventListener('input',calc);el.addEventListener('change',calc);});
+  calc();
+})();
+</script>
+</body>
+</html>
