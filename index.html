@@ -6,6 +6,7 @@
 <link rel="icon" type="image/png" href="favicon.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="canonical" href="https://lablightingmt.com/">
+<meta property="og:image" content="https://lablightingmt.com/img/hero.jpg">
 <meta property="og:title" content="Lab Lighting | Permanent Architectural Lighting, Flathead Valley MT">
 <meta property="og:description" content="Permanent, app-controlled LED lighting for Flathead Valley homes. Free design visit. Kalispell, Montana.">
 <meta property="og:url" content="https://lablightingmt.com/">
@@ -54,7 +55,7 @@ nav a:hover{color:var(--white)}
 .hero .herolbl{position:absolute;right:26px;top:96px;text-align:right;z-index:3}
 .hero .herolbl b{display:block;font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:var(--tan);font-weight:600}
 .hero .herolbl span{display:block;font-size:11px;letter-spacing:.14em;color:rgba(246,243,238,.4);margin-top:7px}
-.hero::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(21,21,21,.74) 0%,rgba(21,21,21,.3) 42%,rgba(21,21,21,.95) 100%)}
+.hero::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(21,21,21,.62) 0%,rgba(21,21,21,.18) 42%,rgba(21,21,21,.93) 100%)}
 .hero .wrap{position:relative;z-index:2;padding-bottom:74px;padding-top:130px}
 .hero h1{font-size:clamp(44px,9vw,88px)}
 .hero .rule{width:64px;height:2px;background:var(--tan);margin:22px 0 16px}
@@ -113,7 +114,7 @@ summary::-webkit-details-marker{display:none}
 summary::after{content:"+";color:var(--tan);font-weight:400;font-size:20px;line-height:1}
 details[open] summary::after{content:"–"}
 details p{margin-top:12px;font-size:14px}
-.scenes{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;margin-top:28px}
+.scenes{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(320px,100%),1fr));gap:14px;margin-top:28px}
 .scene{position:relative;border:1px solid var(--line);overflow:hidden}
 .scene span{position:absolute;left:0;right:0;bottom:0;padding:16px 14px;font-size:10px;letter-spacing:.2em;text-transform:uppercase;background:linear-gradient(transparent,rgba(21,21,21,.92))}
 .note{font-size:11px;letter-spacing:.08em;color:rgba(246,243,238,.45);margin-top:16px;line-height:1.7}
@@ -154,6 +155,10 @@ footer a:hover{color:var(--white)}
 .phbox .lbl span{display:block;font-size:11px;letter-spacing:.14em;color:rgba(246,243,238,.45);margin-top:9px}
 .phbox .glow{position:absolute;left:0;right:0;top:34%;height:1px;background:linear-gradient(90deg,transparent,rgba(246,243,238,.55),rgba(185,161,132,.5),transparent);box-shadow:0 0 26px 5px rgba(246,224,180,.16)}
 .scene .phbox{min-height:210px}
+.hero img.bg{object-fit:cover;object-position:center 40%}
+.photo{width:100%;height:100%;object-fit:cover;border:1px solid var(--line)}
+.scene img{width:100%;height:230px;object-fit:cover;display:block}
+.credit{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:rgba(246,243,238,.4);margin-top:14px}
 .certs{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}
 .cert{border:1px solid var(--line);padding:8px 12px;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:rgba(246,243,238,.65)}
 </style>
@@ -171,7 +176,7 @@ footer a:hover{color:var(--white)}
 </header>
 
 <div class="hero" id="top">
-  <div class="bg heroph" aria-hidden="true"><div class="heroglow"></div></div>
+  <img class="bg" src="img/hero.jpg" alt="Two-story home with warm white permanent lighting along every roofline at night" fetchpriority="high">
   <div class="wrap">
     <h1>Light by<br>Design.</h1>
     <div class="rule"></div>
@@ -218,7 +223,7 @@ footer a:hover{color:var(--white)}
         </div>
         <div class="cta"><a href="#quote" class="btn ghost">Ask About Your Home</a></div>
       </div>
-      <div class="phbox" style="min-height:360px"><div class="glow"></div></div>
+      <img class="photo" src="img/winter-roofline.jpg" alt="Permanent LED track along a snow-covered roofline" loading="lazy" style="min-height:360px">
     </div>
     <div class="specs" style="margin-top:44px">
       <div class="spec"><div class="v">24V</div><div class="k">Low voltage, Class 2</div></div>
@@ -237,11 +242,14 @@ footer a:hover{color:var(--white)}
     <h2>One system. Every night of the year.</h2>
     <p style="max-width:620px">Warm white is the default and the reason most people buy it. Everything else is there when you want it: Halloween, Diwali, the Fourth, a birthday, a rivalry weekend, or the two weeks in December when the whole street drives by slowly.</p>
     <div class="scenes">
-      <div class="scene"><div class="phbox" style="background:radial-gradient(120% 80% at 50% 20%,rgba(246,227,192,.30),rgba(21,21,21,.2) 60%),linear-gradient(160deg,#20201d,#141414)"><div class="glow"></div><div class="lbl"><b>Warm White</b></div></div><span>Warm White · Everyday</span></div>
-      <div class="scene"><div class="phbox" style="background:radial-gradient(120% 80% at 50% 20%,rgba(197,50,45,.42),rgba(21,21,21,.2) 60%),linear-gradient(160deg,#1f1414,#141414)"><div class="glow" style="background:linear-gradient(90deg,transparent,rgba(240,90,80,.8),transparent);box-shadow:0 0 26px 5px rgba(197,50,45,.25)"></div><div class="lbl"><b>Game Day</b></div></div><span>Game Day · Team Colors</span></div>
-      <div class="scene"><div class="phbox" style="background:radial-gradient(90% 80% at 22% 25%,rgba(60,170,95,.40),transparent 60%),radial-gradient(90% 80% at 78% 25%,rgba(197,50,45,.42),transparent 60%),linear-gradient(160deg,#141a16,#141414)"><div class="glow" style="background:linear-gradient(90deg,rgba(60,170,95,.7),transparent,rgba(240,90,80,.75));box-shadow:0 0 26px 5px rgba(90,140,90,.18)"></div><div class="lbl"><b>Holiday</b></div></div><span>December · Holiday</span></div>
-      <div class="scene"><div class="phbox" style="background:radial-gradient(120% 80% at 50% 20%,rgba(90,140,255,.34),rgba(21,21,21,.2) 60%),linear-gradient(160deg,#151a24,#141414)"><div class="glow" style="background:linear-gradient(90deg,transparent,rgba(140,180,255,.8),transparent);box-shadow:0 0 26px 5px rgba(90,140,255,.2)"></div><div class="lbl"><b>Blue Accent</b></div></div><span>Blue Hour · Accent</span></div>
+      <div class="scene"><img src="img/warm-white.jpg" alt="Home with warm white permanent lights on every gable" loading="lazy"><span>Warm White · Everyday</span></div>
+      <div class="scene"><img src="img/blue-hour.jpg" alt="Home lit in cool teal and blue accent lighting" loading="lazy"><span>Cool Accent · Blue Hour</span></div>
+      <div class="scene"><img src="img/multi-color.jpg" alt="Home lit in a multi-color celebration scene" loading="lazy"><span>Celebration · Multi-Color</span></div>
+      <div class="scene"><img src="img/two-tone.jpg" alt="Home with separate color zones on upper and lower rooflines" loading="lazy"><span>Zones · Two-Tone</span></div>
+      <div class="scene"><img src="img/backyard-pool.jpg" alt="Pool and fence line lit with permanent lights" loading="lazy"><span>Backyard · Pool &amp; Fence</span></div>
+      <div class="scene"><img src="img/pergola.jpg" alt="Pergola lit with multi-color permanent lights" loading="lazy"><span>Outdoor Living · Pergola</span></div>
     </div>
+    <p class="credit">Photos: Celebright system installations</p>
   </div>
 </section>
 
@@ -454,7 +462,7 @@ footer a:hover{color:var(--white)}
 
 <section id="about">
   <div class="wrap split">
-    <div class="phbox" style="min-height:340px"><div class="glow"></div></div>
+    <img class="photo" src="img/modern-home.jpg" alt="Modern home with permanent accent lighting at dusk" loading="lazy" style="min-height:340px">
     <div>
       <div class="eyebrow">12 — About</div>
       <h2>Owner-operated, valley based.</h2>
@@ -487,7 +495,7 @@ footer a:hover{color:var(--white)}
         <a href="#services">Services</a><a href="#pricing">Pricing</a><a href="#process">Process</a><a href="#faq">FAQ</a>
       </div>
     </div>
-    <div class="fbot"><span>LAB Lighting · Kalispell, MT</span><span>Light by Design.</span></div>
+    <div class="fbot"><span>LAB Lighting · Kalispell, MT</span><span>Photos courtesy of Celebright</span><span>Light by Design.</span></div>
   </div>
 </footer>
 
