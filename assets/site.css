@@ -316,3 +316,59 @@ main>section+section::before{content:"";position:absolute;left:50%;top:0;transfo
 }
 .interlude img{filter:brightness(.62) saturate(.95)}
 .il-text::before{content:"";position:absolute;left:50%;top:50%;width:140%;height:220%;transform:translate(-50%,-50%);z-index:-1;background:radial-gradient(closest-side,rgba(10,10,10,.62),rgba(10,10,10,0))}
+
+/* ===== One-page flow: every section melts into the next ===== */
+html{background:#121212}
+body.onepage{background:transparent;--g1:rgba(185,161,132,.16);--g2:rgba(197,50,45,.05)}
+body.onepage[data-tone="cool"]{--g1:rgba(78,118,178,.17);--g2:rgba(185,161,132,.06)}
+body.onepage[data-tone="color"]{--g1:rgba(150,82,210,.15);--g2:rgba(36,170,180,.12)}
+body.onepage[data-tone="warm"]{--g1:rgba(185,161,132,.16);--g2:rgba(197,50,45,.05)}
+.ambient{position:fixed;inset:0;z-index:-1;overflow:hidden;background:#141414}
+.ambient i{position:absolute;width:90vmax;height:90vmax;border-radius:50%;filter:blur(40px);transition:background 1.8s ease}
+.ambient .a1{left:-30vmax;top:-25vmax;background:radial-gradient(closest-side,var(--g1),transparent);animation:drift1 26s ease-in-out infinite alternate}
+.ambient .a2{right:-35vmax;bottom:-35vmax;background:radial-gradient(closest-side,var(--g2),transparent);animation:drift2 32s ease-in-out infinite alternate}
+@keyframes drift1{to{transform:translate(18vmax,22vmax)}}
+@keyframes drift2{to{transform:translate(-20vmax,-16vmax)}}
+
+/* no hard edges anywhere */
+.onepage main>section{background:transparent;padding:120px 0}
+.onepage main>section+section::before{display:none}
+.onepage main>section::after{content:"";position:absolute;left:50%;bottom:0;width:1px;height:70px;transform:translateX(-50%);background:linear-gradient(rgba(185,161,132,0),rgba(185,161,132,.35),rgba(185,161,132,0));opacity:.6}
+.onepage main>section:last-child::after{display:none}
+.onepage .card,.onepage .tier,.onepage .est,.onepage .step,.onepage .fig,.onepage .chat{background:rgba(255,255,255,.025);backdrop-filter:blur(6px)}
+
+/* photos dissolve into the page instead of stopping at an edge */
+.onepage .hero.cine::after{background:linear-gradient(180deg,rgba(13,13,13,.55) 0%,rgba(13,13,13,.1) 40%,rgba(20,20,20,.55) 80%,rgba(20,20,20,0) 100%)}
+.onepage .hero.cine img.bg{-webkit-mask-image:linear-gradient(180deg,#000 62%,transparent 100%);mask-image:linear-gradient(180deg,#000 62%,transparent 100%)}
+.onepage .interlude{height:110vh;margin:-60px 0}
+.onepage .interlude::before,.onepage .interlude::after{display:none}
+.onepage .interlude img{-webkit-mask-image:linear-gradient(180deg,transparent 0%,#000 28%,#000 72%,transparent 100%);mask-image:linear-gradient(180deg,transparent 0%,#000 28%,#000 72%,transparent 100%)}
+.onepage footer{background:linear-gradient(180deg,rgba(13,13,13,0),#0d0d0d 120px);border-top:0;padding-top:140px}
+
+/* each section drifts in out of a soft blur and settles back as it leaves */
+@supports (animation-timeline:view()){
+ .onepage main>section>.wrap{animation:melt linear both;animation-timeline:view();animation-range:entry 0% exit 100%}
+ @keyframes melt{
+  entry 0%{opacity:.2;transform:translateY(60px)}
+  entry 40%{opacity:1;transform:none}
+  exit 60%{opacity:1;transform:none}
+  exit 100%{opacity:.25;transform:translateY(-40px)}
+ }
+ .onepage .il-text{animation:ilText linear both;animation-timeline:view();animation-range:cover 15% cover 85%}
+ @keyframes ilText{0%{opacity:0;letter-spacing:.06em;filter:blur(8px)}35%,65%{opacity:1;letter-spacing:-.02em;filter:blur(0)}100%{opacity:0;filter:blur(8px)}}
+}
+
+/* scroll progress + chapter rail */
+.progress{position:absolute;left:0;right:0;bottom:-1px;height:1px;background:transparent}
+.progress i{display:block;height:100%;background:linear-gradient(90deg,var(--tan),#FFE2B0);transform-origin:left;transform:scaleX(0)}
+.rail{position:fixed;right:22px;top:50%;transform:translateY(-50%);z-index:50;display:flex;flex-direction:column;gap:14px;opacity:0;transition:opacity .6s}
+body.scrolled .rail{opacity:1}
+.rail a{display:flex;align-items:center;justify-content:flex-end;gap:10px;text-decoration:none;color:rgba(246,243,238,.0);font-size:9.5px;letter-spacing:.22em;text-transform:uppercase;font-weight:600;transition:color .4s}
+.rail a i{width:6px;height:6px;border:1px solid rgba(246,243,238,.4);transform:rotate(45deg);transition:.4s}
+.rail:hover a{color:rgba(246,243,238,.55)}
+.rail:hover a.on{color:var(--tan)}
+.rail a.on i{background:var(--tan);border-color:var(--tan);transform:rotate(45deg) scale(1.3)}
+@media(max-width:1360px){.rail{display:none}}
+nav a.on{color:var(--white)}
+nav a.on::after{transform:scaleX(1)}
+@media(prefers-reduced-motion:reduce){.ambient i{animation:none}}
