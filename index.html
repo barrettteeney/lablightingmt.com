@@ -217,6 +217,22 @@ footer a:hover{color:var(--white)}
 .fc-body #hcp-lead-iframe{display:block;width:100%;min-height:1000px;border:0}
 .fc-foot{padding:0 20px 16px;font-size:12px;color:rgba(246,243,238,.55)}
 
+.fwide{grid-column:2/-1;margin-top:26px}
+.planwrap{max-width:330px}
+@media(max-width:880px){.fwide{grid-column:2;margin-top:0}.planwrap{max-width:none}}
+.ba{position:relative;overflow:hidden;user-select:none;touch-action:pan-y;cursor:ew-resize}
+.ba img{display:block;width:100%;height:auto;pointer-events:none}
+.ba .ba-day{position:absolute;inset:0;height:100%;object-fit:cover;clip-path:inset(0 calc(100% - var(--x)) 0 0)}
+.ba-handle{position:absolute;top:0;bottom:0;left:var(--x);width:2px;margin-left:-1px;background:var(--white);box-shadow:0 0 12px rgba(0,0,0,.5);pointer-events:none}
+.ba-handle i{position:absolute;top:50%;left:50%;width:34px;height:34px;margin:-17px 0 0 -17px;border-radius:50%;background:var(--carbon);border:2px solid var(--white);box-shadow:0 4px 14px rgba(0,0,0,.5)}
+.ba-handle i::before,.ba-handle i::after{content:"";position:absolute;top:50%;width:0;height:0;margin-top:-5px;border:5px solid transparent}
+.ba-handle i::before{left:5px;border-right-color:var(--white)}
+.ba-handle i::after{right:5px;border-left-color:var(--white)}
+.ba-tag{position:absolute;top:10px;font-size:9px;letter-spacing:.2em;text-transform:uppercase;font-weight:700;padding:5px 8px;background:rgba(21,21,21,.75);color:var(--white);pointer-events:none}
+.ba-tag.l{left:10px}.ba-tag.r{right:10px;color:#FFE2B0}
+.ba input[type=range]{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;pointer-events:none}
+.ba input[type=range]:focus-visible+*{outline:none}
+.ba:has(input:focus-visible) .ba-handle i{outline:2px solid var(--tan);outline-offset:3px}
 </style>
 </head>
 <body>
@@ -414,10 +430,14 @@ footer a:hover{color:var(--white)}
           <h3>Your lighting plan, and your home at night.</h3>
           <p>You get a map of your home showing every run we'd light and its length, with optional add-ons marked separately so you can choose. We also show you a preview of your own house at night, so you know exactly what you're getting before you decide.</p>
         </div>
-        <div class="fmedia duo">
-          <figure class="fig"><img src="img/process-plan.jpg" alt="Top-down lighting plan with each lit roofline and gable labeled with its length" loading="lazy"><figcaption>Your lighting plan</figcaption></figure>
-          <figure class="fig"><img src="img/process-preview.jpg" alt="The same home shown by day on the left and at night with permanent lights on the right" loading="lazy"><figcaption>Your home, day and night</figcaption></figure>
-        </div>
+        <div class="fmedia"><div class="planwrap"><figure class="fig"><img src="img/process-plan.jpg" alt="Top-down lighting plan with each lit roofline and gable labeled with its length" loading="lazy"><figcaption>Your lighting plan</figcaption></figure></div></div>
+        <div class="fwide"><figure class="fig"><div class="ba" style="--x:50%">
+            <img src="img/process-night.jpg" alt="The home at night with permanent lights on" loading="lazy">
+            <img class="ba-day" src="img/process-day.jpg" alt="The same home during the day" loading="lazy">
+            <span class="ba-tag l">Day</span><span class="ba-tag r">Night</span>
+            <span class="ba-handle" aria-hidden="true"><i></i></span>
+            <input type="range" min="0" max="100" value="50" aria-label="Drag to compare day and night">
+          </div><figcaption>Drag to see your home day and night</figcaption></figure></div>
       </div>
 
       <div class="fstep">
@@ -658,6 +678,18 @@ footer a:hover{color:var(--white)}
   [ft,tier,zones].forEach(function(el){el.addEventListener('input',calc);el.addEventListener('change',calc);});
   calc();
 })();
+</script>
+<script>
+document.querySelectorAll('.ba').forEach(function(b){
+  var r=b.querySelector('input'),down=false;
+  function set(v){v=Math.max(0,Math.min(100,v));r.value=v;b.style.setProperty('--x',v+'%');}
+  function fromX(x){var bb=b.getBoundingClientRect();set((x-bb.left)/bb.width*100);}
+  r.addEventListener('input',function(){set(+r.value)});
+  b.addEventListener('pointerdown',function(e){down=true;b.setPointerCapture(e.pointerId);fromX(e.clientX);});
+  b.addEventListener('pointermove',function(e){if(down)fromX(e.clientX);});
+  ['pointerup','pointercancel'].forEach(function(t){b.addEventListener(t,function(){down=false;});});
+  set(+r.value);
+});
 </script>
 </body>
 </html>
