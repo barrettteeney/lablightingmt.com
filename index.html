@@ -233,7 +233,7 @@ footer a:hover{color:var(--white)}
 .ba input[type=range]{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;pointer-events:none}
 .ba input[type=range]:focus-visible+*{outline:none}
 .ba:has(input:focus-visible) .ba-handle i{outline:2px solid var(--tan);outline-offset:3px}
-/* cinematic layer — keeps the existing design, adds motion */
+/* cinematic layer v2 — keeps the existing design, adds motion */
 html.lenis,html.lenis body{height:auto}
 .lenis.lenis-smooth{scroll-behavior:auto!important}
 .lenis.lenis-smooth [data-lenis-prevent]{overscroll-behavior:contain}
@@ -241,19 +241,38 @@ html.lenis,html.lenis body{height:auto}
 .cine-curtain{position:fixed;inset:0;z-index:200;background:#0d0d0d;display:flex;align-items:center;justify-content:center;visibility:hidden}
 .cine-pre .cine-curtain{visibility:visible}
 .cine-curtain .mark{height:54px;width:auto}
-header{transition:transform .55s cubic-bezier(.2,.7,.2,1),background .4s}
+.cine-progress{position:fixed;left:0;top:0;height:2px;width:100%;background:var(--tan);transform-origin:0 50%;transform:scaleX(0);z-index:70;pointer-events:none}
+header{transition:transform .7s cubic-bezier(.16,1,.3,1),background .4s}
 header.h-hide{transform:translateY(-100%)}
-.w{display:inline-block;overflow:hidden;vertical-align:top;padding-bottom:.08em;margin-bottom:-.08em}
-.w>i{display:inline-block;font-style:normal;will-change:transform}
+.w{display:inline-block;overflow:hidden;vertical-align:top;padding-bottom:.1em;margin-bottom:-.1em}
+.w>i{display:inline-block;font-style:normal;will-change:transform;transform-origin:0 100%}
 .hero{overflow:hidden}
 .hero img.bg{will-change:transform;transform-origin:50% 60%}
+.fig{overflow:hidden}
+.fig>img,.planwrap .fig img{will-change:transform}
 #scenes.strip .scenes{display:flex;flex-wrap:nowrap;gap:16px;width:max-content;will-change:transform}
 #scenes.strip .scene{width:min(46vw,620px);flex:none}
 #scenes.strip .scene img{height:min(56vh,520px)}
 #scenes.strip{overflow:hidden}
 .flow{--draw:1}
 .flow::before{transform-origin:top;transform:scaleY(var(--draw))}
-@media(prefers-reduced-motion:reduce){.cine-curtain{display:none}}
+
+/* day -> night on scroll */
+.dusk{--on:125%;--sky:0;--glow:.35;position:relative}
+.dk-stage{position:relative;overflow:hidden;aspect-ratio:1400/824;background:#0b0d12}
+.dk-stage img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.dk-day{position:absolute;inset:0;-webkit-mask-image:linear-gradient(100deg,transparent calc(var(--on) - 22%),#000 var(--on));mask-image:linear-gradient(100deg,transparent calc(var(--on) - 22%),#000 var(--on))}
+.dk-sky{position:absolute;inset:0;background:linear-gradient(180deg,#0a1430 0%,#1b2340 45%,#3a2a2a 100%);mix-blend-mode:multiply;opacity:var(--sky)}
+.dk-glow{position:absolute;inset:0;mix-blend-mode:screen;opacity:var(--glow);pointer-events:none}
+.dk-glow img{filter:blur(14px) brightness(1.25) saturate(1.2)}
+.dk-hud{position:absolute;left:14px;right:14px;top:14px;display:flex;justify-content:space-between;align-items:flex-start;gap:10px;pointer-events:none}
+.dk-clock{font-size:22px;font-weight:700;letter-spacing:-.01em;color:var(--white);background:rgba(13,13,13,.55);padding:6px 11px;font-variant-numeric:tabular-nums;line-height:1;white-space:nowrap}
+.dk-state{font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;font-weight:700;color:#FFE2B0;background:rgba(13,13,13,.6);padding:7px 10px;text-align:right}
+.dk-bar{position:absolute;left:0;right:0;bottom:0;height:3px;background:rgba(246,243,238,.12)}
+.dk-bar i{display:block;height:100%;background:linear-gradient(90deg,#FFE2B0,var(--tan));transform-origin:0 50%;transform:scaleX(var(--p,1))}
+@media(max-width:880px){.fstep .fwide{grid-column:1/-1;margin-top:20px}}
+@media(max-width:600px){.dk-clock{font-size:17px}.dk-state{font-size:8.5px;letter-spacing:.14em}}
+@media(prefers-reduced-motion:reduce){.cine-curtain,.cine-progress{display:none}}
 </style>
 </head>
 <body>
@@ -453,13 +472,14 @@ header.h-hide{transform:translateY(-100%)}
           <p>You get a map of your home showing every run we'd light and its length, with optional add-ons marked separately so you can choose. We also show you a preview of your own house at night, so you know exactly what you're getting before you decide.</p>
         </div>
         <div class="fmedia"><div class="planwrap"><figure class="fig"><img src="img/process-plan.jpg" alt="Top-down lighting plan with each lit roofline and gable labeled with its length" loading="lazy"><figcaption>Your lighting plan</figcaption></figure></div></div>
-        <div class="fwide"><figure class="fig"><div class="ba" style="--x:50%">
-            <img src="img/process-night.jpg" alt="The home at night with permanent lights on" loading="lazy">
-            <img class="ba-day" src="img/process-day.jpg" alt="The same home during the day" loading="lazy">
-            <span class="ba-tag l">Day</span><span class="ba-tag r">Night</span>
-            <span class="ba-handle" aria-hidden="true"><i></i></span>
-            <input type="range" min="0" max="100" value="50" aria-label="Drag to compare day and night">
-          </div><figcaption>Drag to see your home day and night</figcaption></figure></div>
+        <div class="fwide"><figure class="fig dusk">
+          <div class="dk-stage">
+            <img class="dk-night" src="img/process-night.jpg" alt="The home at night with permanent lights on" loading="lazy">
+            <div class="dk-glow" aria-hidden="true"><img src="img/process-night.jpg" alt="" loading="lazy"></div>
+            <div class="dk-day"><img src="img/process-day.jpg" alt="The same home during the day" loading="lazy"><div class="dk-sky"></div></div>
+            <div class="dk-hud" aria-hidden="true"><span class="dk-clock">7:05 PM</span><span class="dk-state">Evening · warm white</span></div>
+            <div class="dk-bar" aria-hidden="true"><i></i></div>
+          </div><figcaption>Keep scrolling: your home from day to night</figcaption></figure></div>
       </div>
 
       <div class="fstep">
@@ -701,28 +721,18 @@ header.h-hide{transform:translateY(-100%)}
   calc();
 })();
 </script>
-<script>
-document.querySelectorAll('.ba').forEach(function(b){
-  var r=b.querySelector('input'),down=false;
-  function set(v){v=Math.max(0,Math.min(100,v));r.value=v;b.style.setProperty('--x',v+'%');}
-  function fromX(x){var bb=b.getBoundingClientRect();set((x-bb.left)/bb.width*100);}
-  r.addEventListener('input',function(){set(+r.value)});
-  b.addEventListener('pointerdown',function(e){down=true;b.setPointerCapture(e.pointerId);fromX(e.clientX);});
-  b.addEventListener('pointermove',function(e){if(down)fromX(e.clientX);});
-  ['pointerup','pointercancel'].forEach(function(t){b.addEventListener(t,function(){down=false;});});
-  set(+r.value);
-});
-</script>
 <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 <script>(function () {
-  if (matchMedia('(prefers-reduced-motion: reduce)').matches || !window.gsap) { document.documentElement.classList.remove('cine-pre'); return; }
+  var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduce || !window.gsap || !window.Lenis) { document.documentElement.classList.remove('cine-pre'); return; }
   gsap.registerPlugin(ScrollTrigger);
   var mm = gsap.matchMedia(), desktop = '(min-width: 900px)';
+  var EASE = 'expo.out', SOFT = 'power3.out';
 
-  // ---- buttery smooth scrolling (Lenis) driven by GSAP's ticker
-  var lenis = new Lenis({ lerp: 0.085, smoothWheel: true, wheelMultiplier: 0.9 });
+  // ---- silky smooth scrolling (Lenis) driven by GSAP's ticker
+  var lenis = new Lenis({ lerp: 0.068, smoothWheel: true, wheelMultiplier: 0.85, touchMultiplier: 1.2 });
   lenis.on('scroll', ScrollTrigger.update);
   gsap.ticker.add(function (t) { lenis.raf(t * 1000); });
   gsap.ticker.lagSmoothing(0);
@@ -730,66 +740,81 @@ document.querySelectorAll('.ba').forEach(function(b){
     a.addEventListener('click', function (e) {
       var id = a.getAttribute('href'); if (id.length < 2) return;
       var el = document.querySelector(id); if (!el) return;
-      e.preventDefault(); lenis.scrollTo(el, { offset: -64, duration: 1.6, easing: function (x) { return 1 - Math.pow(1 - x, 4); } });
+      e.preventDefault(); lenis.scrollTo(el, { offset: -64, duration: 1.9, easing: function (x) { return x < 0.5 ? 8 * x * x * x * x : 1 - Math.pow(-2 * x + 2, 4) / 2; } });
     });
   });
 
-  // ---- header hides on the way down, returns on the way up
+  // ---- header hides on the way down, returns on the way up; progress line
   var header = document.querySelector('header'), lastY = 0;
+  var bar = document.createElement('div'); bar.className = 'cine-progress'; document.body.appendChild(bar);
+  var barTo = gsap.quickTo(bar, 'scaleX', { duration: 0.4, ease: 'power2.out' });
   lenis.on('scroll', function (e) {
-    var y = e.scroll; header.classList.toggle('h-hide', y > lastY && y > 300); header.classList.toggle('h-solid', y > 40); lastY = y;
+    var y = e.scroll; header.classList.toggle('h-hide', y > lastY + 2 && y > 300); if (y < lastY - 2) header.classList.remove('h-hide');
+    header.classList.toggle('h-solid', y > 40); lastY = y; barTo(e.progress || 0);
   });
 
-  // ---- helpers
   function splitWords(el) {
     if (el.dataset.split) return el.querySelectorAll('.w > i');
     el.dataset.split = 1;
-    var html = el.innerHTML.split(/(<br\s*\/?>)/i).map(function (part) {
+    el.innerHTML = el.innerHTML.split(/(<br\s*\/?>)/i).map(function (part) {
       if (/^<br/i.test(part)) return part;
       return part.split(/(\s+)/).map(function (w) { return /^\s+$/.test(w) || !w ? w : '<span class="w"><i>' + w + '</i></span>'; }).join('');
     }).join('');
-    el.innerHTML = html; return el.querySelectorAll('.w > i');
+    return el.querySelectorAll('.w > i');
   }
-  var EASE = 'expo.out';
 
   // ---- intro: curtain lifts, hero settles
   var hero = document.querySelector('.hero'), heroImg = hero.querySelector('img.bg');
   var heroWords = splitWords(hero.querySelector('h1'));
-  var intro = gsap.timeline({ defaults: { ease: EASE } });
-  intro.set('.cine-curtain', { autoAlpha: 1 })
+  gsap.timeline({ defaults: { ease: EASE } })
+    .set('.cine-curtain', { autoAlpha: 1 })
     .from('.cine-curtain .mark', { opacity: 0, y: 14, duration: 0.9 })
-    .to('.cine-curtain .mark', { opacity: 0, y: -10, duration: 0.5, ease: 'power2.in' }, '+=0.25')
-    .to('.cine-curtain', { yPercent: -100, duration: 1.2, ease: 'expo.inOut' }, '-=0.1')
-    .from(heroImg, { scale: 1.28, duration: 2.6, ease: 'expo.out' }, '<0.15')
-    .from(heroWords, { yPercent: 115, duration: 1.4, stagger: 0.07 }, '<0.35')
-    .from(hero.querySelectorAll('.rule, .desc, .lead, .cta, .chips'), { y: 26, opacity: 0, duration: 1.2, stagger: 0.09 }, '<0.35')
-    .from('header', { opacity: 0, duration: 1, clearProps: 'opacity' }, '<');
+    .to('.cine-curtain .mark', { opacity: 0, y: -10, duration: 0.5, ease: 'power2.in' }, '+=0.2')
+    .to('.cine-curtain', { yPercent: -100, duration: 1.3, ease: 'expo.inOut' }, '-=0.1')
+    .from(heroImg, { scale: 1.3, duration: 2.8 }, '<0.15')
+    .from(heroWords, { yPercent: 120, rotate: 4, duration: 1.5, stagger: 0.08 }, '<0.35')
+    .from(hero.querySelectorAll('.rule, .desc, .lead, .cta, .chips'), { y: 30, opacity: 0, duration: 1.4, stagger: 0.1 }, '<0.35')
+    .from('header', { opacity: 0, duration: 1.2, clearProps: 'opacity' }, '<');
   document.documentElement.classList.remove('cine-pre');
 
-  // hero drifts and dims as you leave it
-  gsap.to(heroImg, { yPercent: 14, scale: 1.08, ease: 'none', scrollTrigger: { trigger: hero, start: 'top top', end: 'bottom top', scrub: true } });
-  gsap.to(hero.querySelector('.wrap'), { y: -90, opacity: 0, ease: 'none', scrollTrigger: { trigger: hero, start: '35% top', end: 'bottom top', scrub: true } });
+  gsap.to(heroImg, { yPercent: 16, scale: 1.1, ease: 'none', scrollTrigger: { trigger: hero, start: 'top top', end: 'bottom top', scrub: true } });
+  gsap.to(hero.querySelector('.wrap'), { y: -110, opacity: 0, ease: 'none', scrollTrigger: { trigger: hero, start: '30% top', end: 'bottom top', scrub: true } });
 
-  // ---- section headings: words rise out of a mask
-  document.querySelectorAll('main section h2, body > section h2').forEach(function (h) {
-    var w = splitWords(h);
-    gsap.from(w, { yPercent: 115, duration: 1.3, ease: EASE, stagger: 0.035, scrollTrigger: { trigger: h, start: 'top 88%' } });
+  // ---- every section glides in and eases out (skip sections that pin things)
+  gsap.utils.toArray('body > section, main > section').forEach(function (sec) {
+    if (sec.classList.contains('hero') || sec.id === 'scenes' || sec.id === 'process') return;
+    var w = sec.querySelector(':scope > .wrap'); if (!w) return;
+    gsap.fromTo(w, { y: 70 }, { y: 0, ease: 'none', scrollTrigger: { trigger: sec, start: 'top bottom', end: 'top 35%', scrub: 1.2 } });
   });
-  // eyebrow rule draws in
+
+  // ---- headings: words rise out of a mask
+  document.querySelectorAll('section h2').forEach(function (h) {
+    if (h.closest('.hero')) return;
+    gsap.from(splitWords(h), { yPercent: 120, rotate: 3, duration: 1.5, ease: EASE, stagger: 0.04, scrollTrigger: { trigger: h, start: 'top 88%' } });
+  });
+  document.querySelectorAll('.ftext h3').forEach(function (h) {
+    gsap.from(splitWords(h), { yPercent: 120, duration: 1.3, ease: EASE, stagger: 0.03, scrollTrigger: { trigger: h, start: 'top 90%' } });
+  });
   gsap.utils.toArray('section .eyebrow').forEach(function (e) {
-    gsap.from(e, { opacity: 0, x: -16, duration: 1, ease: EASE, scrollTrigger: { trigger: e, start: 'top 90%' } });
-  });
-  // body copy, cards, rows: soft rise with stagger per group
-  ['section .wrap > p', 'section .split p', '.card', '.tier', '.step', '.fstep', 'details', '.spec', '.cert', '.town', '.chip', '.est', 'table tr', '.next3 li', '.direct a'].forEach(function (sel) {
-    ScrollTrigger.batch(sel, { start: 'top 90%', once: true, onEnter: function (els) { gsap.from(els, { y: 34, opacity: 0, duration: 1.1, ease: EASE, stagger: 0.07, overwrite: true }); } });
+    gsap.from(e, { opacity: 0, x: -20, duration: 1.2, ease: EASE, scrollTrigger: { trigger: e, start: 'top 90%' } });
   });
 
-  // ---- images: wipe open + settle from a slight zoom, then gentle parallax
-  gsap.utils.toArray('.photo, .fig, .formcard').forEach(function (el) {
-    gsap.fromTo(el, { clipPath: 'inset(12% 8% 12% 8%)', opacity: 0.001 }, { clipPath: 'inset(0% 0% 0% 0%)', opacity: 1, duration: 1.5, ease: EASE, scrollTrigger: { trigger: el, start: 'top 85%' } });
+  // ---- body copy, cards, rows: soft rise, staggered per group
+  ['section .wrap > p', 'section .split p', '.ftext p', '.fchip', '.fnum', '.card', '.tier', '.step', 'details', '.spec', '.cert', '.town', '.chip', '.est', 'table tr', '.next3 li', '.direct a', '.field', 'footer .wrap > *'].forEach(function (sel) {
+    ScrollTrigger.batch(sel, { start: 'top 92%', once: true, onEnter: function (els) {
+      gsap.fromTo(els, { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: 1.4, ease: SOFT, stagger: 0.08, overwrite: true, clearProps: 'transform' });
+    } });
+  });
+
+  // ---- images: wipe open, settle from zoom, keep drifting while on screen
+  gsap.utils.toArray('.photo, .fig:not(.dusk), .formcard').forEach(function (el) {
+    gsap.fromTo(el, { clipPath: 'inset(14% 10% 14% 10%)', opacity: 0.001 }, { clipPath: 'inset(0% 0% 0% 0%)', opacity: 1, duration: 1.8, ease: EASE, scrollTrigger: { trigger: el, start: 'top 88%' } });
+  });
+  gsap.utils.toArray('.fig:not(.light):not(.dusk) > img').forEach(function (img) {
+    gsap.fromTo(img, { scale: 1.14, yPercent: -3 }, { scale: 1.02, yPercent: 3, ease: 'none', scrollTrigger: { trigger: img, start: 'top bottom', end: 'bottom top', scrub: 1 } });
   });
   gsap.utils.toArray('img.photo').forEach(function (img) {
-    gsap.fromTo(img, { objectPosition: '50% 35%' }, { objectPosition: '50% 65%', ease: 'none', scrollTrigger: { trigger: img, start: 'top bottom', end: 'bottom top', scrub: true } });
+    gsap.fromTo(img, { objectPosition: '50% 30%' }, { objectPosition: '50% 70%', ease: 'none', scrollTrigger: { trigger: img, start: 'top bottom', end: 'bottom top', scrub: 1 } });
   });
 
   // ---- scenes: pinned horizontal film strip on desktop
@@ -798,37 +823,67 @@ document.querySelectorAll('.ba').forEach(function(b){
     if (!track) return;
     sec.classList.add('strip');
     var dist = function () { return track.scrollWidth - sec.querySelector('.wrap').clientWidth; };
-    gsap.to(track, { x: function () { return -dist(); }, ease: 'none', scrollTrigger: { trigger: sec, start: 'top top', end: function () { return '+=' + dist(); }, pin: true, scrub: 0.6, invalidateOnRefresh: true } });
+    gsap.to(track, { x: function () { return -dist(); }, ease: 'none', scrollTrigger: { trigger: sec, start: 'top top', end: function () { return '+=' + dist(); }, pin: true, scrub: 1, invalidateOnRefresh: true } });
     track.querySelectorAll('.scene img').forEach(function (img) {
-      gsap.fromTo(img, { scale: 1.18 }, { scale: 1, ease: 'none', scrollTrigger: { trigger: sec, start: 'top top', end: function () { return '+=' + dist(); }, scrub: true } });
+      gsap.fromTo(img, { scale: 1.2 }, { scale: 1, ease: 'none', scrollTrigger: { trigger: sec, start: 'top top', end: function () { return '+=' + dist(); }, scrub: 1 } });
     });
     return function () { sec.classList.remove('strip'); };
   });
   mm.add('(max-width: 899px)', function () {
-    ScrollTrigger.batch('.scene', { start: 'top 90%', once: true, onEnter: function (els) { gsap.from(els, { y: 40, opacity: 0, duration: 1.1, ease: EASE, stagger: 0.08 }); } });
+    ScrollTrigger.batch('.scene', { start: 'top 92%', once: true, onEnter: function (els) { gsap.from(els, { y: 44, opacity: 0, duration: 1.3, ease: SOFT, stagger: 0.08 }); } });
   });
+
+  // ---- day to night, driven by scroll
+  var dusk = document.querySelector('.dusk');
+  if (dusk) {
+    var clock = dusk.querySelector('.dk-clock'), state = dusk.querySelector('.dk-state'), last = '';
+    var st = { p: 0 };
+    function paint() {
+      var p = st.p;
+      var dim = Math.min(1, p / 0.5);                       // 0-50%: sun goes down
+      var on = Math.max(0, Math.min(1, (p - 0.42) / 0.5));  // 42-92%: lights switch on across the roof
+      dusk.style.setProperty('--sky', (dim * 0.78).toFixed(3));
+      dusk.style.setProperty('--on', (-10 + on * 135).toFixed(2) + '%');
+      dusk.style.setProperty('--glow', (Math.max(0, (p - 0.75) / 0.25) * 0.55).toFixed(3));
+      dusk.style.setProperty('--p', p.toFixed(3));
+      var mins = Math.round(16 * 60 + 15 + p * 170), h = Math.floor(mins / 60), m = mins % 60;
+      clock.textContent = (h > 12 ? h - 12 : h) + ':' + (m < 10 ? '0' : '') + m + ' PM';
+      var s = p < 0.4 ? 'Daytime · track hidden in your trim' : p < 0.85 ? 'Sunset · lights coming on' : 'Evening · warm white';
+      if (s !== last) { state.textContent = s; last = s; }
+    }
+    st.p = 0; paint();
+    var stage = dusk.querySelector('.dk-stage');
+    mm.add({ d: desktop, m: '(max-width: 899px)' }, function (ctx) {
+      gsap.to(st, { p: 1, ease: 'none', onUpdate: paint, scrollTrigger: {
+        trigger: stage, start: 'center center', end: ctx.conditions.d ? '+=140%' : '+=110%', pin: dusk, pinSpacing: true, scrub: 1.1, anticipatePin: 1, invalidateOnRefresh: true
+      } });
+      gsap.fromTo(stage, { scale: 0.92, opacity: 0.001 }, { scale: 1, opacity: 1, ease: EASE, duration: 1.6, scrollTrigger: { trigger: dusk, start: 'top 85%' } });
+    });
+  }
 
   // ---- How It Works: the timeline line draws as you read
   var flow = document.querySelector('.flow');
-  if (flow) gsap.fromTo(flow, { '--draw': 0 }, { '--draw': 1, ease: 'none', scrollTrigger: { trigger: flow, start: 'top 70%', end: 'bottom 70%', scrub: true } });
+  if (flow) gsap.fromTo(flow, { '--draw': 0 }, { '--draw': 1, ease: 'none', scrollTrigger: { trigger: flow, start: 'top 70%', end: 'bottom 70%', scrub: 1 } });
 
   // ---- spec numbers count up
   document.querySelectorAll('.spec .v').forEach(function (v) {
     var m = v.textContent.match(/^([−-]?)([\d,]+)(.*)$/); if (!m) return;
     var n = parseInt(m[2].replace(/,/g, ''), 10), pre = m[1], post = m[3], o = { x: 0 };
-    gsap.to(o, { x: n, duration: 1.8, ease: 'power3.out', scrollTrigger: { trigger: v, start: 'top 90%' }, onUpdate: function () { v.textContent = pre + Math.round(o.x).toLocaleString('en-US') + post; } });
+    gsap.to(o, { x: n, duration: 2, ease: 'power3.out', scrollTrigger: { trigger: v, start: 'top 90%' }, onUpdate: function () { v.textContent = pre + Math.round(o.x).toLocaleString('en-US') + post; } });
   });
 
   // ---- buttons: a little magnetic pull on desktop
   mm.add(desktop + ' and (hover: hover)', function () {
     document.querySelectorAll('.btn').forEach(function (b) {
-      var xTo = gsap.quickTo(b, 'x', { duration: 0.5, ease: 'power3' }), yTo = gsap.quickTo(b, 'y', { duration: 0.5, ease: 'power3' });
+      var xTo = gsap.quickTo(b, 'x', { duration: 0.6, ease: 'power3' }), yTo = gsap.quickTo(b, 'y', { duration: 0.6, ease: 'power3' });
       b.addEventListener('mousemove', function (e) { var r = b.getBoundingClientRect(); xTo((e.clientX - r.left - r.width / 2) * 0.25); yTo((e.clientY - r.top - r.height / 2) * 0.35); });
       b.addEventListener('mouseleave', function () { xTo(0); yTo(0); });
     });
   });
 
-  window.addEventListener('load', function () { ScrollTrigger.refresh(); });
+  ScrollTrigger.sort();
+  window.addEventListener('load', function () { ScrollTrigger.sort(); ScrollTrigger.refresh(); });
+  document.querySelectorAll('img[loading=lazy]').forEach(function (im) { if (!im.complete) im.addEventListener('load', function () { clearTimeout(window.__strf); window.__strf = setTimeout(function () { ScrollTrigger.refresh(); }, 200); }, { once: true }); });
 })();
 </script>
 </body>
