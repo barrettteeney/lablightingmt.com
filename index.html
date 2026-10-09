@@ -21,6 +21,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/site.css">
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
+<script type="module" src="assets/intro3d.js"></script>
 </head>
 <body class="onepage">
 <div class="ambient" aria-hidden="true"><i class="a1"></i><i class="a2"></i></div>
@@ -35,29 +37,24 @@
 <div class="mnav" aria-hidden="true"><a href="#top" style="--i:0">Home</a><a href="#system" style="--i:1">The System</a><a href="#process" style="--i:2">How It Works</a><a href="#pricing" style="--i:3">Pricing</a><a href="#faq" style="--i:4">FAQ</a><a href="#book" style="--i:5">Book a Measurement</a><div class="mnav-foot"><a href="tel:+14069553400">(406) 955-3400</a><a href="mailto:info@lablightingmt.com">info@lablightingmt.com</a></div></div>
 <nav class="rail" aria-label="Sections"></nav>
 <main>
-<div class="hero cine" id="top" data-tone="warm" data-chapter="Home">
-  <img class="bg" src="img/hero.jpg" alt="Two-story home with warm white permanent lighting along every roofline at night" fetchpriority="high">
-  <div class="wrap">
-    <h1 class="split-lines"><span><i>Light by</i></span><span><i>Design.</i></span></h1>
-    <div class="rule"></div>
-    <div class="desc">Permanent Architectural Lighting</div>
-    <p class="lead">Invisible by day. Architectural by night. Color-matched track and individually controlled LEDs, installed once along your roofline — warm white every evening, team colors on game day, full holiday scenes in December, all from your phone.</p>
-    <div class="cta">
-      <a href="#quote" class="btn">Get My Estimate</a>
-      <a href="#system" class="btn ghost">See the System</a>
+<div class="intro3d" id="top" data-tone="cool" data-chapter="Home">
+  <div class="stage">
+    <img class="fallback" src="img/hero.jpg" alt="Two-story home with warm white permanent lighting along every roofline at night" fetchpriority="high">
+    <canvas aria-hidden="true"></canvas>
+    <div class="cap c1" data-at="-1,0.15">
+      <h1>Light by<br>Design.</h1>
+      <div class="desc">Permanent Architectural Lighting · Flathead Valley</div>
+      <p class="lead">Color-matched track and individually controlled LEDs, installed once along your roofline. Scroll to light the house.</p>
+      <div class="cta"><a href="#book" class="btn">Book a Free Measurement</a><a href="#quote" class="btn ghost">Get My Estimate</a></div>
     </div>
-    <div class="chips">
-      <div class="chip">10-Year Parts Warranty</div>
-      <div class="chip">Rated to −40°</div>
-      <div class="chip">No Monthly Fees</div>
-      <div class="chip">Installed in One Day</div>
-      <div class="chip">Flathead Valley Owned</div>
-    </div>
+    <div class="cap mid c2" data-at="0.17,0.35"><h2>Invisible by day.</h2></div>
+    <div class="cap mid c3" data-at="0.35,0.5"><h2><em>Architectural</em> by night.</h2><p>Warm white along every roofline you see from the street, every night of the year.</p></div>
+    <div class="cap mid c4" data-at="0.52,0.76"><h2>Every color, <em>when you want it.</em></h2><p>Holidays, game day, birthdays. One tap in the app.</p></div>
+    <div class="cap mid c5" data-at="0.8,1.5"><h2>Your home, <em>lit.</em></h2><div class="cta"><a href="#book" class="btn">Book a Free Measurement</a><a href="#system" class="btn ghost">See How It Works</a></div></div>
+    <div class="scrollcue" aria-hidden="true"><span></span></div>
+    <div class="hint" aria-hidden="true">Illustration · scroll</div>
   </div>
-  <div class="scrollcue" aria-hidden="true"><span></span></div>
-</div>
-
-<section data-tone="warm" data-chapter="What we do" id="services">
+</div><section data-tone="warm" data-chapter="What we do" id="services">
   <div class="wrap">
     <div class="eyebrow">What We Do</div>
     <h2>Architectural lighting, not Christmas lights.</h2>
@@ -71,7 +68,7 @@
   </div>
 </section><div class="interlude" data-tone="cool" role="img" aria-label="Home with permanent lights along a snowy roofline at night">
   <img src="img/winter-roofline.jpg" alt="" loading="lazy" decoding="async">
-  <div class="il-text"><span data-r>Invisible by day.</span><span data-r>Architectural by night.</span></div>
+  <div class="il-text"><span data-r>Built for Montana winters.</span><span data-r>Rated to −40°.</span></div>
 </div><section data-tone="cool" data-chapter="The system" id="system">
   <div class="wrap">
     <div class="eyebrow">The System</div>
