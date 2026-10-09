@@ -897,7 +897,7 @@ section{position:relative}
     document.querySelectorAll('.card, .tier').forEach(function (el) {
       var sib = Array.prototype.filter.call(el.parentNode.children, function (c) { return c.classList.contains('card') || c.classList.contains('tier'); });
       var k = sib.indexOf(el) % 3; if (sib.length < 2) return;
-      gsap.fromTo(el, { yPercent: 10 + k * 14 }, { yPercent: -(k * 10), ease: 'none', force3D: true, scrollTrigger: { trigger: el.parentNode, start: 'top bottom', end: 'bottom top', scrub: true } });
+      gsap.fromTo(el, { yPercent: 8 + k * 16 }, { yPercent: 0, ease: 'power2.out', force3D: true, scrollTrigger: { trigger: el.parentNode, start: 'top bottom', end: 'top 55%', scrub: 0.6 } });
     });
   });
   mm.add(desktop + ' and (hover: hover)', function () {
