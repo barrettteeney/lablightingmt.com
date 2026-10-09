@@ -3,8 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<link rel="icon" type="image/png" href="favicon.png">
-<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" href="favicon.ico?v=3" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png?v=3">
+<link rel="icon" type="image/png" sizes="512x512" href="favicon.png?v=3">
+<link rel="apple-touch-icon" href="apple-touch-icon.png?v=3">
 <link rel="canonical" href="https://lablightingmt.com/">
 <meta property="og:image" content="https://lablightingmt.com/img/hero.jpg">
 <meta property="og:title" content="Lab Lighting | Permanent Lights for Flathead Valley Homes">
@@ -274,6 +276,9 @@ header.h-hide{transform:translateY(-100%)}
 header{backdrop-filter:none!important;-webkit-backdrop-filter:none!important;background:rgba(21,21,21,.97)!important}
 .flowline{position:absolute;left:21px;top:8px;bottom:8px;width:1px;background:linear-gradient(var(--tan),rgba(185,161,132,.15));transform-origin:top;will-change:transform}
 .flow.has-line::before{display:none}
+.sline{position:absolute;top:-1px;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--tan) 30%,var(--tan) 70%,transparent);transform:scaleX(0);transform-origin:50% 50%;pointer-events:none;will-change:transform;font-style:normal}
+section{position:relative}
+.cine-glow{position:fixed;left:-300px;top:-300px;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(255,214,150,.09) 0%,rgba(255,214,150,0) 65%);pointer-events:none;z-index:1;opacity:0;transition:opacity .6s;will-change:transform}
 </style>
 </head>
 <body>
@@ -462,7 +467,7 @@ header{backdrop-filter:none!important;-webkit-backdrop-filter:none!important;bac
           <h3>We measure your roof from above.</h3>
           <p>We order a satellite measurement report of your home. Every eave, gable and roof edge is measured to the foot, so your plan and price are built on real numbers instead of guesses.</p>
         </div>
-        <div class="fmedia"><figure class="fig light"><img src="img/process-measure.png" alt="Aerial roof measurement diagram with the length of every roof edge in feet" loading="lazy" decoding="async"><figcaption>Satellite measurement report</figcaption></figure></div>
+        <div class="fmedia"><figure class="fig light"><img src="img/process-measure.png?v=3" alt="Sample roof measurement report for an example home, with the length of every roof edge in feet" loading="lazy" decoding="async"><figcaption>Sample satellite measurement report</figcaption></figure></div>
       </div>
 
       <div class="fstep">
@@ -472,12 +477,12 @@ header{backdrop-filter:none!important;-webkit-backdrop-filter:none!important;bac
           <h3>Your lighting plan, and your home at night.</h3>
           <p>You get a map of your home showing every run we'd light and its length, with optional add-ons marked separately so you can choose. We also show you a preview of your own house at night, so you know exactly what you're getting before you decide.</p>
         </div>
-        <div class="fmedia"><div class="planwrap"><figure class="fig"><img src="img/process-plan.jpg" alt="Top-down lighting plan with each lit roofline and gable labeled with its length" loading="lazy" decoding="async"><figcaption>Your lighting plan</figcaption></figure></div></div>
+        <div class="fmedia"><div class="planwrap"><figure class="fig doc"><img src="img/process-plan.jpg?v=3" alt="Sample lighting plan for an example home, with each lit roofline and gable labeled with its length" loading="lazy" decoding="async"><figcaption>Sample lighting plan</figcaption></figure></div></div>
         <div class="fwide"><figure class="fig dusk">
           <div class="dk-stage">
-            <img src="img/process-day.jpg" alt="The home during the day" loading="lazy" decoding="async">
+            <img src="img/process-day.jpg?v=3" alt="Example home during the day" loading="lazy" decoding="async">
             <div class="dk-shade" aria-hidden="true"></div>
-            <div class="dk-wipe"><img src="img/process-night.jpg" alt="The same home at night with permanent lights on" loading="lazy" decoding="async"></div>
+            <div class="dk-wipe"><img src="img/process-night.jpg?v=3" alt="The same example home at night with permanent lights on" loading="lazy" decoding="async"></div>
             <div class="dk-hud" aria-hidden="true"><span class="dk-clock">7:05 PM</span><span class="dk-state">Evening · warm white</span></div>
             <div class="dk-bar" aria-hidden="true"><i></i></div>
           </div><figcaption>Keep scrolling: your home from day to night</figcaption></figure></div>
@@ -490,7 +495,7 @@ header{backdrop-filter:none!important;-webkit-backdrop-filter:none!important;bac
           <h3>Approve your estimate and reserve your date.</h3>
           <p>Your written estimate lists every run, its footage and its price. Approve it online, and a 50% deposit reserves your install date and orders your track, color-matched to your trim. Before install day we confirm the measurements and trim color in person. The balance isn't due until your lights are up and working.</p>
         </div>
-        <div class="fmedia"><figure class="fig"><img src="img/process-estimate.jpg" alt="Line-by-line estimate listing each roofline run and its footage" loading="lazy" decoding="async"><figcaption>Line-by-line estimate (prices hidden)</figcaption></figure></div>
+        <div class="fmedia"><figure class="fig doc"><img src="img/process-estimate.jpg?v=3" alt="Line-by-line estimate listing each roofline run and its footage" loading="lazy" decoding="async"><figcaption>Sample line-by-line estimate (prices hidden)</figcaption></figure></div>
       </div>
 
       <div class="fstep">
@@ -778,45 +783,54 @@ header{backdrop-filter:none!important;-webkit-backdrop-filter:none!important;bac
     .from('header', { opacity: 0, duration: 1.2, clearProps: 'opacity' }, '<');
   document.documentElement.classList.remove('cine-pre');
 
-  gsap.to(heroImg, { yPercent: 16, scale: 1.1, ease: 'none', force3D: true, scrollTrigger: { trigger: hero, start: 'top top', end: 'bottom top', scrub: true } });
+  gsap.to(heroImg, { yPercent: 24, scale: 1.2, ease: 'none', force3D: true, scrollTrigger: { trigger: hero, start: 'top top', end: 'bottom top', scrub: true } });
   gsap.to(hero.querySelector('.wrap'), { y: -110, opacity: 0, ease: 'none', scrollTrigger: { trigger: hero, start: '30% top', end: 'bottom top', scrub: true } });
 
   // ---- every section glides in and eases out (skip sections that pin things)
   gsap.utils.toArray('body > section, main > section').forEach(function (sec) {
     if (sec.classList.contains('hero') || sec.id === 'scenes' || sec.id === 'process') return;
     var w = sec.querySelector(':scope > .wrap'); if (!w) return;
-    gsap.fromTo(w, { y: 70 }, { y: 0, ease: 'none', force3D: true, scrollTrigger: { trigger: sec, start: 'top bottom', end: 'top 35%', scrub: true } });
+    gsap.fromTo(w, { y: 160, opacity: 0.15 }, { y: 0, opacity: 1, ease: 'none', force3D: true, scrollTrigger: { trigger: sec, start: 'top bottom', end: 'top 30%', scrub: true } });
+  });
+
+  gsap.utils.toArray('body > section').forEach(function (sec) {
+    if (sec.classList.contains('hero')) return;
+    var l = document.createElement('i'); l.className = 'sline'; sec.prepend(l);
+    gsap.fromTo(l, { scaleX: 0 }, { scaleX: 1, ease: 'none', force3D: true, scrollTrigger: { trigger: sec, start: 'top 95%', end: 'top 45%', scrub: true } });
   });
 
   // ---- headings: words rise out of a mask
   document.querySelectorAll('section h2').forEach(function (h) {
     if (h.closest('.hero')) return;
-    gsap.from(splitWords(h), { yPercent: 120, rotate: 3, duration: 1.5, ease: EASE, stagger: 0.04, scrollTrigger: { trigger: h, start: 'top 88%' } });
+    gsap.from(splitWords(h), { yPercent: 130, rotate: 8, duration: 1.7, ease: EASE, stagger: 0.06, scrollTrigger: { trigger: h, start: 'top 88%' } });
   });
   document.querySelectorAll('.ftext h3').forEach(function (h) {
-    gsap.from(splitWords(h), { yPercent: 120, duration: 1.3, ease: EASE, stagger: 0.03, scrollTrigger: { trigger: h, start: 'top 90%' } });
+    gsap.from(splitWords(h), { yPercent: 130, rotate: 6, duration: 1.5, ease: EASE, stagger: 0.045, scrollTrigger: { trigger: h, start: 'top 90%' } });
   });
   gsap.utils.toArray('section .eyebrow').forEach(function (e) {
-    gsap.from(e, { opacity: 0, x: -20, duration: 1.2, ease: EASE, scrollTrigger: { trigger: e, start: 'top 90%' } });
+    gsap.from(e, { opacity: 0, x: -50, duration: 1.4, ease: EASE, scrollTrigger: { trigger: e, start: 'top 90%' } });
   });
 
   // ---- body copy, cards, rows: soft rise, staggered per group
   ['.formcard', 'section .wrap > p', 'section .split p', '.ftext p', '.fchip', '.fnum', '.card', '.tier', '.step', 'details', '.spec', '.cert', '.town', '.chip', '.est', 'table tr', '.next3 li', '.direct a', '.field', 'footer .wrap > *'].forEach(function (sel) {
-    ScrollTrigger.batch(sel, { start: 'top 92%', once: true, onEnter: function (els) {
-      gsap.fromTo(els, { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: 1.4, ease: SOFT, stagger: 0.08, overwrite: true, clearProps: 'transform' });
+    ScrollTrigger.batch(sel, { start: 'top 88%', once: true, onEnter: function (els) {
+      gsap.fromTo(els, { y: 90, opacity: 0, scale: 0.94 }, { y: 0, opacity: 1, scale: 1, duration: 1.6, ease: EASE, stagger: 0.12, overwrite: true, force3D: true });
     } });
   });
 
   // ---- images: wipe open, settle from zoom, keep drifting while on screen
   gsap.utils.toArray('.fig:not(.dusk)').forEach(function (el) {
-    gsap.fromTo(el, { clipPath: 'inset(14% 10% 14% 10%)', opacity: 0.001 }, { clipPath: 'inset(0% 0% 0% 0%)', opacity: 1, duration: 1.8, ease: EASE, scrollTrigger: { trigger: el, start: 'top 88%' } });
+    gsap.fromTo(el, { clipPath: 'inset(30% 22% 30% 22%)', opacity: 0.001 }, { clipPath: 'inset(0% 0% 0% 0%)', opacity: 1, duration: 2, ease: EASE, scrollTrigger: { trigger: el, start: 'top 88%' } });
   });
-  gsap.utils.toArray('.fig:not(.light):not(.dusk) > img').forEach(function (img) {
-    gsap.fromTo(img, { scale: 1.14, yPercent: -3 }, { scale: 1.02, yPercent: 3, ease: 'none', force3D: true, scrollTrigger: { trigger: img, start: 'top bottom', end: 'bottom top', scrub: true } });
+  gsap.utils.toArray('.fig.doc > img').forEach(function (img) {
+    gsap.fromTo(img, { scale: 1.08 }, { scale: 1, ease: 'none', force3D: true, scrollTrigger: { trigger: img, start: 'top bottom', end: 'center center', scrub: true } });
+  });
+  gsap.utils.toArray('.fig:not(.light):not(.dusk):not(.doc) > img').forEach(function (img) {
+    gsap.fromTo(img, { scale: 1.32, yPercent: -7 }, { scale: 1.04, yPercent: 7, ease: 'none', force3D: true, scrollTrigger: { trigger: img, start: 'top bottom', end: 'bottom top', scrub: true } });
   });
   gsap.utils.toArray('img.photo').forEach(function (img) {
     gsap.set(img.parentNode, { overflow: 'hidden' });
-    gsap.fromTo(img, { yPercent: -5, scale: 1.12 }, { yPercent: 5, scale: 1.12, ease: 'none', force3D: true, scrollTrigger: { trigger: img, start: 'top bottom', end: 'bottom top', scrub: true } });
+    gsap.fromTo(img, { yPercent: -9, scale: 1.22 }, { yPercent: 9, scale: 1.22, ease: 'none', force3D: true, scrollTrigger: { trigger: img, start: 'top bottom', end: 'bottom top', scrub: true } });
   });
 
   // ---- scenes: pinned horizontal film strip on desktop
@@ -856,7 +870,8 @@ header{backdrop-filter:none!important;-webkit-backdrop-filter:none!important;bac
       tl.to(shade, { opacity: 1, duration: 0.45, ease: 'sine.inOut' }, 0)
         .to(wipe, { xPercent: 0, duration: 0.6, ease: 'sine.inOut', force3D: true }, 0.3)
         .to(wimg, { xPercent: 0, duration: 0.6, ease: 'sine.inOut', force3D: true }, 0.3)
-        .to(dbar, { scaleX: 1, duration: 0.9 }, 0);
+        .to(dbar, { scaleX: 1, duration: 0.9 }, 0)
+        .fromTo(stage.querySelectorAll('img'), { scale: 1 }, { scale: 1.07, duration: 0.9, force3D: true }, 0);
       gsap.fromTo(stage, { scale: 0.94, opacity: 0.001 }, { scale: 1, opacity: 1, ease: EASE, duration: 1.6, force3D: true, scrollTrigger: { trigger: dusk, start: 'top 88%' } });
       return function () { gsap.set(wipe, { xPercent: -100 }); gsap.set(wimg, { xPercent: 120 }); };
     });
@@ -872,6 +887,22 @@ header{backdrop-filter:none!important;-webkit-backdrop-filter:none!important;bac
     var m = v.textContent.match(/^([−-]?)([\d,]+)(.*)$/); if (!m) return;
     var n = parseInt(m[2].replace(/,/g, ''), 10), pre = m[1], post = m[3], o = { x: 0 };
     gsap.to(o, { x: n, duration: 2, ease: 'power3.out', scrollTrigger: { trigger: v, start: 'top 90%' }, onUpdate: function () { v.textContent = pre + Math.round(o.x).toLocaleString('en-US') + post; } });
+  });
+
+  // ---- cards in a row drift at different speeds (desktop)
+  mm.add(desktop, function () {
+    document.querySelectorAll('.card, .tier').forEach(function (el) {
+      var sib = Array.prototype.filter.call(el.parentNode.children, function (c) { return c.classList.contains('card') || c.classList.contains('tier'); });
+      var k = sib.indexOf(el) % 3; if (sib.length < 2) return;
+      gsap.fromTo(el, { yPercent: 10 + k * 14 }, { yPercent: -(k * 10), ease: 'none', force3D: true, scrollTrigger: { trigger: el.parentNode, start: 'top bottom', end: 'bottom top', scrub: true } });
+    });
+  });
+  mm.add(desktop + ' and (hover: hover)', function () {
+    var g = document.createElement('div'); g.className = 'cine-glow'; document.body.appendChild(g);
+    var gx = gsap.quickTo(g, 'x', { duration: 0.9, ease: 'power3' }), gy = gsap.quickTo(g, 'y', { duration: 0.9, ease: 'power3' });
+    function mv(e) { gx(e.clientX); gy(e.clientY); g.style.opacity = 1; }
+    window.addEventListener('mousemove', mv);
+    return function () { window.removeEventListener('mousemove', mv); g.remove(); };
   });
 
   // ---- buttons: a little magnetic pull on desktop
