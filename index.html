@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="cine-pre">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -233,9 +233,31 @@ footer a:hover{color:var(--white)}
 .ba input[type=range]{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;pointer-events:none}
 .ba input[type=range]:focus-visible+*{outline:none}
 .ba:has(input:focus-visible) .ba-handle i{outline:2px solid var(--tan);outline-offset:3px}
+/* cinematic layer — keeps the existing design, adds motion */
+html.lenis,html.lenis body{height:auto}
+.lenis.lenis-smooth{scroll-behavior:auto!important}
+.lenis.lenis-smooth [data-lenis-prevent]{overscroll-behavior:contain}
+.cine-pre body{overflow:hidden}
+.cine-curtain{position:fixed;inset:0;z-index:200;background:#0d0d0d;display:flex;align-items:center;justify-content:center;visibility:hidden}
+.cine-pre .cine-curtain{visibility:visible}
+.cine-curtain .mark{height:54px;width:auto}
+header{transition:transform .55s cubic-bezier(.2,.7,.2,1),background .4s}
+header.h-hide{transform:translateY(-100%)}
+.w{display:inline-block;overflow:hidden;vertical-align:top;padding-bottom:.08em;margin-bottom:-.08em}
+.w>i{display:inline-block;font-style:normal;will-change:transform}
+.hero{overflow:hidden}
+.hero img.bg{will-change:transform;transform-origin:50% 60%}
+#scenes.strip .scenes{display:flex;flex-wrap:nowrap;gap:16px;width:max-content;will-change:transform}
+#scenes.strip .scene{width:min(46vw,620px);flex:none}
+#scenes.strip .scene img{height:min(56vh,520px)}
+#scenes.strip{overflow:hidden}
+.flow{--draw:1}
+.flow::before{transform-origin:top;transform:scaleY(var(--draw))}
+@media(prefers-reduced-motion:reduce){.cine-curtain{display:none}}
 </style>
 </head>
 <body>
+<div class="cine-curtain" aria-hidden="true"><img class="mark" src="logo-light.png" alt=""></div>
 
 <header>
   <div class="bar">
@@ -690,6 +712,124 @@ document.querySelectorAll('.ba').forEach(function(b){
   ['pointerup','pointercancel'].forEach(function(t){b.addEventListener(t,function(){down=false;});});
   set(+r.value);
 });
+</script>
+<script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script>(function () {
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches || !window.gsap) { document.documentElement.classList.remove('cine-pre'); return; }
+  gsap.registerPlugin(ScrollTrigger);
+  var mm = gsap.matchMedia(), desktop = '(min-width: 900px)';
+
+  // ---- buttery smooth scrolling (Lenis) driven by GSAP's ticker
+  var lenis = new Lenis({ lerp: 0.085, smoothWheel: true, wheelMultiplier: 0.9 });
+  lenis.on('scroll', ScrollTrigger.update);
+  gsap.ticker.add(function (t) { lenis.raf(t * 1000); });
+  gsap.ticker.lagSmoothing(0);
+  document.querySelectorAll('a[href^="#"]').forEach(function (a) {
+    a.addEventListener('click', function (e) {
+      var id = a.getAttribute('href'); if (id.length < 2) return;
+      var el = document.querySelector(id); if (!el) return;
+      e.preventDefault(); lenis.scrollTo(el, { offset: -64, duration: 1.6, easing: function (x) { return 1 - Math.pow(1 - x, 4); } });
+    });
+  });
+
+  // ---- header hides on the way down, returns on the way up
+  var header = document.querySelector('header'), lastY = 0;
+  lenis.on('scroll', function (e) {
+    var y = e.scroll; header.classList.toggle('h-hide', y > lastY && y > 300); header.classList.toggle('h-solid', y > 40); lastY = y;
+  });
+
+  // ---- helpers
+  function splitWords(el) {
+    if (el.dataset.split) return el.querySelectorAll('.w > i');
+    el.dataset.split = 1;
+    var html = el.innerHTML.split(/(<br\s*\/?>)/i).map(function (part) {
+      if (/^<br/i.test(part)) return part;
+      return part.split(/(\s+)/).map(function (w) { return /^\s+$/.test(w) || !w ? w : '<span class="w"><i>' + w + '</i></span>'; }).join('');
+    }).join('');
+    el.innerHTML = html; return el.querySelectorAll('.w > i');
+  }
+  var EASE = 'expo.out';
+
+  // ---- intro: curtain lifts, hero settles
+  var hero = document.querySelector('.hero'), heroImg = hero.querySelector('img.bg');
+  var heroWords = splitWords(hero.querySelector('h1'));
+  var intro = gsap.timeline({ defaults: { ease: EASE } });
+  intro.set('.cine-curtain', { autoAlpha: 1 })
+    .from('.cine-curtain .mark', { opacity: 0, y: 14, duration: 0.9 })
+    .to('.cine-curtain .mark', { opacity: 0, y: -10, duration: 0.5, ease: 'power2.in' }, '+=0.25')
+    .to('.cine-curtain', { yPercent: -100, duration: 1.2, ease: 'expo.inOut' }, '-=0.1')
+    .from(heroImg, { scale: 1.28, duration: 2.6, ease: 'expo.out' }, '<0.15')
+    .from(heroWords, { yPercent: 115, duration: 1.4, stagger: 0.07 }, '<0.35')
+    .from(hero.querySelectorAll('.rule, .desc, .lead, .cta, .chips'), { y: 26, opacity: 0, duration: 1.2, stagger: 0.09 }, '<0.35')
+    .from('header', { yPercent: -100, opacity: 0, duration: 1 }, '<');
+  document.documentElement.classList.remove('cine-pre');
+
+  // hero drifts and dims as you leave it
+  gsap.to(heroImg, { yPercent: 14, scale: 1.08, ease: 'none', scrollTrigger: { trigger: hero, start: 'top top', end: 'bottom top', scrub: true } });
+  gsap.to(hero.querySelector('.wrap'), { y: -90, opacity: 0, ease: 'none', scrollTrigger: { trigger: hero, start: '35% top', end: 'bottom top', scrub: true } });
+
+  // ---- section headings: words rise out of a mask
+  document.querySelectorAll('main section h2, body > section h2').forEach(function (h) {
+    var w = splitWords(h);
+    gsap.from(w, { yPercent: 115, duration: 1.3, ease: EASE, stagger: 0.035, scrollTrigger: { trigger: h, start: 'top 88%' } });
+  });
+  // eyebrow rule draws in
+  gsap.utils.toArray('section .eyebrow').forEach(function (e) {
+    gsap.from(e, { opacity: 0, x: -16, duration: 1, ease: EASE, scrollTrigger: { trigger: e, start: 'top 90%' } });
+  });
+  // body copy, cards, rows: soft rise with stagger per group
+  ['section .wrap > p', 'section .split p', '.card', '.tier', '.step', '.fstep', 'details', '.spec', '.cert', '.town', '.chip', '.est', 'table tr', '.next3 li', '.direct a'].forEach(function (sel) {
+    ScrollTrigger.batch(sel, { start: 'top 90%', once: true, onEnter: function (els) { gsap.from(els, { y: 34, opacity: 0, duration: 1.1, ease: EASE, stagger: 0.07, overwrite: true }); } });
+  });
+
+  // ---- images: wipe open + settle from a slight zoom, then gentle parallax
+  gsap.utils.toArray('.photo, .fig, .formcard').forEach(function (el) {
+    gsap.fromTo(el, { clipPath: 'inset(12% 8% 12% 8%)', opacity: 0.001 }, { clipPath: 'inset(0% 0% 0% 0%)', opacity: 1, duration: 1.5, ease: EASE, scrollTrigger: { trigger: el, start: 'top 85%' } });
+  });
+  gsap.utils.toArray('img.photo').forEach(function (img) {
+    gsap.fromTo(img, { objectPosition: '50% 35%' }, { objectPosition: '50% 65%', ease: 'none', scrollTrigger: { trigger: img, start: 'top bottom', end: 'bottom top', scrub: true } });
+  });
+
+  // ---- scenes: pinned horizontal film strip on desktop
+  mm.add(desktop, function () {
+    var sec = document.querySelector('#scenes'), track = sec && sec.querySelector('.scenes');
+    if (!track) return;
+    sec.classList.add('strip');
+    var dist = function () { return track.scrollWidth - sec.querySelector('.wrap').clientWidth; };
+    gsap.to(track, { x: function () { return -dist(); }, ease: 'none', scrollTrigger: { trigger: sec, start: 'top top', end: function () { return '+=' + dist(); }, pin: true, scrub: 0.6, invalidateOnRefresh: true } });
+    track.querySelectorAll('.scene img').forEach(function (img) {
+      gsap.fromTo(img, { scale: 1.18 }, { scale: 1, ease: 'none', scrollTrigger: { trigger: sec, start: 'top top', end: function () { return '+=' + dist(); }, scrub: true } });
+    });
+    return function () { sec.classList.remove('strip'); };
+  });
+  mm.add('(max-width: 899px)', function () {
+    ScrollTrigger.batch('.scene', { start: 'top 90%', once: true, onEnter: function (els) { gsap.from(els, { y: 40, opacity: 0, duration: 1.1, ease: EASE, stagger: 0.08 }); } });
+  });
+
+  // ---- How It Works: the timeline line draws as you read
+  var flow = document.querySelector('.flow');
+  if (flow) gsap.fromTo(flow, { '--draw': 0 }, { '--draw': 1, ease: 'none', scrollTrigger: { trigger: flow, start: 'top 70%', end: 'bottom 70%', scrub: true } });
+
+  // ---- spec numbers count up
+  document.querySelectorAll('.spec .v').forEach(function (v) {
+    var m = v.textContent.match(/^([−-]?)([\d,]+)(.*)$/); if (!m) return;
+    var n = parseInt(m[2].replace(/,/g, ''), 10), pre = m[1], post = m[3], o = { x: 0 };
+    gsap.to(o, { x: n, duration: 1.8, ease: 'power3.out', scrollTrigger: { trigger: v, start: 'top 90%' }, onUpdate: function () { v.textContent = pre + Math.round(o.x).toLocaleString('en-US') + post; } });
+  });
+
+  // ---- buttons: a little magnetic pull on desktop
+  mm.add(desktop + ' and (hover: hover)', function () {
+    document.querySelectorAll('.btn').forEach(function (b) {
+      var xTo = gsap.quickTo(b, 'x', { duration: 0.5, ease: 'power3' }), yTo = gsap.quickTo(b, 'y', { duration: 0.5, ease: 'power3' });
+      b.addEventListener('mousemove', function (e) { var r = b.getBoundingClientRect(); xTo((e.clientX - r.left - r.width / 2) * 0.25); yTo((e.clientY - r.top - r.height / 2) * 0.35); });
+      b.addEventListener('mouseleave', function () { xTo(0); yTo(0); });
+    });
+  });
+
+  window.addEventListener('load', function () { ScrollTrigger.refresh(); });
+})();
 </script>
 </body>
 </html>
