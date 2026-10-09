@@ -254,25 +254,26 @@ header.h-hide{transform:translateY(-100%)}
 #scenes.strip .scene{width:min(46vw,620px);flex:none}
 #scenes.strip .scene img{height:min(56vh,520px)}
 #scenes.strip{overflow:hidden}
-.flow{--draw:1}
-.flow::before{transform-origin:top;transform:scaleY(var(--draw))}
 
-/* day -> night on scroll */
-.dusk{--on:125%;--sky:0;--glow:.35;position:relative}
-.dk-stage{position:relative;overflow:hidden;aspect-ratio:1400/824;background:#0b0d12}
-.dk-stage img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
-.dk-day{position:absolute;inset:0;-webkit-mask-image:linear-gradient(100deg,transparent calc(var(--on) - 22%),#000 var(--on));mask-image:linear-gradient(100deg,transparent calc(var(--on) - 22%),#000 var(--on))}
-.dk-sky{position:absolute;inset:0;background:linear-gradient(180deg,#0a1430 0%,#1b2340 45%,#3a2a2a 100%);mix-blend-mode:multiply;opacity:var(--sky)}
-.dk-glow{position:absolute;inset:0;mix-blend-mode:screen;opacity:var(--glow);pointer-events:none}
-.dk-glow img{filter:blur(14px) brightness(1.25) saturate(1.2)}
-.dk-hud{position:absolute;left:14px;right:14px;top:14px;display:flex;justify-content:space-between;align-items:flex-start;gap:10px;pointer-events:none}
-.dk-clock{font-size:22px;font-weight:700;letter-spacing:-.01em;color:var(--white);background:rgba(13,13,13,.55);padding:6px 11px;font-variant-numeric:tabular-nums;line-height:1;white-space:nowrap}
-.dk-state{font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;font-weight:700;color:#FFE2B0;background:rgba(13,13,13,.6);padding:7px 10px;text-align:right}
-.dk-bar{position:absolute;left:0;right:0;bottom:0;height:3px;background:rgba(246,243,238,.12)}
-.dk-bar i{display:block;height:100%;background:linear-gradient(90deg,#FFE2B0,var(--tan));transform-origin:0 50%;transform:scaleX(var(--p,1))}
+/* day -> night on scroll (transform/opacity only, GPU composited) */
+.dusk{position:relative}
+.dk-stage{position:relative;overflow:hidden;aspect-ratio:1400/824;background:#0b0d12;transform:translateZ(0)}
+.dk-stage img{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;display:block}
+.dk-shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,14,36,.92) 0%,rgba(14,20,40,.82) 50%,rgba(22,16,16,.78) 100%);opacity:0;will-change:opacity}
+.dk-wipe{position:absolute;top:0;bottom:0;left:0;width:120%;overflow:hidden;-webkit-mask-image:linear-gradient(90deg,#000 80%,transparent 100%);mask-image:linear-gradient(90deg,#000 80%,transparent 100%);will-change:transform}
+.dk-wipe img{width:83.3334%!important;will-change:transform}
+.dk-hud{position:absolute;left:14px;right:14px;top:14px;display:flex;justify-content:space-between;align-items:flex-start;gap:10px;pointer-events:none;z-index:2}
+.dk-clock{font-size:22px;font-weight:700;letter-spacing:-.01em;color:var(--white);background:rgba(13,13,13,.6);padding:6px 11px;font-variant-numeric:tabular-nums;line-height:1;white-space:nowrap}
+.dk-state{font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;font-weight:700;color:#FFE2B0;background:rgba(13,13,13,.65);padding:7px 10px;text-align:right}
+.dk-bar{position:absolute;left:0;right:0;bottom:0;height:3px;background:rgba(246,243,238,.12);z-index:2}
+.dk-bar i{display:block;height:100%;background:linear-gradient(90deg,#FFE2B0,var(--tan));transform-origin:0 50%;will-change:transform}
 @media(max-width:880px){.fstep .fwide{grid-column:1/-1;margin-top:20px}}
 @media(max-width:600px){.dk-clock{font-size:17px}.dk-state{font-size:8.5px;letter-spacing:.14em}}
 @media(prefers-reduced-motion:reduce){.cine-curtain,.cine-progress{display:none}}
+
+header{backdrop-filter:none!important;-webkit-backdrop-filter:none!important;background:rgba(21,21,21,.97)!important}
+.flowline{position:absolute;left:21px;top:8px;bottom:8px;width:1px;background:linear-gradient(var(--tan),rgba(185,161,132,.15));transform-origin:top;will-change:transform}
+.flow.has-line::before{display:none}
 </style>
 </head>
 <body>
@@ -355,12 +356,12 @@ header.h-hide{transform:translateY(-100%)}
     <h2>One system. Every night of the year.</h2>
     <p style="max-width:620px">Warm white is the default and the reason most people buy it. Everything else is there when you want it: Halloween, Diwali, the Fourth, a birthday, a rivalry weekend, or the two weeks in December when the whole street drives by slowly.</p>
     <div class="scenes">
-      <div class="scene"><img src="img/warm-white.jpg" alt="Home with warm white permanent lights on every gable" loading="lazy"><span>Warm White · Everyday</span></div>
-      <div class="scene"><img src="img/blue-hour.jpg" alt="Home lit in cool teal and blue accent lighting" loading="lazy"><span>Cool Accent · Blue Hour</span></div>
-      <div class="scene"><img src="img/multi-color.jpg" alt="Home lit in a multi-color celebration scene" loading="lazy"><span>Celebration · Multi-Color</span></div>
-      <div class="scene"><img src="img/two-tone.jpg" alt="Home with separate color zones on upper and lower rooflines" loading="lazy"><span>Zones · Two-Tone</span></div>
-      <div class="scene"><img src="img/backyard-pool.jpg" alt="Pool and fence line lit with permanent lights" loading="lazy"><span>Backyard · Pool &amp; Fence</span></div>
-      <div class="scene"><img src="img/pergola.jpg" alt="Pergola lit with multi-color permanent lights" loading="lazy"><span>Outdoor Living · Pergola</span></div>
+      <div class="scene"><img src="img/warm-white.jpg" alt="Home with warm white permanent lights on every gable" loading="lazy" decoding="async"><span>Warm White · Everyday</span></div>
+      <div class="scene"><img src="img/blue-hour.jpg" alt="Home lit in cool teal and blue accent lighting" loading="lazy" decoding="async"><span>Cool Accent · Blue Hour</span></div>
+      <div class="scene"><img src="img/multi-color.jpg" alt="Home lit in a multi-color celebration scene" loading="lazy" decoding="async"><span>Celebration · Multi-Color</span></div>
+      <div class="scene"><img src="img/two-tone.jpg" alt="Home with separate color zones on upper and lower rooflines" loading="lazy" decoding="async"><span>Zones · Two-Tone</span></div>
+      <div class="scene"><img src="img/backyard-pool.jpg" alt="Pool and fence line lit with permanent lights" loading="lazy" decoding="async"><span>Backyard · Pool &amp; Fence</span></div>
+      <div class="scene"><img src="img/pergola.jpg" alt="Pergola lit with multi-color permanent lights" loading="lazy" decoding="async"><span>Outdoor Living · Pergola</span></div>
     </div>
     <p class="credit">Photos: Celebright system installations</p>
   </div>
@@ -461,7 +462,7 @@ header.h-hide{transform:translateY(-100%)}
           <h3>We measure your roof from above.</h3>
           <p>We order a satellite measurement report of your home. Every eave, gable and roof edge is measured to the foot, so your plan and price are built on real numbers instead of guesses.</p>
         </div>
-        <div class="fmedia"><figure class="fig light"><img src="img/process-measure.png" alt="Aerial roof measurement diagram with the length of every roof edge in feet" loading="lazy"><figcaption>Satellite measurement report</figcaption></figure></div>
+        <div class="fmedia"><figure class="fig light"><img src="img/process-measure.png" alt="Aerial roof measurement diagram with the length of every roof edge in feet" loading="lazy" decoding="async"><figcaption>Satellite measurement report</figcaption></figure></div>
       </div>
 
       <div class="fstep">
@@ -471,12 +472,12 @@ header.h-hide{transform:translateY(-100%)}
           <h3>Your lighting plan, and your home at night.</h3>
           <p>You get a map of your home showing every run we'd light and its length, with optional add-ons marked separately so you can choose. We also show you a preview of your own house at night, so you know exactly what you're getting before you decide.</p>
         </div>
-        <div class="fmedia"><div class="planwrap"><figure class="fig"><img src="img/process-plan.jpg" alt="Top-down lighting plan with each lit roofline and gable labeled with its length" loading="lazy"><figcaption>Your lighting plan</figcaption></figure></div></div>
+        <div class="fmedia"><div class="planwrap"><figure class="fig"><img src="img/process-plan.jpg" alt="Top-down lighting plan with each lit roofline and gable labeled with its length" loading="lazy" decoding="async"><figcaption>Your lighting plan</figcaption></figure></div></div>
         <div class="fwide"><figure class="fig dusk">
           <div class="dk-stage">
-            <img class="dk-night" src="img/process-night.jpg" alt="The home at night with permanent lights on" loading="lazy">
-            <div class="dk-glow" aria-hidden="true"><img src="img/process-night.jpg" alt="" loading="lazy"></div>
-            <div class="dk-day"><img src="img/process-day.jpg" alt="The same home during the day" loading="lazy"><div class="dk-sky"></div></div>
+            <img src="img/process-day.jpg" alt="The home during the day" loading="lazy" decoding="async">
+            <div class="dk-shade" aria-hidden="true"></div>
+            <div class="dk-wipe"><img src="img/process-night.jpg" alt="The same home at night with permanent lights on" loading="lazy" decoding="async"></div>
             <div class="dk-hud" aria-hidden="true"><span class="dk-clock">7:05 PM</span><span class="dk-state">Evening · warm white</span></div>
             <div class="dk-bar" aria-hidden="true"><i></i></div>
           </div><figcaption>Keep scrolling: your home from day to night</figcaption></figure></div>
@@ -489,7 +490,7 @@ header.h-hide{transform:translateY(-100%)}
           <h3>Approve your estimate and reserve your date.</h3>
           <p>Your written estimate lists every run, its footage and its price. Approve it online, and a 50% deposit reserves your install date and orders your track, color-matched to your trim. Before install day we confirm the measurements and trim color in person. The balance isn't due until your lights are up and working.</p>
         </div>
-        <div class="fmedia"><figure class="fig"><img src="img/process-estimate.jpg" alt="Line-by-line estimate listing each roofline run and its footage" loading="lazy"><figcaption>Line-by-line estimate (prices hidden)</figcaption></figure></div>
+        <div class="fmedia"><figure class="fig"><img src="img/process-estimate.jpg" alt="Line-by-line estimate listing each roofline run and its footage" loading="lazy" decoding="async"><figcaption>Line-by-line estimate (prices hidden)</figcaption></figure></div>
       </div>
 
       <div class="fstep">
@@ -499,7 +500,7 @@ header.h-hide{transform:translateY(-100%)}
           <h3>Your lights go up.</h3>
           <p>Most homes take a single day, weather permitting. Track fastens to the fascia or soffit (never through your roof), wiring stays hidden, and before we leave we set up the app on your phone and build your first scenes with you.</p>
         </div>
-        <div class="fmedia"><figure class="fig"><img src="img/warm-white.jpg" alt="Home with warm white permanent lights along the roofline at dusk" loading="lazy"><figcaption>Warm white, every night</figcaption></figure></div>
+        <div class="fmedia"><figure class="fig"><img src="img/warm-white.jpg" alt="Home with warm white permanent lights along the roofline at dusk" loading="lazy" decoding="async"><figcaption>Warm white, every night</figcaption></figure></div>
       </div>
 
     </div>
@@ -732,7 +733,7 @@ header.h-hide{transform:translateY(-100%)}
   var EASE = 'expo.out', SOFT = 'power3.out';
 
   // ---- silky smooth scrolling (Lenis) driven by GSAP's ticker
-  var lenis = new Lenis({ lerp: 0.068, smoothWheel: true, wheelMultiplier: 0.85, touchMultiplier: 1.2 });
+  var lenis = new Lenis({ lerp: 0.075, smoothWheel: true, wheelMultiplier: 0.9, touchMultiplier: 1.1 });
   lenis.on('scroll', ScrollTrigger.update);
   gsap.ticker.add(function (t) { lenis.raf(t * 1000); });
   gsap.ticker.lagSmoothing(0);
@@ -777,14 +778,14 @@ header.h-hide{transform:translateY(-100%)}
     .from('header', { opacity: 0, duration: 1.2, clearProps: 'opacity' }, '<');
   document.documentElement.classList.remove('cine-pre');
 
-  gsap.to(heroImg, { yPercent: 16, scale: 1.1, ease: 'none', scrollTrigger: { trigger: hero, start: 'top top', end: 'bottom top', scrub: true } });
+  gsap.to(heroImg, { yPercent: 16, scale: 1.1, ease: 'none', force3D: true, scrollTrigger: { trigger: hero, start: 'top top', end: 'bottom top', scrub: true } });
   gsap.to(hero.querySelector('.wrap'), { y: -110, opacity: 0, ease: 'none', scrollTrigger: { trigger: hero, start: '30% top', end: 'bottom top', scrub: true } });
 
   // ---- every section glides in and eases out (skip sections that pin things)
   gsap.utils.toArray('body > section, main > section').forEach(function (sec) {
     if (sec.classList.contains('hero') || sec.id === 'scenes' || sec.id === 'process') return;
     var w = sec.querySelector(':scope > .wrap'); if (!w) return;
-    gsap.fromTo(w, { y: 70 }, { y: 0, ease: 'none', scrollTrigger: { trigger: sec, start: 'top bottom', end: 'top 35%', scrub: 1.2 } });
+    gsap.fromTo(w, { y: 70 }, { y: 0, ease: 'none', force3D: true, scrollTrigger: { trigger: sec, start: 'top bottom', end: 'top 35%', scrub: true } });
   });
 
   // ---- headings: words rise out of a mask
@@ -800,21 +801,22 @@ header.h-hide{transform:translateY(-100%)}
   });
 
   // ---- body copy, cards, rows: soft rise, staggered per group
-  ['section .wrap > p', 'section .split p', '.ftext p', '.fchip', '.fnum', '.card', '.tier', '.step', 'details', '.spec', '.cert', '.town', '.chip', '.est', 'table tr', '.next3 li', '.direct a', '.field', 'footer .wrap > *'].forEach(function (sel) {
+  ['.formcard', 'section .wrap > p', 'section .split p', '.ftext p', '.fchip', '.fnum', '.card', '.tier', '.step', 'details', '.spec', '.cert', '.town', '.chip', '.est', 'table tr', '.next3 li', '.direct a', '.field', 'footer .wrap > *'].forEach(function (sel) {
     ScrollTrigger.batch(sel, { start: 'top 92%', once: true, onEnter: function (els) {
       gsap.fromTo(els, { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: 1.4, ease: SOFT, stagger: 0.08, overwrite: true, clearProps: 'transform' });
     } });
   });
 
   // ---- images: wipe open, settle from zoom, keep drifting while on screen
-  gsap.utils.toArray('.photo, .fig:not(.dusk), .formcard').forEach(function (el) {
+  gsap.utils.toArray('.fig:not(.dusk)').forEach(function (el) {
     gsap.fromTo(el, { clipPath: 'inset(14% 10% 14% 10%)', opacity: 0.001 }, { clipPath: 'inset(0% 0% 0% 0%)', opacity: 1, duration: 1.8, ease: EASE, scrollTrigger: { trigger: el, start: 'top 88%' } });
   });
   gsap.utils.toArray('.fig:not(.light):not(.dusk) > img').forEach(function (img) {
-    gsap.fromTo(img, { scale: 1.14, yPercent: -3 }, { scale: 1.02, yPercent: 3, ease: 'none', scrollTrigger: { trigger: img, start: 'top bottom', end: 'bottom top', scrub: 1 } });
+    gsap.fromTo(img, { scale: 1.14, yPercent: -3 }, { scale: 1.02, yPercent: 3, ease: 'none', force3D: true, scrollTrigger: { trigger: img, start: 'top bottom', end: 'bottom top', scrub: true } });
   });
   gsap.utils.toArray('img.photo').forEach(function (img) {
-    gsap.fromTo(img, { objectPosition: '50% 30%' }, { objectPosition: '50% 70%', ease: 'none', scrollTrigger: { trigger: img, start: 'top bottom', end: 'bottom top', scrub: 1 } });
+    gsap.set(img.parentNode, { overflow: 'hidden' });
+    gsap.fromTo(img, { yPercent: -5, scale: 1.12 }, { yPercent: 5, scale: 1.12, ease: 'none', force3D: true, scrollTrigger: { trigger: img, start: 'top bottom', end: 'bottom top', scrub: true } });
   });
 
   // ---- scenes: pinned horizontal film strip on desktop
@@ -833,37 +835,37 @@ header.h-hide{transform:translateY(-100%)}
     ScrollTrigger.batch('.scene', { start: 'top 92%', once: true, onEnter: function (els) { gsap.from(els, { y: 44, opacity: 0, duration: 1.3, ease: SOFT, stagger: 0.08 }); } });
   });
 
-  // ---- day to night, driven by scroll
+  // ---- day to night, driven by scroll (transforms + opacity only)
   var dusk = document.querySelector('.dusk');
   if (dusk) {
-    var clock = dusk.querySelector('.dk-clock'), state = dusk.querySelector('.dk-state'), last = '';
-    var st = { p: 0 };
-    function paint() {
-      var p = st.p;
-      var dim = Math.min(1, p / 0.5);                       // 0-50%: sun goes down
-      var on = Math.max(0, Math.min(1, (p - 0.42) / 0.5));  // 42-92%: lights switch on across the roof
-      dusk.style.setProperty('--sky', (dim * 0.78).toFixed(3));
-      dusk.style.setProperty('--on', (-10 + on * 135).toFixed(2) + '%');
-      dusk.style.setProperty('--glow', (Math.max(0, (p - 0.75) / 0.25) * 0.55).toFixed(3));
-      dusk.style.setProperty('--p', p.toFixed(3));
-      var mins = Math.round(16 * 60 + 15 + p * 170), h = Math.floor(mins / 60), m = mins % 60;
-      clock.textContent = (h > 12 ? h - 12 : h) + ':' + (m < 10 ? '0' : '') + m + ' PM';
-      var s = p < 0.4 ? 'Daytime · track hidden in your trim' : p < 0.85 ? 'Sunset · lights coming on' : 'Evening · warm white';
-      if (s !== last) { state.textContent = s; last = s; }
+    var stage = dusk.querySelector('.dk-stage'), clock = dusk.querySelector('.dk-clock'), state = dusk.querySelector('.dk-state');
+    var wipe = dusk.querySelector('.dk-wipe'), wimg = wipe.querySelector('img'), shade = dusk.querySelector('.dk-shade'), dbar = dusk.querySelector('.dk-bar i');
+    var lastMin = -1, lastS = '';
+    function hud(p) {
+      var mins = Math.round(16 * 60 + 15 + p * 170);
+      if (mins !== lastMin) { lastMin = mins; var h = Math.floor(mins / 60), m = mins % 60; clock.textContent = (h > 12 ? h - 12 : h) + ':' + (m < 10 ? '0' : '') + m + ' PM'; }
+      var s = p < 0.35 ? 'Daytime · track hidden in your trim' : p < 0.85 ? 'Sunset · lights coming on' : 'Evening · warm white';
+      if (s !== lastS) { lastS = s; state.textContent = s; }
     }
-    st.p = 0; paint();
-    var stage = dusk.querySelector('.dk-stage');
+    gsap.set(wipe, { xPercent: -100, force3D: true }); gsap.set(wimg, { xPercent: 120, force3D: true });
+    gsap.set(shade, { opacity: 0 }); gsap.set(dbar, { scaleX: 0 }); hud(0);
     mm.add({ d: desktop, m: '(max-width: 899px)' }, function (ctx) {
-      gsap.to(st, { p: 1, ease: 'none', onUpdate: paint, scrollTrigger: {
-        trigger: stage, start: 'center center', end: ctx.conditions.d ? '+=140%' : '+=110%', pin: dusk, pinSpacing: true, scrub: 1.1, anticipatePin: 1, invalidateOnRefresh: true
+      var tl = gsap.timeline({ defaults: { ease: 'none' }, onUpdate: function () { hud(tl.progress()); }, scrollTrigger: {
+        trigger: stage, start: 'center center', end: ctx.conditions.d ? '+=75%' : '+=60%', pin: dusk, pinSpacing: true, scrub: 0.5, anticipatePin: 1, invalidateOnRefresh: true
       } });
-      gsap.fromTo(stage, { scale: 0.92, opacity: 0.001 }, { scale: 1, opacity: 1, ease: EASE, duration: 1.6, scrollTrigger: { trigger: dusk, start: 'top 85%' } });
+      tl.to(shade, { opacity: 1, duration: 0.45, ease: 'sine.inOut' }, 0)
+        .to(wipe, { xPercent: 0, duration: 0.6, ease: 'sine.inOut', force3D: true }, 0.3)
+        .to(wimg, { xPercent: 0, duration: 0.6, ease: 'sine.inOut', force3D: true }, 0.3)
+        .to(dbar, { scaleX: 1, duration: 0.9 }, 0);
+      gsap.fromTo(stage, { scale: 0.94, opacity: 0.001 }, { scale: 1, opacity: 1, ease: EASE, duration: 1.6, force3D: true, scrollTrigger: { trigger: dusk, start: 'top 88%' } });
+      return function () { gsap.set(wipe, { xPercent: -100 }); gsap.set(wimg, { xPercent: 120 }); };
     });
   }
 
   // ---- How It Works: the timeline line draws as you read
   var flow = document.querySelector('.flow');
-  if (flow) gsap.fromTo(flow, { '--draw': 0 }, { '--draw': 1, ease: 'none', scrollTrigger: { trigger: flow, start: 'top 70%', end: 'bottom 70%', scrub: 1 } });
+  if (flow) { var fl = document.createElement('div'); fl.className = 'flowline'; flow.prepend(fl); flow.classList.add('has-line');
+    gsap.fromTo(fl, { scaleY: 0 }, { scaleY: 1, ease: 'none', force3D: true, scrollTrigger: { trigger: flow, start: 'top 70%', end: 'bottom 70%', scrub: true } }); }
 
   // ---- spec numbers count up
   document.querySelectorAll('.spec .v').forEach(function (v) {
@@ -881,6 +883,12 @@ header.h-hide{transform:translateY(-100%)}
     });
   });
 
+  // pre-decode every image after load so nothing decodes mid-scroll
+  window.addEventListener('load', function () {
+    (window.requestIdleCallback || function (f) { setTimeout(f, 600); })(function () {
+      document.querySelectorAll('img[loading=lazy]').forEach(function (im) { im.loading = 'eager'; if (im.decode) im.decode().catch(function () {}); });
+    });
+  });
   ScrollTrigger.sort();
   window.addEventListener('load', function () { ScrollTrigger.sort(); ScrollTrigger.refresh(); });
   document.querySelectorAll('img[loading=lazy]').forEach(function (im) { if (!im.complete) im.addEventListener('load', function () { clearTimeout(window.__strf); window.__strf = setTimeout(function () { ScrollTrigger.refresh(); }, 200); }, { once: true }); });
