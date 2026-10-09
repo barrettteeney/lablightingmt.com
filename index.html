@@ -763,7 +763,7 @@ document.querySelectorAll('.ba').forEach(function(b){
     .from(heroImg, { scale: 1.28, duration: 2.6, ease: 'expo.out' }, '<0.15')
     .from(heroWords, { yPercent: 115, duration: 1.4, stagger: 0.07 }, '<0.35')
     .from(hero.querySelectorAll('.rule, .desc, .lead, .cta, .chips'), { y: 26, opacity: 0, duration: 1.2, stagger: 0.09 }, '<0.35')
-    .from('header', { yPercent: -100, opacity: 0, duration: 1 }, '<');
+    .from('header', { opacity: 0, duration: 1, clearProps: 'opacity' }, '<');
   document.documentElement.classList.remove('cine-pre');
 
   // hero drifts and dims as you leave it
