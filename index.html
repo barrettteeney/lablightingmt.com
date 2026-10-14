@@ -233,7 +233,14 @@ footer a:hover{color:var(--white)}
 .lf .btn{width:100%;justify-content:center;margin-top:4px}
 .lf .btn[disabled]{opacity:.6;cursor:wait}
 .lf-note{min-height:20px;margin:12px 0 4px;font-size:14px;line-height:1.5}
-.lf-note.ok{color:var(--tan)}.lf-note.err{color:#ff8a84}
+.lf-note.ok{color:var(--tan)}
+.lf .field{position:relative}
+.addr-suggest{position:absolute;left:0;right:0;top:100%;z-index:40;background:#1b1b1b;border:1px solid var(--tan);border-top:0;box-shadow:0 18px 40px rgba(0,0,0,.55)}
+.addr-suggest button{display:block;width:100%;padding:12px 14px;border:0;border-bottom:1px solid var(--line);background:transparent;color:var(--white);font:inherit;font-size:14.5px;line-height:1.3;text-align:left;cursor:pointer;letter-spacing:0;text-transform:none}
+.addr-suggest button small{display:block;color:rgba(246,243,238,.55);font-size:12px;margin-top:2px}
+.addr-suggest button[aria-selected=true],.addr-suggest button:hover{background:rgba(185,161,132,.16)}
+.addr-suggest .addr-attrib{padding:6px 14px;font-size:11px;color:rgba(246,243,238,.45);text-align:right;font-family:Roboto,Arial,sans-serif}
+.addr-ok{position:absolute;right:12px;top:38px;color:var(--tan);font-size:12px;font-weight:600;pointer-events:none}.lf-note.err{color:#ff8a84}
 .lf-note a{color:inherit}
 @media(max-width:560px){.lf-row{grid-template-columns:1fr;gap:0}.lf-areas{grid-template-columns:repeat(2,1fr)}}
 .fc-foot{padding:0 20px 16px;font-size:12px;color:rgba(246,243,238,.55)}
@@ -631,7 +638,7 @@ section{position:relative}
   <div class="field"><label for="lf-last">Last name</label><input id="lf-last" name="last_name" autocomplete="family-name"></div></div>
   <div class="lf-row"><div class="field"><label for="lf-phone">Mobile phone</label><input id="lf-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" required></div>
   <div class="field"><label for="lf-email">Email <span class="opt">(optional)</span></label><input id="lf-email" name="email" type="email" autocomplete="email"></div></div>
-  <div class="field"><label for="lf-address">Home address</label><input id="lf-address" name="address" autocomplete="street-address" placeholder="Street, city" required></div>
+  <div class="field"><label for="lf-address">Home address</label><input id="lf-address" name="address" autocomplete="off" placeholder="Start typing your address" required data-address-input></div>
   <div class="field"><label>Where would you like lights?</label><div class="lf-areas">
     <label><input type="checkbox" name="areas" value="Front"><span>Front</span></label>
     <label><input type="checkbox" name="areas" value="Sides"><span>Sides</span></label>
@@ -659,17 +666,131 @@ section{position:relative}
     if(!(digits.length===10||(digits.length===11&&digits[0]==='1'))){say('Please enter a 10-digit phone number so we can reach you.','err');f.elements.phone.focus();return;}
     if(!v('address')){say('Please add your home address so we can measure your roofline.','err');f.elements.address.focus();return;}
     if(v('_honey')){say('Sent. Thanks!','ok');f.reset();return;}
+    var A=f.elements.address, verified=A.dataset.verified==='1' && A.dataset.verifiedValue===v('address');
+    if(window.__labAddrReady && !verified && f.dataset.addrConfirm!==v('address')){
+      f.dataset.addrConfirm=v('address');
+      say('Please pick your address from the suggestions so we measure the right home. If it isn\'t listed, check it\'s complete (street, city) and tap the button again to send it as typed.','err');
+      A.focus(); return;
+    }
     var areas=[].slice.call(f.querySelectorAll('input[name=areas]:checked')).map(function(c){return c.value;});
-    var payload={first_name:v('first_name'),last_name:v('last_name'),phone:v('phone'),email:v('email'),address:v('address'),areas:areas,notes:v('notes'),page:location.href,_honey:v('_honey')};
+    var payload={first_name:v('first_name'),last_name:v('last_name'),phone:v('phone'),email:v('email'),address:v('address'),address_verified:verified,street:verified?(A.dataset.street||''):'',city:verified?(A.dataset.city||''):'',state:verified?(A.dataset.state||''):'',zip:verified?(A.dataset.zip||''):'',lat:verified?(A.dataset.lat||''):'',lng:verified?(A.dataset.lng||''):'',areas:areas,notes:v('notes'),page:location.href,_honey:v('_honey')};
     btn.disabled=true;btn.textContent='Sending...';say('');
     fetch(LEAD_WEBHOOK,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)})
       .then(function(r){if(!r.ok)throw new Error(r.status);
-        say('Sent! We\'ll reach out within one business day. To get your design started, we\'d love a few more details: exactly where you want lights (front, sides, back, porch, garage), how many stories your home is, your trim color, and anything else we should know, like HOA rules or a date you\'re hoping for. Just reply to our text or call (406) 955-3400.','ok');f.reset();})
+        delete A.dataset.verified;delete A.dataset.verifiedValue;var ok=document.querySelector('.addr-ok');if(ok)ok.remove();say('Sent! We\'ll reach out within one business day. To get your design started, we\'d love a few more details: exactly where you want lights (front, sides, back, porch, garage), how many stories your home is, your trim color, and anything else we should know, like HOA rules or a date you\'re hoping for. Just reply to our text or call (406) 955-3400.','ok');f.reset();})
       .catch(function(){say(FALLBACK,'err');})
       .then(function(){btn.disabled=false;btn.textContent='Request my free measurement';});
   });
 })();
 </script>
+<script>
+/* Lab Lighting: Google address lookup for the measurement form.
+   Browser key (public by design). Restrict it in Google Cloud to lablightingmt.com and
+   www.lablightingmt.com, Maps JavaScript API + Places API (New) only, with a daily cap.
+   Leave LAB_MAPS_KEY empty to switch the lookup off; the form still works as a plain box. */
+(function () {
+  "use strict";
+  var LAB_MAPS_KEY = "AIzaSyCxvBnaKM_jcdL6YEP3-9JeMMT8EEZV854";
+  if (!LAB_MAPS_KEY) return;
+  var input = document.querySelector("[data-address-input]");
+  if (!input) return;
+  var BIAS = { center: { lat: 48.2, lng: -114.31 }, radius: 50000 };
+  var places = null, token = null, timer = null, lastQ = "", items = [], active = -1;
+  var wrap = input.parentNode;
+  var list = document.createElement("div");
+  list.className = "addr-suggest"; list.id = "addr-suggest-list"; list.hidden = true; list.setAttribute("role", "listbox");
+  wrap.appendChild(list);
+  input.setAttribute("role", "combobox"); input.setAttribute("aria-autocomplete", "list");
+  input.setAttribute("aria-controls", list.id); input.setAttribute("aria-expanded", "false");
+  function close() { list.hidden = true; list.innerHTML = ""; items = []; active = -1; input.setAttribute("aria-expanded", "false"); }
+  function mark(ok) {
+    var b = wrap.querySelector(".addr-ok");
+    if (ok) { if (!b) { b = document.createElement("span"); b.className = "addr-ok"; wrap.appendChild(b); } b.textContent = "✓ Verified"; }
+    else if (b) b.remove();
+  }
+  function clearVerified() { ["verified","verifiedValue","street","city","state","zip","lat","lng"].forEach(function (k) { delete input.dataset[k]; }); mark(false); }
+  function highlight(i) { var bs = list.querySelectorAll("button"); for (var j = 0; j < bs.length; j++) bs[j].setAttribute("aria-selected", j === i ? "true" : "false"); active = i; }
+  function render(sugs) {
+    list.innerHTML = ""; items = [];
+    sugs.forEach(function (s) {
+      var p = s.placePrediction; if (!p) return;
+      var idx = items.length, btn = document.createElement("button");
+      btn.type = "button"; btn.setAttribute("role", "option");
+      btn.textContent = p.mainText ? p.mainText.toString() : p.text.toString();
+      if (p.secondaryText) { var sm = document.createElement("small"); sm.textContent = p.secondaryText.toString(); btn.appendChild(sm); }
+      btn.addEventListener("mousedown", function (e) { e.preventDefault(); });
+      btn.addEventListener("click", function () { choose(idx); });
+      list.appendChild(btn); items.push(p);
+    });
+    if (!items.length) return close();
+    var at = document.createElement("div"); at.className = "addr-attrib"; at.textContent = "powered by Google"; list.appendChild(at);
+    list.hidden = false; input.setAttribute("aria-expanded", "true"); active = -1;
+  }
+  function comp(cs, type, short) { for (var i = 0; i < cs.length; i++) if (cs[i].types.indexOf(type) !== -1) return short ? cs[i].shortText : cs[i].longText; return ""; }
+  function choose(i) {
+    var p = items[i]; if (!p) return;
+    input.value = p.text ? p.text.toString() : input.value; close();
+    var place = p.toPlace();
+    place.fetchFields({ fields: ["formattedAddress", "addressComponents", "location"] }).then(function () {
+      var cs = place.addressComponents || [];
+      var street = [comp(cs, "street_number"), comp(cs, "route")].filter(Boolean).join(" ");
+      if (!street) { input.dataset.verified = "0"; return; }
+      input.value = (place.formattedAddress || input.value).replace(/, USA$/, "");
+      input.dataset.street = street;
+      input.dataset.city = comp(cs, "locality") || comp(cs, "postal_town") || comp(cs, "administrative_area_level_3");
+      input.dataset.state = comp(cs, "administrative_area_level_1", true);
+      input.dataset.zip = comp(cs, "postal_code");
+      if (place.location) { input.dataset.lat = place.location.lat().toFixed(6); input.dataset.lng = place.location.lng().toFixed(6); }
+      input.dataset.verified = "1"; input.dataset.verifiedValue = input.value.trim(); mark(true);
+    }).catch(function () {});
+    token = null;
+  }
+  function load() {
+    return new Promise(function (res, rej) {
+      if (window.google && google.maps && google.maps.importLibrary) return res();
+      window.__labMapsReady = res;
+      var sc = document.createElement("script");
+      sc.src = "https://maps.googleapis.com/maps/api/js?key=" + encodeURIComponent(LAB_MAPS_KEY) + "&loading=async&v=weekly&callback=__labMapsReady";
+      sc.async = true; sc.onerror = rej; document.head.appendChild(sc);
+    }).then(function () { return google.maps.importLibrary("places"); }).then(function (lib) {
+      if (!lib.AutocompleteSuggestion) throw new Error("no places");
+      places = lib; window.__labAddrReady = true;
+    });
+  }
+  function lookup(q) {
+    if (!places) return;
+    if (!token) token = new places.AutocompleteSessionToken();
+    lastQ = q;
+    places.AutocompleteSuggestion.fetchAutocompleteSuggestions({ input: q, sessionToken: token, includedRegionCodes: ["us"], locationBias: BIAS })
+      .then(function (r) { if (q !== lastQ || input.value.trim() !== q) return; render((r && r.suggestions) || []); })
+      .catch(function () { close(); });
+  }
+  input.addEventListener("input", function () {
+    if (input.dataset.verifiedValue !== input.value.trim()) clearVerified();
+    clearTimeout(timer);
+    var q = input.value.trim();
+    if (q.length < 4 || !places) return close();
+    timer = setTimeout(function () { lookup(q); }, 280);
+  });
+  input.addEventListener("keydown", function (e) {
+    if (list.hidden || !items.length) return;
+    if (e.key === "ArrowDown") { e.preventDefault(); highlight((active + 1) % items.length); }
+    else if (e.key === "ArrowUp") { e.preventDefault(); highlight((active - 1 + items.length) % items.length); }
+    else if (e.key === "Enter") { e.preventDefault(); choose(active >= 0 ? active : 0); }
+    else if (e.key === "Escape") close();
+  });
+  input.addEventListener("blur", function () { setTimeout(close, 150); });
+  var started = false;
+  function start() { if (started) return; started = true; load().catch(function () { places = null; window.__labAddrReady = false; }); }
+  var book = document.getElementById("book");
+  if ("IntersectionObserver" in window && book) {
+    var io = new IntersectionObserver(function (en) { if (en.some(function (x) { return x.isIntersecting; })) { io.disconnect(); start(); } }, { rootMargin: "500px" });
+    io.observe(book);
+  } else start();
+  input.addEventListener("focus", start);
+})();
+</script>
+
         </div>
         <div class="fc-foot">Your details go straight to our team. No spam, ever.</div>
       </div>
