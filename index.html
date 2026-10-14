@@ -664,7 +664,7 @@ section{position:relative}
     btn.disabled=true;btn.textContent='Sending...';say('');
     fetch(LEAD_WEBHOOK,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)})
       .then(function(r){if(!r.ok)throw new Error(r.status);
-        say('Sent. Barrett has your details and will reach out within one business day to set up your free measurement.','ok');f.reset();})
+        say('Sent. We have your details and will reach out within one business day to set up your free measurement.','ok');f.reset();})
       .catch(function(){say(FALLBACK,'err');})
       .then(function(){btn.disabled=false;btn.textContent='Request my free measurement';});
   });
