@@ -192,6 +192,8 @@ footer a:hover{color:var(--white)}
 .phbox .glow{position:absolute;left:0;right:0;top:34%;height:1px;background:linear-gradient(90deg,transparent,rgba(246,243,238,.55),rgba(185,161,132,.5),transparent);box-shadow:0 0 26px 5px rgba(246,224,180,.16)}
 .scene .phbox{min-height:210px}
 .hero img.bg{object-fit:cover;object-position:center 40%}
+.photo-wrap{position:relative;overflow:hidden;height:100%;border:1px solid var(--line);isolation:isolate}
+.photo-wrap .photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border:0}
 .photo{width:100%;height:100%;object-fit:cover;border:1px solid var(--line)}
 .scene img{width:100%;height:230px;object-fit:cover;display:block}
 .credit{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:rgba(246,243,238,.4);margin-top:14px}
@@ -290,7 +292,7 @@ header.h-hide{transform:translateY(-100%)}
 @media(max-width:600px){.dk-clock{font-size:17px}.dk-state{font-size:8.5px;letter-spacing:.14em}}
 @media(prefers-reduced-motion:reduce){.cine-curtain,.cine-progress{display:none}}
 
-header{backdrop-filter:none!important;-webkit-backdrop-filter:none!important;background:rgba(21,21,21,.97)!important}
+header{backdrop-filter:none!important;-webkit-backdrop-filter:none!important;background:#151515!important}
 .flowline{position:absolute;left:21px;top:8px;bottom:8px;width:1px;background:linear-gradient(var(--tan),rgba(185,161,132,.15));transform-origin:top;will-change:transform}
 .flow.has-line::before{display:none}
 .sline{position:absolute;top:-1px;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--tan) 30%,var(--tan) 70%,transparent);transform:scaleX(0);transform-origin:50% 50%;pointer-events:none;will-change:transform;font-style:normal}
@@ -359,7 +361,7 @@ section{position:relative}
         </div>
         <div class="cta"><a href="#book" class="btn ghost">Ask About Your Home</a></div>
       </div>
-      <img class="photo" src="img/winter-roofline.jpg" alt="Permanent LED track along a snow-covered roofline" loading="lazy" style="min-height:360px">
+      <div class="photo-wrap" style="min-height:360px"><img class="photo" src="img/winter-roofline.jpg" alt="Permanent LED track along a snow-covered roofline" loading="lazy"></div>
     </div>
     <div class="specs" style="margin-top:44px">
       <div class="spec"><div class="v">24V</div><div class="k">Low voltage, Class 2</div></div>
@@ -735,7 +737,7 @@ section{position:relative}
 
 <section id="about">
   <div class="wrap split">
-    <img class="photo" src="img/modern-home.jpg" alt="Modern home with permanent accent lighting at dusk" loading="lazy" style="min-height:340px">
+    <div class="photo-wrap" style="min-height:340px"><img class="photo" src="img/modern-home.jpg" alt="Modern home with permanent accent lighting at dusk" loading="lazy"></div>
     <div>
       <div class="eyebrow">12 — About</div>
       <h2>Locally owned, valley based.</h2>
@@ -768,7 +770,7 @@ section{position:relative}
         <a href="#services">Services</a><a href="#pricing">Pricing</a><a href="#process">Process</a><a href="#faq">FAQ</a>
       </div>
     </div>
-    <div class="fbot"><span>Lab Lighting · Kalispell, MT</span><span>Photos courtesy of Celebright</span><span><a href="privacy.html" style="color:inherit">Privacy</a></span><span>Light by Design.</span></div>
+    <div class="fbot"><span>Lab Lighting · Kalispell, MT</span><span>Photos courtesy of Celebright</span><span><a href="privacy.html" style="color:inherit;font-size:inherit;display:inline;margin:0">Privacy</a> · <a href="terms.html" style="color:inherit;font-size:inherit;display:inline;margin:0">Terms</a></span><span>Light by Design.</span></div>
   </div>
 </footer>
 
@@ -872,7 +874,7 @@ section{position:relative}
   });
 
   // ---- body copy, cards, rows: soft rise, staggered per group
-  ['.formcard', 'section .wrap > p', 'section .split p', '.ftext p', '.fchip', '.fnum', '.card', '.tier', '.step', 'details', '.spec', '.cert', '.town', '.chip', '.est', 'table tr', '.next3 li', '.direct a', '.field', 'footer .wrap > *'].forEach(function (sel) {
+  ['.formcard', 'section .wrap > p', 'section .split p', '.ftext p', '.fchip', '.fnum', '.card', '.tier', '.step', 'details', '.spec', '.cert', '.town', '.chip', '.est', 'table tr', '.next3 li', '.direct a', '.field'].forEach(function (sel) {
     document.querySelectorAll(sel).forEach(function (el) {
       if (el.closest('.hero') || el.dataset.rv) return; el.dataset.rv = 1;
       var sib = Array.prototype.filter.call(el.parentNode.children, function (c) { return c.matches(sel); }), k = Math.max(0, sib.indexOf(el)) % 4;
@@ -892,7 +894,7 @@ section{position:relative}
     gsap.fromTo(img, { scale: 1.32, yPercent: -7 }, { scale: 1.04, yPercent: 7, ease: 'none', force3D: true, scrollTrigger: { trigger: img, start: 'top bottom', end: 'bottom top', scrub: true } });
   });
   gsap.utils.toArray('img.photo').forEach(function (img) {
-    gsap.set(img.parentNode, { overflow: 'hidden' });
+    
     gsap.fromTo(img, { yPercent: -9, scale: 1.22 }, { yPercent: 9, scale: 1.22, ease: 'none', force3D: true, scrollTrigger: { trigger: img, start: 'top bottom', end: 'bottom top', scrub: true } });
   });
 
