@@ -215,8 +215,25 @@ footer a:hover{color:var(--white)}
 .fc-time{margin-left:auto;color:rgba(246,243,238,.5);letter-spacing:.16em}
 .pulse{width:8px;height:8px;border-radius:50%;background:#FFE2B0;box-shadow:0 0 0 0 rgba(255,226,176,.6);animation:pulse 2.4s infinite}
 @keyframes pulse{70%{box-shadow:0 0 0 10px rgba(255,226,176,0)}100%{box-shadow:0 0 0 0 rgba(255,226,176,0)}}
-.fc-body{background:#fff;margin:14px;padding:4px}
-.fc-body #hcp-lead-iframe{display:block;width:100%;min-height:1000px;border:0}
+.fc-body{padding:22px 20px 6px}
+.lf-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.lf .field{margin-bottom:16px}
+.lf textarea{width:100%;background:var(--ink);border:1px solid var(--line);color:var(--white);font-family:var(--f);font-size:15px;padding:13px 14px;outline:none;resize:vertical;min-height:84px}
+.lf textarea:focus{border-color:var(--tan)}
+.lf .opt{color:rgba(246,243,238,.4);letter-spacing:.12em}
+.lf-areas{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.lf-areas label{position:relative;display:block;margin:0;cursor:pointer}
+.lf-areas input{position:absolute;opacity:0;width:1px;height:1px}
+.lf-areas span{display:block;text-align:center;border:1px solid var(--line);background:var(--ink);color:var(--white);font-size:12.5px;letter-spacing:.06em;text-transform:none;font-weight:500;padding:12px 6px;transition:.15s}
+.lf-areas input:checked+span{border-color:var(--tan);background:rgba(185,161,132,.16);color:var(--tan)}
+.lf-areas input:focus-visible+span{outline:2px solid var(--tan);outline-offset:2px}
+.lf-hp{position:absolute!important;left:-9999px!important;width:1px;height:1px;overflow:hidden}
+.lf .btn{width:100%;justify-content:center;margin-top:4px}
+.lf .btn[disabled]{opacity:.6;cursor:wait}
+.lf-note{min-height:20px;margin:12px 0 4px;font-size:14px;line-height:1.5}
+.lf-note.ok{color:var(--tan)}.lf-note.err{color:#ff8a84}
+.lf-note a{color:inherit}
+@media(max-width:560px){.lf-row{grid-template-columns:1fr;gap:0}.lf-areas{grid-template-columns:repeat(2,1fr)}}
 .fc-foot{padding:0 20px 16px;font-size:12px;color:rgba(246,243,238,.55)}
 
 .fwide{grid-column:2/-1;margin-top:26px}
@@ -607,7 +624,50 @@ section{position:relative}
       <div class="formcard">
         <div class="fc-head"><span class="pulse"></span>Free measurement request<span class="fc-time">About one minute</span></div>
         <div class="fc-body">
-<!--Start of Housecallpro Lead Capture code--> <script async src="https://online-booking.housecallpro.com/script.js?token=68abb4df368d44f8af1c70b21d95db78&orgName=LAB-Lighting"> </script> <iframe style="border: none;" id="hcp-lead-iframe" title="Book a free measurement" src="https://book.housecallpro.com/lead-form/LAB-Lighting/68abb4df368d44f8af1c70b21d95db78"></iframe> <!--End of Housecallpro Lead Capture code-->
+<form class="lf" id="labForm" novalidate>
+  <div class="lf-row"><div class="field"><label for="lf-first">First name</label><input id="lf-first" name="first_name" autocomplete="given-name" required></div>
+  <div class="field"><label for="lf-last">Last name</label><input id="lf-last" name="last_name" autocomplete="family-name"></div></div>
+  <div class="lf-row"><div class="field"><label for="lf-phone">Mobile phone</label><input id="lf-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" required></div>
+  <div class="field"><label for="lf-email">Email <span class="opt">(optional)</span></label><input id="lf-email" name="email" type="email" autocomplete="email"></div></div>
+  <div class="field"><label for="lf-address">Home address</label><input id="lf-address" name="address" autocomplete="street-address" placeholder="Street, city" required></div>
+  <div class="field"><label>Where would you like lights?</label><div class="lf-areas">
+    <label><input type="checkbox" name="areas" value="Front"><span>Front</span></label>
+    <label><input type="checkbox" name="areas" value="Sides"><span>Sides</span></label>
+    <label><input type="checkbox" name="areas" value="Back"><span>Back</span></label>
+    <label><input type="checkbox" name="areas" value="Porch"><span>Porch</span></label>
+    <label><input type="checkbox" name="areas" value="Garage"><span>Garage</span></label>
+    <label><input type="checkbox" name="areas" value="Whole house"><span>Whole house</span></label>
+  </div></div>
+  <div class="field"><label for="lf-notes">Anything else? <span class="opt">(optional)</span></label><textarea id="lf-notes" name="notes" placeholder="Two-story, specific colors, timing, HOA..."></textarea></div>
+  <div class="lf-hp" aria-hidden="true"><label>Leave blank<input name="_honey" tabindex="-1" autocomplete="off"></label></div>
+  <button class="btn" type="submit">Request my free measurement</button>
+  <p class="lf-note" id="lfNote" role="status" aria-live="polite"></p>
+</form>
+<script>
+(function(){
+  var LEAD_WEBHOOK="https://ocsllc.app.n8n.cloud/webhook/lab-website-estimate";
+  var f=document.getElementById('labForm'),note=document.getElementById('lfNote'),btn=f.querySelector('button[type=submit]');
+  function say(msg,cls){note.className='lf-note '+(cls||'');note.innerHTML=msg;}
+  var FALLBACK='Something went wrong sending that. Please call or text <a href="tel:+14069553400">(406) 955-3400</a> and we\'ll get you set up.';
+  f.addEventListener('submit',function(e){
+    e.preventDefault();
+    var v=function(n){var el=f.elements[n];return el?String(el.value||'').trim():'';};
+    var digits=v('phone').replace(/\D/g,'');
+    if(!v('first_name')){say('Please add your first name.','err');f.elements.first_name.focus();return;}
+    if(!(digits.length===10||(digits.length===11&&digits[0]==='1'))){say('Please enter a 10-digit phone number so we can reach you.','err');f.elements.phone.focus();return;}
+    if(!v('address')){say('Please add your home address so we can measure your roofline.','err');f.elements.address.focus();return;}
+    if(v('_honey')){say('Sent. Thanks!','ok');f.reset();return;}
+    var areas=[].slice.call(f.querySelectorAll('input[name=areas]:checked')).map(function(c){return c.value;});
+    var payload={first_name:v('first_name'),last_name:v('last_name'),phone:v('phone'),email:v('email'),address:v('address'),areas:areas,notes:v('notes'),page:location.href,_honey:v('_honey')};
+    btn.disabled=true;btn.textContent='Sending...';say('');
+    fetch(LEAD_WEBHOOK,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)})
+      .then(function(r){if(!r.ok)throw new Error(r.status);
+        say('Sent. Barrett has your details and will reach out within one business day to set up your free measurement.','ok');f.reset();})
+      .catch(function(){say(FALLBACK,'err');})
+      .then(function(){btn.disabled=false;btn.textContent='Request my free measurement';});
+  });
+})();
+</script>
         </div>
         <div class="fc-foot">Your details go straight to our team. No spam, ever.</div>
       </div>
