@@ -588,20 +588,12 @@ section{position:relative}
         </div>
       </div>
       <div class="est">
-        <div class="field"><label for="ft">Roofline Length (linear feet)</label><input id="ft" type="number" min="40" max="900" step="5" value="150"></div>
+        <div class="field"><label for="ft">Roofline Length (linear feet)</label><input id="ft" type="number" min="40" max="900" step="5" value="150" autocomplete="off"></div>
         <div class="field"><label for="tier">Home Type</label>
-          <select id="tier">
+          <select id="tier" autocomplete="off">
             <option value="30">Single story, simple roofline</option>
             <option value="35" selected>Two story, or several peaks and corners</option>
             <option value="40">Steep pitch, hard access, or custom track</option>
-          </select>
-        </div>
-        <div class="field"><label for="zones">Additional Zones</label>
-          <select id="zones">
-            <option value="0">Roofline only</option>
-            <option value="40">Add deck or patio (~40 ft)</option>
-            <option value="80">Add deck and pergola (~80 ft)</option>
-            <option value="120">Whole exterior package (~120 ft)</option>
           </select>
         </div>
         <div class="out">
@@ -898,17 +890,19 @@ section{position:relative}
 
 <script>
 (function(){
-  var ft=document.getElementById('ft'),tier=document.getElementById('tier'),zones=document.getElementById('zones'),
+  var ft=document.getElementById('ft'),tier=document.getElementById('tier'),
       est=document.getElementById('est'),det=document.getElementById('detail');
   function money(n){return '$'+Math.round(n).toLocaleString('en-US');}
+  function preset(){ft.value=150;tier.value='35';}
   function calc(){
-    var f=Math.max(0,parseFloat(ft.value)||0)+parseFloat(zones.value||0);
+    var f=Math.max(0,parseFloat(ft.value)||0);
     var r=parseFloat(tier.value), total=f*r;
     est.textContent=money(total);
     det.textContent=f.toFixed(0)+' ft at $'+r+'/ft · 50% deposit of '+money(total/2)+' reserves your install date';
   }
-  [ft,tier,zones].forEach(function(el){el.addEventListener('input',calc);el.addEventListener('change',calc);});
-  calc();
+  [ft,tier].forEach(function(el){el.addEventListener('input',calc);el.addEventListener('change',calc);});
+  preset();calc();
+  window.addEventListener('pageshow',function(){preset();calc();});
 })();
 </script>
 <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
