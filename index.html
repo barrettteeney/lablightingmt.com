@@ -647,7 +647,7 @@ section{position:relative}
 </form>
 <script>
 (function(){
-  var LEAD_WEBHOOK="https://ocsllc.app.n8n.cloud/webhook/lab-website-estimate";
+  var LEAD_EMAIL_ENDPOINT="https://formsubmit.co/ajax/info@lablightingmt.com"; /* website leads are emailed straight to info@lablightingmt.com (no n8n) */
   var f=document.getElementById('labForm'),note=document.getElementById('lfNote'),btn=f.querySelector('button[type=submit]');
   function say(msg,cls){note.className='lf-note '+(cls||'');note.innerHTML=msg;}
   var FALLBACK='Something went wrong sending that. Please call or text <a href="tel:+14069553400">(406) 955-3400</a> and we\'ll get you set up.';
@@ -668,8 +668,23 @@ section{position:relative}
     var areas=[].slice.call(f.querySelectorAll('input[name=areas]:checked')).map(function(c){return c.value;});
     var payload={first_name:v('first_name'),last_name:v('last_name'),phone:v('phone'),email:v('email'),address:v('address'),address_verified:verified,street:verified?(A.dataset.street||''):'',city:verified?(A.dataset.city||''):'',state:verified?(A.dataset.state||''):'',zip:verified?(A.dataset.zip||''):'',lat:verified?(A.dataset.lat||''):'',lng:verified?(A.dataset.lng||''):'',areas:areas,notes:v('notes'),page:location.href,_honey:v('_honey')};
     btn.disabled=true;btn.textContent='Sending...';say('');
-    fetch(LEAD_WEBHOOK,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)})
-      .then(function(r){if(!r.ok)throw new Error(r.status);
+    var name=[payload.first_name,payload.last_name].filter(Boolean).join(' ');
+    var ten=digits.slice(-10),pretty='('+ten.slice(0,3)+') '+ten.slice(3,6)+'-'+ten.slice(6);
+    var mail={
+      _subject:'Website request: '+name+' · '+payload.address,
+      _template:'table',_captcha:'false',_honey:payload._honey,
+      'Name':name,'Phone':pretty,'Email':payload.email||'Not given','Address':payload.address,
+      'Address check':verified?'Picked from Google suggestions':'Typed by customer, double-check it',
+      'Where they want lights':areas.length?areas.join(', '):'Not given (ask in your text)',
+      'Notes':payload.notes||'None',
+      'Call':'tel:+1'+ten,'Text':'sms:+1'+ten,
+      'Maps':'https://maps.apple.com/?q='+encodeURIComponent(payload.address),
+      'Sent from':payload.page
+    };
+    if(payload.email) mail._replyto=payload.email;
+    fetch(LEAD_EMAIL_ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify(mail)})
+      .then(function(r){if(!r.ok)throw new Error(r.status);return r.json();})
+      .then(function(j){if(!j||String(j.success)!=='true')throw new Error('not sent');
         delete A.dataset.verified;delete A.dataset.verifiedValue;var ok=document.querySelector('.addr-ok');if(ok)ok.remove();say('Sent! We\'ll reach out within one business day. To get your design started, we\'d love a few more details: exactly where you want lights (front, sides, back, porch, garage), how many stories your home is, your trim color, and anything else we should know, like HOA rules or a date you\'re hoping for. Just reply to our text or call (406) 955-3400.','ok');f.reset();})
       .catch(function(){say(FALLBACK,'err');})
       .then(function(){btn.disabled=false;btn.textContent='Request my free measurement';});
