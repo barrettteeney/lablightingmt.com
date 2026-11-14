@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Lab Quote Tool</title>
+<link rel="icon" href="../favicon.ico?v=3" sizes="any">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--carbon:#151515;--card:#1d1d1d;--ink:#0d0d0d;--white:#F6F3EE;--muted:#b8b2a8;--tan:#B9A184;--glow:#FFE2B0;--red:#C5322D;--line:rgba(246,243,238,.14);--f:"Montserrat",-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--carbon);color:var(--white);font-family:var(--f);font-size:14px;line-height:1.45}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 18px;border-bottom:1px solid var(--line)}
+header img{height:26px}
+header .t{font-size:11px;letter-spacing:.16em;color:var(--tan);font-weight:700;text-transform:uppercase}
+main{padding:16px 18px 40px;max-width:1500px;margin:0 auto}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+input,select{background:var(--ink);border:1px solid var(--line);color:var(--white);font-family:var(--f);font-size:14px;border-radius:8px;padding:10px 12px}
+input[type=text]{flex:1;min-width:240px}
+button{background:var(--card);color:var(--white);border:1px solid var(--line);font-family:var(--f);font-size:13px;font-weight:600;border-radius:20px;padding:9px 14px;cursor:pointer}
+button.p{background:var(--tan);color:var(--carbon);border-color:var(--tan)}
+button.on{border-color:var(--glow);color:var(--glow);box-shadow:0 0 0 1px var(--glow) inset}
+button:disabled{opacity:.45;cursor:default}
+.grid{display:grid;grid-template-columns:1.25fr 1fr;gap:14px;margin-top:14px}
+@media(max-width:980px){.grid{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px}
+.eb{font-size:10px;letter-spacing:.16em;color:var(--tan);font-weight:700;text-transform:uppercase;margin-bottom:8px}
+#map,#pano{height:520px;border-radius:8px;overflow:hidden;background:#000}
+#pano{height:360px}
+.hint{font-size:12px;color:var(--muted);margin-top:8px}
+.status{font-size:12.5px;color:var(--muted);margin-top:10px;min-height:18px}
+.status b{color:var(--white)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{font-size:10px;letter-spacing:.12em;color:var(--muted);text-align:left;font-weight:600;text-transform:uppercase;padding:6px 4px;border-bottom:1px solid var(--line)}
+td{padding:6px 4px;border-bottom:1px solid rgba(246,243,238,.07);vertical-align:middle}
+td.n,th.n{text-align:right;white-space:nowrap}
+td input,td select{padding:4px 6px;font-size:12.5px;width:100%}
+td input.sm{width:64px}
+.tot{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px}
+@media(max-width:620px){.tot{grid-template-columns:repeat(2,1fr)}}
+.tot div{background:var(--ink);border:1px solid var(--line);border-radius:10px;padding:10px}
+.tot span{display:block;font-size:10px;letter-spacing:.12em;color:var(--muted);text-transform:uppercase}
+.tot b{font-size:20px}
+.segs{font-size:12.5px;color:var(--muted);margin-top:8px}
+.segs b{color:var(--white)}
+#mock{width:100%;border-radius:8px;display:block;background:#000;cursor:crosshair}
+textarea{width:100%;min-height:120px;background:var(--ink);border:1px solid var(--line);color:var(--white);font-family:var(--f);font-size:13px;border-radius:8px;padding:10px;margin-top:8px}
+.sw{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:middle}
+.x{background:none;border:none;color:var(--muted);padding:2px 6px;font-size:16px}
+</style>
+</head>
+<body>
+<header><img src="../logo-light.png" alt="Lab Lighting"><span class="t">Instant quote tool · internal</span></header>
+<main>
+  <div class="row">
+    <input id="addr" type="text" placeholder="Customer address, e.g. 54 Mackinaw Way, Somers, MT" autocomplete="off">
+    <input id="cust" type="text" placeholder="Customer first name (for the text)" style="flex:0 1 230px;min-width:160px">
+    <button class="p" id="go">Find house</button>
+  </div>
+  <div class="status" id="status">Type an address and press <b>Find house</b>.</div>
+
+  <div class="grid">
+    <div class="card">
+      <div class="eb">1 · Trace the front roofline on the satellite view</div>
+      <div class="row" style="margin-bottom:10px">
+        <button id="mEave" class="on">Flat eave</button>
+        <button id="mRake">Gable edge (sloped)</button>
+        <button id="fin">Finish line ⏎</button>
+        <button id="undo">Undo point</button>
+        <button id="clr">Clear all</button>
+      </div>
+      <div id="map"></div>
+      <div class="hint">Click along each roof edge you'll light, from corner to corner, then press <b>Finish line</b> (or Enter). For a front-facing gable, pick <b>Gable edge</b> and trace the gable's bottom edge as seen from above (corner, peak point, corner): the tool adds the roof slope. Zoom with the scroll wheel; the map won't zoom on double-click.</div>
+      <div class="segs" id="segs"></div>
+    </div>
+
+    <div>
+      <div class="card">
+        <div class="eb">2 · Street View check</div>
+        <div id="pano"></div>
+        <div class="hint" id="panoInfo">Use it to confirm the house, count the gables, and check the pitch. Drag to look around.</div>
+      </div>
+
+      <div class="card" style="margin-top:14px">
+        <div class="eb">3 · Footage and price</div>
+        <div class="row" style="margin-bottom:8px">
+          <label style="font-size:12.5px;color:var(--muted)">Pitch for new gable lines</label>
+          <input id="pitch" type="number" min="0" max="24" step="0.5" value="8" style="width:80px"> <span style="color:var(--muted);font-size:12.5px">/12</span>
+        </div>
+        <table><thead><tr><th>#</th><th>Run</th><th>Type</th><th class="n">Pitch</th><th class="n">From above</th><th class="n">Actual</th><th></th></tr></thead><tbody id="rows"><tr><td colspan="7" style="color:var(--muted)">No lines yet.</td></tr></tbody></table>
+        <div class="tot">
+          <div><span>Measured</span><b id="tFt">0 ft</b></div>
+          <div><span>Priced at</span><b id="tR">0 ft</b></div>
+          <div><span>Quote range</span><b id="tP">$0</b></div>
+          <div><span>Deposit (50%)</span><b id="tD">$0</b></div>
+        </div>
+        <div class="hint">Locked method: round up to the next 10 ft, $25/ft, $250 off per full 100 ft. Range = your footage to +10%. Over 300 ft = custom.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <div class="eb">4 · Night mockup</div>
+      <div class="row" style="margin-bottom:10px">
+        <button id="useSV">Use current Street View</button>
+        <label class="row" style="gap:6px"><button id="upBtn" type="button">Upload customer photo</button><input id="up" type="file" accept="image/*" hidden></label>
+        <button id="mFin">Finish line ⏎</button>
+        <button id="mUndo">Undo point</button>
+        <button id="mClr">Clear lights</button>
+        <button id="mDl" class="p">Download PNG</button>
+      </div>
+      <canvas id="mock" width="1280" height="720"></canvas>
+      <div class="hint" id="mockHint">Load a photo, then click along each roof edge to place lights (corner, peak, corner…). Press Finish line between runs. A straight-on customer photo looks best.</div>
+    </div>
+    <div class="card">
+      <div class="eb">5 · Text to the customer (Barrett sends it)</div>
+      <textarea id="msg"></textarea>
+      <div class="row" style="margin-top:8px"><button id="cpMsg">Copy text</button><button id="cpSum">Copy job summary</button></div>
+      <div class="hint">Preliminary price. Always confirmed at the free design visit, or by a roof report.</div>
+    </div>
+  </div>
+</main>
+
+<script>
+var LAB_MAPS_KEY = "AIzaSyCxvBnaKM_jcdL6YEP3-9JeMMT8EEZV854";
+var map, pano, svService, geocoder, house = null, solar = null, panoData = null;
+var lines = [];          // finished map lines: {type, pitch, path:[LatLng], poly, label}
+var cur = null;          // current map line in progress
+var mode = 'eave';
+var COLORS = {eave:'#FFE2B0', rake:'#7FD1FF'};
+var $ = function(id){return document.getElementById(id)};
+function ft(m){return m*3.28084}
+function money(n){return '$'+Math.round(n).toLocaleString()}
+function slope(p){return Math.sqrt(1+Math.pow(p/12,2))}
+function price(f){ if(f<=0) return {r:0,p:0}; var r=Math.ceil(f/10)*10; if(r>300) return {r:r,p:null}; return {r:r,p:r*25-Math.floor(r/100)*250}; }
+function status(h){ $('status').innerHTML=h; }
+
+// ---------- Maps load ----------
+window.__labReady = function(){
+  geocoder = new google.maps.Geocoder();
+  svService = new google.maps.StreetViewService();
+  map = new google.maps.Map($('map'), {center:{lat:48.198,lng:-114.312}, zoom:13, mapTypeId:'satellite', tilt:0, disableDoubleClickZoom:true, streetViewControl:false, fullscreenControl:true, clickableIcons:false, gestureHandling:'greedy'});
+  pano = new google.maps.StreetViewPanorama($('pano'), {addressControl:false, motionTracking:false, fullscreenControl:true, showRoadLabels:false});
+  map.addListener('click', function(e){ addPoint(e.latLng); });
+  var q = new URLSearchParams(location.search).get('address'); if(q){ $('addr').value=q; find(); }
+};
+(function(){ var s=document.createElement('script'); s.src='https://maps.googleapis.com/maps/api/js?key='+encodeURIComponent(LAB_MAPS_KEY)+'&libraries=geometry&loading=async&v=weekly&callback=__labReady'; s.async=true; s.onerror=function(){status('Could not load Google Maps.');}; document.head.appendChild(s); })();
+
+// ---------- Find house ----------
+function find(){
+  var a=$('addr').value.trim(); if(!a||!geocoder) return;
+  status('Finding <b>'+a+'</b>…');
+  geocoder.geocode({address:a, componentRestrictions:{country:'US'}}, function(res, st){
+    if(st!=='OK'||!res.length){ status('Address not found ('+st+'). Try adding the town and MT.'); return; }
+    locate(res[0].geometry.location, res[0].formatted_address);
+  });
+}
+$('go').onclick=find; $('addr').addEventListener('keydown',function(e){ if(e.key==='Enter'){ e.preventDefault(); find(); } });
+
+function locate(loc, label){
+  house = loc; clearAll();
+  map.setCenter(loc); map.setZoom(21);
+  status('Found <b>'+label+'</b>. Loading roof data and Street View…');
+  loadSolar(loc.lat(), loc.lng(), label);
+  loadPano(loc);
+}
+
+function loadSolar(lat, lng, label){
+  solar=null; $('segs').innerHTML='';
+  var tryQ=['HIGH','MEDIUM','LOW'];
+  (function next(i){
+    if(i>=tryQ.length){ $('segs').innerHTML='No Google roof data for this house. Set the pitch from Street View (most valley homes are 6/12–8/12).'; status('Found <b>'+label+'</b>. No roof data, so set pitch by eye.'); return; }
+    fetch('https://solar.googleapis.com/v1/buildingInsights:findClosest?location.latitude='+lat+'&location.longitude='+lng+'&requiredQuality='+tryQ[i]+'&key='+encodeURIComponent(LAB_MAPS_KEY))
+      .then(function(r){ return r.json().then(function(j){ return {ok:r.ok, j:j}; }); })
+      .then(function(x){
+        if(!x.ok){ return next(i+1); }
+        solar=x.j; showSolar(label);
+      }).catch(function(){ next(i+1); });
+  })(0);
+}
+function dir(az){ var d=['N','NE','E','SE','S','SW','W','NW']; return d[Math.round(((az%360)+360)%360/45)%8]; }
+function showSolar(label){
+  var c=solar.center; if(c){ house=new google.maps.LatLng(c.latitude,c.longitude); map.setCenter(house); }
+  var segs=(solar.solarPotential&&solar.solarPotential.roofSegmentStats)||[];
+  if(!segs.length){ $('segs').innerHTML='Roof data found but no roof sections listed.'; return; }
+  var tot=0, wsum=0;
+  var items=segs.map(function(s){ var a=(s.stats&&s.stats.areaMeters2)||0, p=12*Math.tan((s.pitchDegrees||0)*Math.PI/180); tot+=a; if(s.pitchDegrees>5){ wsum+=a; } return {a:a,p:p,deg:s.pitchDegrees||0,az:s.azimuthDegrees||0}; });
+  var pitched=items.filter(function(i){return i.deg>5;});
+  var main=pitched.slice().sort(function(x,y){return y.a-x.a})[0];
+  if(main){ $('pitch').value=(Math.round(main.p*2)/2).toFixed(1); }
+  var date=solar.imageryDate?(' · imagery '+solar.imageryDate.month+'/'+solar.imageryDate.year):'';
+  $('segs').innerHTML='<b>Google roof data</b> ('+(solar.imageryQuality||'')+date+'): '+items.length+' roof sections. Main pitch <b>'+(main?main.p.toFixed(1):'?')+'/12</b>. '+
+    items.sort(function(x,y){return y.a-x.a}).slice(0,8).map(function(i){return i.p.toFixed(1)+'/12 facing '+dir(i.az)}).join(' · ');
+  status('Ready. Trace the front roofline. Pitch set to <b>'+$('pitch').value+'/12</b> from Google roof data; check it against Street View.');
+}
+
+function loadPano(loc){
+  svService.getPanorama({location:loc, radius:60, source:google.maps.StreetViewSource.OUTDOOR, preference:google.maps.StreetViewPreference.NEAREST}, function(d, st){
+    if(st!=='OK'){ panoData=null; $('panoInfo').textContent='No Street View here. Ask the customer for a photo of the front.'; return; }
+    panoData=d;
+    var h=google.maps.geometry.spherical.computeHeading(d.location.latLng, house||loc);
+    pano.setPano(d.location.pano); pano.setPov({heading:h, pitch:8}); pano.setZoom(1); pano.setVisible(true);
+    var dist=google.maps.geometry.spherical.computeDistanceBetween(d.location.latLng, house||loc);
+    $('panoInfo').innerHTML='Street View photo taken <b>'+(d.imageDate||'unknown date')+'</b>, about '+Math.round(ft(dist))+' ft from the house. If it\'s old or blocked by trees, ask for a customer photo.';
+  });
+}
+
+// ---------- Map tracing ----------
+function setMode(m){ mode=m; $('mEave').classList.toggle('on',m==='eave'); $('mRake').classList.toggle('on',m==='rake'); if(cur){ cur.type=m; cur.poly.setOptions({strokeColor:COLORS[m]}); } }
+$('mEave').onclick=function(){setMode('eave')}; $('mRake').onclick=function(){setMode('rake')};
+function addPoint(ll){
+  if(!cur){ cur={type:mode, pitch:parseFloat($('pitch').value)||0, path:[], poly:new google.maps.Polyline({map:map, strokeColor:COLORS[mode], strokeWeight:4, clickable:false}), dots:[]}; }
+  cur.path.push(ll); cur.poly.setPath(cur.path);
+  cur.dots.push(new google.maps.Marker({map:map, position:ll, clickable:false, icon:{path:google.maps.SymbolPath.CIRCLE, scale:4, fillColor:'#fff', fillOpacity:1, strokeWeight:0}}));
+}
+function finishLine(){
+  if(!cur) return;
+  if(cur.path.length<2){ cur.poly.setMap(null); cur.dots.forEach(function(d){d.setMap(null)}); cur=null; return; }
+  cur.pitch=cur.type==='rake'?(parseFloat($('pitch').value)||0):0;
+  cur.name=cur.type==='rake'?'Gable':'Eave';
+  var mid=cur.path[Math.floor(cur.path.length/2)];
+  cur.label=new google.maps.Marker({map:map, position:mid, clickable:false, label:{text:String(lines.length+1), color:'#151515', fontWeight:'700', fontSize:'12px'}, icon:{path:google.maps.SymbolPath.CIRCLE, scale:10, fillColor:COLORS[cur.type], fillOpacity:1, strokeWeight:0}});
+  lines.push(cur); cur=null; render();
+}
+$('fin').onclick=finishLine;
+$('undo').onclick=function(){ if(cur&&cur.path.length){ cur.path.pop(); cur.poly.setPath(cur.path); var d=cur.dots.pop(); d&&d.setMap(null); if(!cur.path.length){ cur.poly.setMap(null); cur=null; } } else if(lines.length){ var l=lines.pop(); l.poly.setMap(null); l.label.setMap(null); l.dots.forEach(function(d){d.setMap(null)}); render(); } };
+function clearAll(){ if(cur){ cur.poly.setMap(null); cur.dots.forEach(function(d){d.setMap(null)}); cur=null; } lines.forEach(function(l){ l.poly.setMap(null); l.label.setMap(null); l.dots.forEach(function(d){d.setMap(null)}); }); lines=[]; render(); }
+$('clr').onclick=clearAll;
+document.addEventListener('keydown', function(e){ if(e.key==='Enter' && e.target.tagName!=='INPUT' && e.target.tagName!=='TEXTAREA'){ e.preventDefault(); if(mk.cur) mFinish(); else finishLine(); } });
+
+function lenFt(l){ return ft(google.maps.geometry.spherical.computeLength(l.path)); }
+function trueFt(l){ return lenFt(l)*(l.type==='rake'?slope(l.pitch):1); }
+function render(){
+  var tb=$('rows');
+  if(!lines.length){ tb.innerHTML='<tr><td colspan="7" style="color:var(--muted)">No lines yet.</td></tr>'; }
+  else tb.innerHTML=lines.map(function(l,i){
+    return '<tr><td><span class="sw" style="background:'+COLORS[l.type]+'"></span>'+(i+1)+'</td>'+
+      '<td><input data-i="'+i+'" data-k="name" value="'+(l.name||'').replace(/"/g,'&quot;')+'"></td>'+
+      '<td><select data-i="'+i+'" data-k="type"><option value="eave"'+(l.type==='eave'?' selected':'')+'>Flat eave</option><option value="rake"'+(l.type==='rake'?' selected':'')+'>Gable edge</option></select></td>'+
+      '<td class="n">'+(l.type==='rake'?'<input class="sm" type="number" step="0.5" data-i="'+i+'" data-k="pitch" value="'+l.pitch+'">':'–')+'</td>'+
+      '<td class="n">'+lenFt(l).toFixed(1)+' ft</td><td class="n"><b>'+trueFt(l).toFixed(1)+' ft</b></td>'+
+      '<td><button class="x" data-del="'+i+'" title="Remove">×</button></td></tr>';
+  }).join('');
+  tb.querySelectorAll('[data-k]').forEach(function(el){ el.onchange=function(){ var l=lines[+el.dataset.i], k=el.dataset.k; if(k==='pitch') l.pitch=parseFloat(el.value)||0; else if(k==='type'){ l.type=el.value; if(l.type==='rake'&&!l.pitch) l.pitch=parseFloat($('pitch').value)||0; l.poly.setOptions({strokeColor:COLORS[l.type]}); } else l[k]=el.value; render(); }; });
+  tb.querySelectorAll('[data-del]').forEach(function(b){ b.onclick=function(){ var l=lines.splice(+b.dataset.del,1)[0]; l.poly.setMap(null); l.label.setMap(null); l.dots.forEach(function(d){d.setMap(null)}); lines.forEach(function(x,i){ x.label.setLabel({text:String(i+1),color:'#151515',fontWeight:'700',fontSize:'12px'}); }); render(); }; });
+  var total=lines.reduce(function(s,l){return s+trueFt(l)},0);
+  var lo=price(total), hi=price(total*1.1);
+  $('tFt').textContent=total.toFixed(1)+' ft';
+  $('tR').textContent=lo.r+(hi.r!==lo.r?'–'+hi.r:'')+' ft';
+  if(lo.p===null||hi.p===null){ $('tP').textContent='Custom'; $('tD').textContent='–'; }
+  else { $('tP').textContent=money(lo.p)+(hi.p!==lo.p?'–'+money(hi.p):''); $('tD').textContent=money(lo.p/2)+(hi.p!==lo.p?'–'+money(hi.p/2):''); }
+  window.__quote={total:total, lo:lo, hi:hi};
+  writeMsg();
+}
+function writeMsg(){
+  var q=window.__quote||{total:0}; var n=$('cust').value.trim()||'there';
+  if(!q.total){ $('msg').value=''; return; }
+  var pr=(q.lo.p===null||q.hi.p===null)?'a custom quote (it\'s a bigger home)':(money(q.lo.p)+(q.hi.p!==q.lo.p?'–'+money(q.hi.p):''));
+  $('msg').value='Hey '+n+', it\'s Barrett with Lab Lighting! I put together a quick design of your place. Here\'s what the front would look like lit up. Based on the measurements, the front roofline runs about '+Math.round(q.total)+' ft, so you\'re looking at roughly '+pr+' installed. That includes the lights, track color-matched to your trim, the controller and app setup, and no monthly fees. I\'d love to swing by to confirm measurements and match your trim color. That visit\'s free. What day works for you?';
+}
+$('cust').addEventListener('input', writeMsg);
+function copy(t,b){ navigator.clipboard.writeText(t).then(function(){ var o=b.textContent; b.textContent='Copied'; setTimeout(function(){b.textContent=o},1200); }); }
+$('cpMsg').onclick=function(){ copy($('msg').value, this); };
+$('cpSum').onclick=function(){
+  var q=window.__quote||{total:0};
+  var s='INSTANT QUOTE · '+$('addr').value+'\n'+lines.map(function(l,i){return (i+1)+'. '+(l.name||'')+' · '+(l.type==='rake'?'gable edge @ '+l.pitch+'/12':'flat eave')+' · '+lenFt(l).toFixed(1)+' ft from above → '+trueFt(l).toFixed(1)+' ft'}).join('\n')+
+    '\nFront total: '+(q.total||0).toFixed(1)+' ft · Quote: '+$('tP').textContent+' · Deposit: '+$('tD').textContent+'\nPitch source: '+(solar?'Google roof data':'by eye')+(panoData?' · Street View '+panoData.imageDate:'')+'\nPreliminary, confirmed at the free design visit.';
+  copy(s, this);
+};
+
+// ---------- Mockup ----------
+var cv=$('mock'), cx=cv.getContext('2d'), mimg=null, mk={lines:[], cur:null}, tainted=false;
+function loadImg(src, cross){
+  var im=new Image(); if(cross) im.crossOrigin='anonymous';
+  im.onload=function(){ mimg=im; tainted=!cross; var w=Math.min(1600, im.naturalWidth), h=Math.round(w*im.naturalHeight/im.naturalWidth); cv.width=w; cv.height=h; mk={lines:[],cur:null}; draw();
+    $('mockHint').textContent=tainted?'Street View loaded. Click along the roof edges to place lights. (Download is blocked for Street View images, so take a screenshot of this one.)':'Click along each roof edge to place lights (corner, peak, corner…). Press Finish line between runs.'; };
+  im.onerror=function(){ if(cross) loadImg(src,false); else $('mockHint').textContent='Could not load that image.'; };
+  im.src=src;
+}
+$('useSV').onclick=function(){
+  if(!pano||!pano.getPano()){ $('mockHint').textContent='Find a house with Street View first.'; return; }
+  var pov=pano.getPov(), z=pano.getZoom()||1, fov=Math.max(20,Math.min(120,180/Math.pow(2,z)));
+  loadImg('https://maps.googleapis.com/maps/api/streetview?size=640x480&pano='+pano.getPano()+'&heading='+pov.heading.toFixed(1)+'&pitch='+pov.pitch.toFixed(1)+'&fov='+fov.toFixed(0)+'&key='+encodeURIComponent(LAB_MAPS_KEY), true);
+};
+$('upBtn').onclick=function(){ $('up').click(); };
+$('up').onchange=function(){ var f=this.files[0]; if(!f) return; var r=new FileReader(); r.onload=function(){ loadImg(r.result,true); }; r.readAsDataURL(f); };
+function pos(e){ var b=cv.getBoundingClientRect(); return [(e.clientX-b.left)*cv.width/b.width, (e.clientY-b.top)*cv.height/b.height]; }
+cv.addEventListener('click', function(e){ if(!mimg) return; if(!mk.cur) mk.cur=[]; mk.cur.push(pos(e)); draw(); });
+function mFinish(){ if(mk.cur&&mk.cur.length>1) mk.lines.push(mk.cur); mk.cur=null; draw(); }
+$('mFin').onclick=mFinish;
+$('mUndo').onclick=function(){ if(mk.cur&&mk.cur.length){ mk.cur.pop(); if(!mk.cur.length) mk.cur=null; } else mk.lines.pop(); draw(); };
+$('mClr').onclick=function(){ mk={lines:[],cur:null}; draw(); };
+function draw(){
+  if(!mimg){ cx.fillStyle='#000'; cx.fillRect(0,0,cv.width,cv.height); return; }
+  var W=cv.width,H=cv.height; cx.globalCompositeOperation='source-over'; cx.drawImage(mimg,0,0,W,H);
+  cx.globalCompositeOperation='multiply'; cx.fillStyle='rgb(58,70,112)'; cx.fillRect(0,0,W,H);
+  cx.globalCompositeOperation='source-over';
+  var g=cx.createLinearGradient(0,0,0,H*0.6); g.addColorStop(0,'rgba(8,14,40,0.55)'); g.addColorStop(1,'rgba(8,14,40,0.05)'); cx.fillStyle=g; cx.fillRect(0,0,W,H);
+  var all=mk.lines.concat(mk.cur&&mk.cur.length>1?[mk.cur]:[]);
+  var sp=Math.max(8, W/120), r=Math.max(1.8, W/520);
+  all.forEach(function(pts){
+    cx.save(); cx.globalCompositeOperation='lighter'; cx.strokeStyle='rgba(255,200,130,0.09)'; cx.lineWidth=r*7; cx.lineCap='round'; cx.lineJoin='round'; cx.filter='blur('+(r*4)+'px)';
+    cx.beginPath(); pts.forEach(function(p,i){ i?cx.lineTo(p[0],p[1]):cx.moveTo(p[0],p[1]); }); cx.stroke(); cx.restore();
+    var bulbs=[]; for(var i=0;i<pts.length-1;i++){ var a=pts[i],b=pts[i+1],d=Math.hypot(b[0]-a[0],b[1]-a[1]),n=Math.max(1,Math.round(d/sp)); for(var j=(i?1:0);j<=n;j++) bulbs.push([a[0]+(b[0]-a[0])*j/n, a[1]+(b[1]-a[1])*j/n]); }
+    cx.save(); cx.globalCompositeOperation='lighter';
+    bulbs.forEach(function(p){ var gr=cx.createRadialGradient(p[0],p[1],0,p[0],p[1],r*5); gr.addColorStop(0,'rgba(255,214,160,0.5)'); gr.addColorStop(1,'rgba(255,190,120,0)'); cx.fillStyle=gr; cx.beginPath(); cx.arc(p[0],p[1],r*5,0,7); cx.fill(); });
+    cx.restore();
+    cx.fillStyle='#FFF4DF'; bulbs.forEach(function(p){ cx.beginPath(); cx.arc(p[0],p[1],r,0,7); cx.fill(); });
+  });
+  if(mk.cur){ cx.fillStyle='#7FD1FF'; mk.cur.forEach(function(p){ cx.beginPath(); cx.arc(p[0],p[1],4,0,7); cx.fill(); }); }
+}
+draw();
+$('mDl').onclick=function(){
+  if(!mimg) return;
+  try{ var a=document.createElement('a'); a.download='Lab_Lighting_mockup_'+($('addr').value||'home').replace(/[^a-z0-9]+/gi,'_')+'.png'; a.href=cv.toDataURL('image/png'); a.click(); }
+  catch(err){ $('mockHint').textContent='This Street View image can\'t be downloaded (Google blocks it). Take a screenshot, or use the customer\'s own photo.'; }
+};
+</script>
+</body>
+</html>
