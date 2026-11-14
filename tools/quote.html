@@ -145,6 +145,7 @@ window.__labReady = function(){
   map = new google.maps.Map($('map'), {center:{lat:48.198,lng:-114.312}, zoom:13, mapTypeId:'satellite', tilt:0, disableDoubleClickZoom:true, streetViewControl:false, fullscreenControl:true, clickableIcons:false, gestureHandling:'greedy'});
   pano = new google.maps.StreetViewPanorama($('pano'), {addressControl:false, motionTracking:false, fullscreenControl:true, showRoadLabels:false});
   map.addListener('click', function(e){ addPoint(e.latLng); });
+  map.addListener('dblclick', function(e){ var last=cur&&cur.path[cur.path.length-1]; if(!last||google.maps.geometry.spherical.computeDistanceBetween(last,e.latLng)>0.3) addPoint(e.latLng); });
   var q = new URLSearchParams(location.search).get('address'); if(q){ $('addr').value=q; find(); }
 };
 (function(){ var s=document.createElement('script'); s.src='https://maps.googleapis.com/maps/api/js?key='+encodeURIComponent(LAB_MAPS_KEY)+'&libraries=geometry&loading=async&v=weekly&callback=__labReady'; s.async=true; s.onerror=function(){status('Could not load Google Maps.');}; document.head.appendChild(s); })();
@@ -162,7 +163,7 @@ $('go').onclick=find; $('addr').addEventListener('keydown',function(e){ if(e.key
 
 function locate(loc, label){
   house = loc; clearAll();
-  map.setCenter(loc); map.setZoom(21);
+  map.setCenter(loc); map.setZoom(20);
   status('Found <b>'+label+'</b>. Loading roof data and Street View…');
   loadSolar(loc.lat(), loc.lng(), label);
   loadPano(loc);
@@ -183,7 +184,7 @@ function loadSolar(lat, lng, label){
 }
 function dir(az){ var d=['N','NE','E','SE','S','SW','W','NW']; return d[Math.round(((az%360)+360)%360/45)%8]; }
 function showSolar(label){
-  var c=solar.center; if(c){ house=new google.maps.LatLng(c.latitude,c.longitude); map.setCenter(house); }
+  var c=solar.center; if(c){ house=new google.maps.LatLng(c.latitude,c.longitude); map.setCenter(house); aimPano(); }
   var segs=(solar.solarPotential&&solar.solarPotential.roofSegmentStats)||[];
   if(!segs.length){ $('segs').innerHTML='Roof data found but no roof sections listed.'; return; }
   var tot=0, wsum=0;
@@ -197,12 +198,15 @@ function showSolar(label){
   status('Ready. Trace the front roofline. Pitch set to <b>'+$('pitch').value+'/12</b> from Google roof data; check it against Street View.');
 }
 
+function aimPano(){ if(!pano||!pano.getPosition()||!house) return; var pp=pano.getPosition(); pano.setPov({heading:google.maps.geometry.spherical.computeHeading(pp,house), pitch:10}); pano.setZoom(1.3);
+  if(panoData) $('panoInfo').innerHTML='Street View photo taken <b>'+(panoData.imageDate||'unknown date')+'</b>, about '+Math.round(ft(google.maps.geometry.spherical.computeDistanceBetween(pp,house)))+' ft from the house. If it\'s old or blocked by trees, ask for a customer photo. <a href="#" id="aim" style="color:var(--tan)">Point at house</a>';
+  var a=$('aim'); if(a) a.onclick=function(e){e.preventDefault(); aimPano();}; }
 function loadPano(loc){
   svService.getPanorama({location:loc, radius:60, source:google.maps.StreetViewSource.OUTDOOR, preference:google.maps.StreetViewPreference.NEAREST}, function(d, st){
     if(st!=='OK'){ panoData=null; $('panoInfo').textContent='No Street View here. Ask the customer for a photo of the front.'; return; }
     panoData=d;
     var h=google.maps.geometry.spherical.computeHeading(d.location.latLng, house||loc);
-    pano.setPano(d.location.pano); pano.setPov({heading:h, pitch:8}); pano.setZoom(1); pano.setVisible(true);
+    pano.setPano(d.location.pano); pano.setPov({heading:h, pitch:8}); pano.setZoom(1); pano.setVisible(true); setTimeout(aimPano,1200);
     var dist=google.maps.geometry.spherical.computeDistanceBetween(d.location.latLng, house||loc);
     $('panoInfo').innerHTML='Street View photo taken <b>'+(d.imageDate||'unknown date')+'</b>, about '+Math.round(ft(dist))+' ft from the house. If it\'s old or blocked by trees, ask for a customer photo.';
   });
