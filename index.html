@@ -321,10 +321,15 @@ section{position:relative}
 .fit-o.on{border-color:var(--tan);background:rgba(185,161,132,.09)}
 .fit-o.on b{color:#FFE2B0}
 .fit-out{border:1px solid var(--line);background:rgba(246,243,238,.025);padding:22px 24px}
-.fit-viz{background:#0c1426;border:1px solid var(--line);margin-bottom:18px;overflow:hidden}
-.fit-viz svg{display:block;width:100%;height:auto}
-.fit-viz svg.anim .house,.fit-viz svg.anim .lg{transition:opacity .45s ease}
-@media(prefers-reduced-motion:reduce){.fit-viz svg.anim .house,.fit-viz svg.anim .lg{transition:none}}
+.fit-viz{background:#101820;border:1px solid var(--line);margin-bottom:18px;overflow:hidden}
+.fit-stage{position:relative;aspect-ratio:1024/576;background:#101820}
+.fit-photo{position:absolute;inset:0;margin:0;opacity:0}
+.fit-viz.anim .fit-photo{transition:opacity .45s ease}
+.fit-photo.on{opacity:1}
+.fit-photo img{display:block;width:100%;height:100%;object-fit:fill}
+.fit-stage svg{position:absolute;inset:0;width:100%;height:100%;display:block;pointer-events:none}
+.fit-stage svg.anim .lg{transition:opacity .45s ease}
+@media(prefers-reduced-motion:reduce){.fit-viz.anim .fit-photo,.fit-stage svg.anim .lg{transition:none}}
 .fit-res{display:grid;grid-template-columns:1fr 1.3fr;gap:16px;border-bottom:1px solid var(--line);padding-bottom:16px}
 .fit-l{font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:var(--tan);font-weight:600}
 .fit-v{font-size:20px;font-weight:700;margin-top:6px}
@@ -612,7 +617,23 @@ section{position:relative}
         </div>
       </div>
       <div class="fit-out">
-        <div class="fit-viz"><svg id="fitSvg" viewBox="0 0 600 360" role="img" aria-label="House preview showing which rooflines are lit"></svg></div>
+        <div class="fit-viz" id="fitViz">
+          <div class="fit-stage">
+            <picture class="fit-photo" data-home="ss">
+              <source srcset="assets/fit/single-story.webp" type="image/webp">
+              <img src="assets/fit/single-story.jpg" alt="" width="1024" height="576">
+            </picture>
+            <picture class="fit-photo on" data-home="sg">
+              <source srcset="assets/fit/single-garage.webp" type="image/webp">
+              <img src="assets/fit/single-garage.jpg" alt="" width="1024" height="576">
+            </picture>
+            <picture class="fit-photo" data-home="ts">
+              <source srcset="assets/fit/two-story.webp" type="image/webp">
+              <img src="assets/fit/two-story.jpg" alt="" width="1024" height="576">
+            </picture>
+            <svg id="fitSvg" viewBox="0 0 1024 576" preserveAspectRatio="none" role="img" aria-label="House preview showing which rooflines are lit"></svg>
+          </div>
+        </div>
         <div class="fit-res">
           <div><div class="fit-l">Typical footage</div><div class="fit-v" id="fitFt">90–130 ft</div></div>
           <div><div class="fit-l">Estimated installed</div><div class="fit-v big" id="fitPrice">$2,250–$3,000</div></div>
@@ -1201,12 +1222,10 @@ section{position:relative}
 })();
 </script>
 <script>
-/* Find Your Fit house illustrations.
-   Cabinet projection, front face undistorted, right side receding.
-   Lights are point bulbs on the fascia, grouped front / side / back. */
+/* Find Your Fit. Each house is a dusk photograph with permanent-light pucks
+   traced on the fascia. Tiers: front (street), side (eave returns), back. */
 (function () {
-  var S = 8.15, ZX = 0.6, ZY = 0.24, GROUND = 316;
-  var STEP = 12;
+  var STEP = 11;
 
   function n(v) { return (Math.round(v * 10) / 10).toFixed(1); }
   function fmt(pts) {
@@ -1214,462 +1233,139 @@ section{position:relative}
     for (i = 0; i < pts.length; i++) s += (i ? ' ' : '') + n(pts[i][0]) + ',' + n(pts[i][1]);
     return s;
   }
-  function lerp(a, b, t) { return [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t]; }
-
-  function along(pts, step) {
-    var segs = [], total = 0, i, dx, dy, len, s, dist, t, out, use, k;
+  function samples(pts, step) {
+    var segs = [], total = 0, i, dx, dy, len, dist, acc, t, out, k, a, b, L, count;
     for (i = 0; i < pts.length - 1; i++) {
       dx = pts[i + 1][0] - pts[i][0];
       dy = pts[i + 1][1] - pts[i][1];
       len = Math.sqrt(dx * dx + dy * dy);
-      segs.push({ a: pts[i], dx: dx, dy: dy, len: len, start: total });
+      segs.push([pts[i], pts[i + 1], len]);
       total += len;
     }
     if (total < 1) return pts.slice();
-    use = total / Math.max(1, Math.round(total / step));
+    count = Math.max(2, Math.round(total / step) + 1);
+    step = total / (count - 1);
     out = [];
-    for (i = 0; i * use < total - 0.01; i++) {
-      dist = i * use;
-      s = segs[segs.length - 1];
-      for (k = 0; k < segs.length; k++) {
-        if (dist <= segs[k].start + segs[k].len + 0.01) { s = segs[k]; break; }
+    for (k = 0; k < count; k++) {
+      dist = Math.min(k * step, total);
+      acc = 0;
+      for (i = 0; i < segs.length; i++) {
+        a = segs[i][0]; b = segs[i][1]; L = segs[i][2];
+        if (acc + L >= dist - 1e-6 || i === segs.length - 1) {
+          t = L === 0 ? 0 : Math.max(0, Math.min(1, (dist - acc) / L));
+          out.push([a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t]);
+          break;
+        }
+        acc += L;
       }
-      t = s.len ? (dist - s.start) / s.len : 0;
-      if (t < 0) t = 0;
-      if (t > 1) t = 1;
-      out.push([s.a[0] + s.dx * t, s.a[1] + s.dy * t]);
     }
-    out.push(pts[pts.length - 1]);
     return out;
   }
-
-  function dedupe(pts) {
-    var kept = [], i, j, p, dx, dy, hit;
-    for (i = 0; i < pts.length; i++) {
-      p = pts[i]; hit = false;
-      for (j = 0; j < kept.length; j++) {
-        dx = kept[j][0] - p[0]; dy = kept[j][1] - p[1];
-        if (dx * dx + dy * dy < 20) { hit = true; break; }
-      }
-      if (!hit) kept.push(p);
-    }
-    return kept;
-  }
-
-  function linesBetween(a0, a1, b0, b1, count, color, width) {
-    var s = '', i, t, p, q;
-    for (i = 1; i < count; i++) {
-      t = i / count;
-      p = lerp(a0, b0, t); q = lerp(a1, b1, t);
-      s += '<line x1="' + n(p[0]) + '" y1="' + n(p[1]) + '" x2="' + n(q[0]) + '" y2="' + n(q[1]) + '" stroke="' + color + '" stroke-width="' + width + '"/>';
-    }
-    return s;
-  }
-
-  function hLines(poly, step, color) {
-    var minX = 1e9, maxX = -1e9, minY = 1e9, maxY = -1e9, i, y, s = '';
-    for (i = 0; i < poly.length; i++) {
-      if (poly[i][0] < minX) minX = poly[i][0];
-      if (poly[i][0] > maxX) maxX = poly[i][0];
-      if (poly[i][1] < minY) minY = poly[i][1];
-      if (poly[i][1] > maxY) maxY = poly[i][1];
-    }
-    for (y = Math.ceil((minY + 3) / step) * step; y < maxY - 2; y += step) {
-      s += '<line x1="' + n(minX - 4) + '" y1="' + n(y) + '" x2="' + n(maxX + 4) + '" y2="' + n(y) + '" stroke="' + color + '" stroke-width="1"/>';
-    }
-    return s;
-  }
-
-  function fascia(pts) {
-    var p = fmt(pts);
-    return '<polyline points="' + p + '" fill="none" stroke="#2a261f" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>'
-      + '<polyline points="' + p + '" fill="none" stroke="#a39886" stroke-width="2.15" stroke-linejoin="round" stroke-linecap="round"/>';
-  }
-
-  function bulbs(polylines) {
-    var raw = [], i, kept, halo = '', core = '', wash = '';
-    for (i = 0; i < polylines.length; i++) raw = raw.concat(along(polylines[i], STEP));
-    kept = dedupe(raw);
-    for (i = 0; i < polylines.length; i++) {
-      wash += '<polyline points="' + fmt(polylines[i]) + '" fill="none" stroke="#ffe7c4" stroke-width="1.15" stroke-linejoin="round" stroke-linecap="round" opacity="0.32"/>';
-    }
-    for (i = 0; i < kept.length; i++) {
-      halo += '<circle cx="' + n(kept[i][0]) + '" cy="' + n(kept[i][1]) + '" r="1.85" fill="#ffd7a8"/>';
-      core += '<circle cx="' + n(kept[i][0]) + '" cy="' + n(kept[i][1]) + '" r="2.05" fill="#ffe9cc"/>';
-      core += '<circle cx="' + n(kept[i][0]) + '" cy="' + n(kept[i][1]) + '" r="0.82" fill="#fffaf4"/>';
-    }
-    return wash + '<g filter="url(#fitHalo)">' + halo + '</g>' + core;
-  }
-
-  function lightGroup(tier, polylines, on) {
-    return '<g class="lg" data-tier="' + tier + '" opacity="' + (on ? '1' : '0') + '">' + bulbs(polylines) + '</g>';
-  }
-
-  function makeP() {
-    var pts = [];
-    function P(x, y, z) {
-      var s = [(x + z * ZX) * S, -(y + z * ZY) * S];
-      pts.push(s);
-      return s;
-    }
-    P.all = pts;
-    return P;
-  }
-
-  /* A front-gabled volume. Right wall is the visible side. */
-  function volume(P, o) {
-    var x0 = o.x, x1 = o.x + o.w, z0 = o.z, z1 = o.z + o.d;
-    var wall = o.wall, rise = o.rise, oh = o.oh == null ? 0.78 : o.oh;
-    var xm = (x0 + x1) / 2, peak = wall + rise, id = o.id;
-    var flg = P(x0, 0, z0), frg = P(x1, 0, z0), brg = P(x1, 0, z1);
-    var fle = P(x0, wall, z0), fre = P(x1, wall, z0), bre = P(x1, wall, z1), ble = P(x0, wall, z1);
-    var fp = P(xm, peak, z0);
-    var rfle = P(x0 - oh, wall, z0 - oh), rfre = P(x1 + oh, wall, z0 - oh);
-    var rble = P(x0 - oh, wall, z1 + oh * 0.4), rbre = P(x1 + oh, wall, z1 + oh * 0.4);
-    var rfp = P(xm, peak + oh * 0.18, z0 - oh), rbp = P(xm, peak + oh * 0.18, z1 + oh * 0.4);
-    var front = [flg, frg, fre, fp, fle];
-    var right = [frg, brg, bre, fre];
-    var roofL = [rfle, rfp, rbp, rble];
-    var roofR = [rfp, rfre, rbre, rbp];
-    var soffR = [fre, rfre, rbre, bre];
-    var h = '';
-    h += '<polygon points="' + fmt(right) + '" fill="url(#wallSide)"/>';
-    h += '<polygon points="' + fmt(soffR) + '" fill="#7a7268"/>';
-    h += '<polygon points="' + fmt(roofL) + '" fill="#34312d"/>';
-    h += '<polygon points="' + fmt(roofR) + '" fill="#282521"/>';
-    h += linesBetween(rfle, rble, rfp, rbp, 8, 'rgba(246,240,230,.075)', 0.8);
-    h += linesBetween(rfp, rbp, rfre, rbre, 8, 'rgba(246,240,230,.05)', 0.8);
-    h += '<polygon points="' + fmt(front) + '" fill="url(#wallFront)"/>';
-    h += '<clipPath id="' + id + '-f"><polygon points="' + fmt(front) + '"/></clipPath>';
-    h += '<g clip-path="url(#' + id + '-f)">' + hLines(front, 5.1, 'rgba(28,22,16,.34)') + '</g>';
-    h += '<clipPath id="' + id + '-s"><polygon points="' + fmt(right) + '"/></clipPath>';
-    h += '<g clip-path="url(#' + id + '-s)">' + linesBetween(fre, bre, frg, brg, 9, 'rgba(18,14,10,.38)', 1) + '</g>';
-    var fFront = [P(x0, 0, z0), P(x1, 0, z0), P(x1, 0.72, z0), P(x0, 0.72, z0)];
-    var fSide = [P(x1, 0, z0), P(x1, 0, z1), P(x1, 0.72, z1), P(x1, 0.72, z0)];
-    h += '<polygon points="' + fmt(fFront) + '" fill="#2a2724"/>';
-    h += '<polygon points="' + fmt(fSide) + '" fill="#211f1c"/>';
-    h += '<polyline points="' + fmt([flg, fle]) + '" fill="none" stroke="#d2c6b4" stroke-width="3.1" stroke-linecap="butt"/>';
-    h += '<polyline points="' + fmt([frg, fre]) + '" fill="none" stroke="#d2c6b4" stroke-width="3.1" stroke-linecap="butt"/>';
-    h += '<polyline points="' + fmt([fre, bre]) + '" fill="none" stroke="#cbbda8" stroke-width="2"/>';
-    h += fascia([rfle, rfp, rfre]);
-    h += fascia([rfre, rbre]);
-    h += fascia([rfle, rble]);
-    if (!o.skipBack) h += fascia([rble, rbp, rbre]);
-    h += '<polyline points="' + fmt([rfp, rbp]) + '" fill="none" stroke="#161412" stroke-width="2.2" stroke-linecap="round"/>';
-    h += '<polyline points="' + fmt([rfp, rbp]) + '" fill="none" stroke="#4a453e" stroke-width="0.7" stroke-linecap="round"/>';
-    return {
-      markup: h,
-      front: [[rfle, rfp, rfre]],
-      side: [[rfle, rble], [rfre, rbre]],
-      back: [[rble, rbp, rbre]],
-      fp: fp, fle: fle, fre: fre, flg: flg, frg: frg, xm: xm, wall: wall, peak: peak, x0: x0, x1: x1, z0: z0
-    };
-  }
-
-  function win(P, x, sill, z, w, h, cols) {
-    var bl = P(x, sill, z), tr = P(x + w, sill + h, z);
-    var rx = bl[0], ry = tr[1], rw = tr[0] - bl[0], rh = bl[1] - tr[1];
-    if (rw < 2 || rh < 2) return '';
-    var t = Math.max(1.5, Math.min(2.5, rw * 0.07));
-    var s = '';
-    s += '<rect x="' + n(rx - t) + '" y="' + n(ry - t) + '" width="' + n(rw + t * 2) + '" height="' + n(rh + t * 2) + '" fill="#d9d0c2"/>';
-    s += '<rect x="' + n(rx - rh * 0.28) + '" y="' + n(ry - rh * 0.22) + '" width="' + n(rw + rh * 0.56) + '" height="' + n(rh * 1.45) + '" fill="#ffb15a" opacity="0.16" filter="url(#fitWin)"/>';
-    s += '<rect x="' + n(rx) + '" y="' + n(ry) + '" width="' + n(rw) + '" height="' + n(rh) + '" fill="url(#glass)"/>';
-    s += '<rect x="' + n(rx) + '" y="' + n(ry) + '" width="' + n(rw) + '" height="' + n(rh * 0.14) + '" fill="#6a341c" opacity="0.32"/>';
-    var c = cols || 2, i, lx, my;
-    for (i = 1; i < c; i++) {
-      lx = rx + rw * i / c;
-      s += '<line x1="' + n(lx) + '" y1="' + n(ry) + '" x2="' + n(lx) + '" y2="' + n(ry + rh) + '" stroke="#2c241c" stroke-width="0.85"/>';
-    }
-    my = ry + rh * 0.5;
-    s += '<line x1="' + n(rx) + '" y1="' + n(my) + '" x2="' + n(rx + rw) + '" y2="' + n(my) + '" stroke="#2c241c" stroke-width="0.85"/>';
-    s += '<rect x="' + n(rx - t - 0.7) + '" y="' + n(ry + rh) + '" width="' + n(rw + (t + 0.7) * 2) + '" height="' + n(Math.max(1.5, t * 0.62)) + '" fill="#cfc3b0"/>';
-    return s;
-  }
-
-  function winSide(P, x, sill, z, d, h) {
-    var a = P(x, sill + h, z), b = P(x, sill + h, z + d), c = P(x, sill, z + d), e = P(x, sill, z);
-    var s = '<polygon points="' + fmt([a, b, c, e]) + '" fill="url(#glass)" stroke="#d9d0c2" stroke-width="1.7" stroke-linejoin="miter"/>';
-    var mt = lerp(a, b, 0.5), mb = lerp(e, c, 0.5);
-    var lm = lerp(a, e, 0.5), rm = lerp(b, c, 0.5);
-    s += '<line x1="' + n(mt[0]) + '" y1="' + n(mt[1]) + '" x2="' + n(mb[0]) + '" y2="' + n(mb[1]) + '" stroke="#2c241c" stroke-width="0.8"/>';
-    s += '<line x1="' + n(lm[0]) + '" y1="' + n(lm[1]) + '" x2="' + n(rm[0]) + '" y2="' + n(rm[1]) + '" stroke="#2c241c" stroke-width="0.8"/>';
-    return s;
-  }
-
-  function door(P, x, z, w, h) {
-    var bl = P(x, 0, z), tr = P(x + w, h, z);
-    var rx = bl[0], ry = tr[1], rw = tr[0] - bl[0], rh = bl[1] - tr[1];
-    var t = 2.3, s = '', gw, gh, gy, py, ph;
-    s += '<rect x="' + n(rx - t) + '" y="' + n(ry - t) + '" width="' + n(rw + t * 2) + '" height="' + n(rh + t) + '" fill="#d9d0c2"/>';
-    s += '<rect x="' + n(rx) + '" y="' + n(ry) + '" width="' + n(rw) + '" height="' + n(rh) + '" fill="#3a2b22"/>';
-    gw = rw * 0.3; gh = rh * 0.2; gy = ry + rh * 0.08;
-    s += '<rect x="' + n(rx + rw * 0.14) + '" y="' + n(gy) + '" width="' + n(gw) + '" height="' + n(gh) + '" fill="url(#glass)"/>';
-    s += '<rect x="' + n(rx + rw * 0.56) + '" y="' + n(gy) + '" width="' + n(gw) + '" height="' + n(gh) + '" fill="url(#glass)"/>';
-    py = ry + rh * 0.36; ph = rh * 0.22;
-    s += '<rect x="' + n(rx + rw * 0.14) + '" y="' + n(py) + '" width="' + n(gw) + '" height="' + n(ph) + '" fill="#2a1d18" stroke="#1a120e" stroke-width="0.7"/>';
-    s += '<rect x="' + n(rx + rw * 0.56) + '" y="' + n(py) + '" width="' + n(gw) + '" height="' + n(ph) + '" fill="#2a1d18" stroke="#1a120e" stroke-width="0.7"/>';
-    s += '<rect x="' + n(rx + rw * 0.14) + '" y="' + n(ry + rh * 0.66) + '" width="' + n(gw) + '" height="' + n(ph * 0.9) + '" fill="#2a1d18" stroke="#1a120e" stroke-width="0.7"/>';
-    s += '<rect x="' + n(rx + rw * 0.56) + '" y="' + n(ry + rh * 0.66) + '" width="' + n(gw) + '" height="' + n(ph * 0.9) + '" fill="#2a1d18" stroke="#1a120e" stroke-width="0.7"/>';
-    s += '<circle cx="' + n(rx + rw * 0.8) + '" cy="' + n(ry + rh * 0.58) + '" r="1.15" fill="#ead9b0"/>';
-    return s;
-  }
-
-  function sideLite(P, x, z, w, h) {
-    var bl = P(x, 0.55, z), tr = P(x + w, h * 0.7, z);
-    var rx = bl[0], ry = tr[1], rw = tr[0] - bl[0], rh = bl[1] - tr[1];
-    var my = ry + rh * 0.5;
-    return '<rect x="' + n(rx - 1.3) + '" y="' + n(ry - 1.3) + '" width="' + n(rw + 2.6) + '" height="' + n(rh + 1.3) + '" fill="#d9d0c2"/>'
-      + '<rect x="' + n(rx) + '" y="' + n(ry) + '" width="' + n(rw) + '" height="' + n(rh) + '" fill="url(#glass)"/>'
-      + '<line x1="' + n(rx) + '" y1="' + n(my) + '" x2="' + n(rx + rw) + '" y2="' + n(my) + '" stroke="#2c241c" stroke-width="0.7"/>';
-  }
-
-  function garageDoor(P, x, z, w, hgt) {
-    var bl = P(x, 0, z), tr = P(x + w, hgt, z);
-    var rx = bl[0], ry = tr[1], rw = tr[0] - bl[0], rh = bl[1] - tr[1];
-    var cols = 4, rows = 4, gap = 1.35, s = '', r, c, cw, ch, px, py;
-    s += '<rect x="' + n(rx - 2) + '" y="' + n(ry - 2) + '" width="' + n(rw + 4) + '" height="' + n(rh + 2) + '" fill="#d9d0c2"/>';
-    s += '<rect x="' + n(rx) + '" y="' + n(ry) + '" width="' + n(rw) + '" height="' + n(rh) + '" fill="#34322e"/>';
-    cw = (rw - gap * (cols + 1)) / cols;
-    ch = (rh - gap * (rows + 1)) / rows;
-    for (r = 0; r < rows; r++) {
-      for (c = 0; c < cols; c++) {
-        px = rx + gap + c * (cw + gap);
-        py = ry + gap + r * (ch + gap);
-        s += '<rect x="' + n(px) + '" y="' + n(py) + '" width="' + n(cw) + '" height="' + n(ch) + '" fill="' + (r === 0 ? 'url(#gglass)' : '#3c3a36') + '" stroke="#2a2724" stroke-width="0.6"/>';
+  function place(lines) {
+    var used = [], pts = [], i, j, p, u, dx, dy, ok, got;
+    for (i = 0; i < lines.length; i++) {
+      got = samples(lines[i], STEP);
+      for (j = 0; j < got.length; j++) {
+        p = got[j];
+        ok = true;
+        for (u = 0; u < used.length; u++) {
+          dx = used[u][0] - p[0];
+          dy = used[u][1] - p[1];
+          if (dx * dx + dy * dy < 36) { ok = false; break; }
+        }
+        if (ok) { used.push(p); pts.push(p); }
       }
     }
-    return s;
+    return pts;
   }
-
-  function vent(P, xm, z, y, w, h) {
-    var bl = P(xm - w / 2, y, z), tr = P(xm + w / 2, y + h, z);
-    var rx = bl[0], ry = tr[1], rw = tr[0] - bl[0], rh = bl[1] - tr[1];
-    var s = '<rect x="' + n(rx - 1.4) + '" y="' + n(ry - 1.4) + '" width="' + n(rw + 2.8) + '" height="' + n(rh + 2.8) + '" fill="#d9d0c2"/>';
-    s += '<rect x="' + n(rx) + '" y="' + n(ry) + '" width="' + n(rw) + '" height="' + n(rh) + '" fill="#2a261f"/>';
-    var i, ly;
-    for (i = 1; i <= 3; i++) {
-      ly = ry + rh * i / 4;
-      s += '<line x1="' + n(rx + 1) + '" y1="' + n(ly) + '" x2="' + n(rx + rw - 1) + '" y2="' + n(ly) + '" stroke="#d9d0c2" stroke-width="0.7"/>';
-    }
-    return s;
-  }
-
-  function shrub(pt, rx, ry) {
-    var x = pt[0], y = pt[1];
-    return '<ellipse cx="' + n(x) + '" cy="' + n(y - ry * 0.15) + '" rx="' + n(rx) + '" ry="' + n(ry * 0.72) + '" fill="#121a16"/>'
-      + '<ellipse cx="' + n(x - rx * 0.08) + '" cy="' + n(y - ry * 0.72) + '" rx="' + n(rx * 0.78) + '" ry="' + n(ry * 0.7) + '" fill="#1c2820"/>'
-      + '<ellipse cx="' + n(x + rx * 0.22) + '" cy="' + n(y - ry * 0.55) + '" rx="' + n(rx * 0.48) + '" ry="' + n(ry * 0.48) + '" fill="#24352c"/>';
-  }
-
-  function belt(P, x0, x1, z, y) {
-    var a = P(x0, y, z), b = P(x1, y, z), c = P(x1, y + 0.38, z), d = P(x0, y + 0.38, z);
-    return '<polygon points="' + fmt([a, b, c, d]) + '" fill="#d9d0c2"/>';
-  }
-
-  function walk(P, x, z, w, flare) {
-    var a = P(x, 0, z), b = P(x + w, 0, z);
-    var mid = (a[0] + b[0]) / 2, half = Math.abs(b[0] - a[0]) / 2 + flare;
-    var bot = 360 - GROUND;
-    return '<polygon points="' + fmt([a, b, [mid + half, bot], [mid - half, bot]]) + '" fill="#2e2c29"/>';
-  }
-
-  function shadow(cx, rx) {
-    return '<ellipse cx="' + n(cx) + '" cy="8" rx="' + n(rx) + '" ry="12" fill="#000" opacity="0.38" filter="url(#fitShade)"/>';
-  }
-
-  function spill(P, x, z) {
-    var p = P(x, 0, z - 0.4);
-    return '<ellipse cx="' + n(p[0]) + '" cy="' + n(p[1] + 10) + '" rx="46" ry="14" fill="url(#spill)" opacity="0.9"/>';
-  }
-
-  function assemble(P, id, cov, parts) {
-    var front = [], side = [], back = [], body = '', i;
-    for (i = 0; i < parts.vols.length; i++) {
-      body += parts.vols[i].markup;
-      front = front.concat(parts.vols[i].front);
-      side = side.concat(parts.vols[i].side);
-      back = back.concat(parts.vols[i].back);
-    }
-    var h = '';
-    h += parts.ground || '';
-    h += body;
-    h += parts.openings || '';
-    h += parts.plants || '';
-    var showF = true, showS = cov !== 'front', showB = cov === 'full';
-    h += lightGroup('front', front, showF);
-    h += lightGroup('side', side, showS);
-    h += lightGroup('back', back, showB);
-    var xs = P.all, minX = 1e9, maxX = -1e9;
-    for (i = 0; i < xs.length; i++) {
-      if (xs[i][0] < minX) minX = xs[i][0];
-      if (xs[i][0] > maxX) maxX = xs[i][0];
-    }
-    var tx = 300 - (minX + maxX) / 2;
-    return { markup: '<g class="house" data-home="' + id + '" transform="translate(' + n(tx) + ' ' + GROUND + ')">' + h + '</g>', tx: tx };
-  }
-
-  function ranch(P, cov, id) {
-    var v = volume(P, { id: id, x: 0, z: 0, w: 40, d: 18, wall: 9.5, rise: 4.35, oh: 0.8 });
-    var openings = '';
-    openings += win(P, 3.1, 2.7, 0, 7.4, 4.5, 3);
-    openings += win(P, 12.0, 2.7, 0, 5.4, 4.5, 2);
-    openings += sideLite(P, 19.15, 0, 0.85, 7.5);
-    openings += door(P, 20.15, 0, 3.5, 7.5);
-    openings += sideLite(P, 23.8, 0, 0.85, 7.5);
-    openings += win(P, 26.4, 2.7, 0, 5.2, 4.5, 2);
-    openings += win(P, 33.0, 2.7, 0, 4.6, 4.5, 2);
-    openings += vent(P, 20, 0, 10.7, 3.2, 1.25);
-    openings += winSide(P, 40, 3.0, 3.2, 3.4, 3.6);
-    openings += winSide(P, 40, 3.0, 10.5, 3.4, 3.6);
-    var plants = shrub(P(1.2, 0, -0.3), 16, 11) + shrub(P(38.6, 0, -0.2), 14, 10) + shrub(P(26.2, 0, -0.6), 9, 7);
-    var ground = walk(P, 19.0, -0.15, 5.7, 16) + spill(P, 22, 0) + shadow(P(20, 0, 6)[0], 168);
-    return assemble(P, 'ss', cov, { vols: [v], openings: openings, plants: plants, ground: ground });
-  }
-
-  function garageHome(P, cov, id) {
-    var main = volume(P, { id: id + 'm', x: 13.5, z: 0, w: 36, d: 17.2, wall: 11.1, rise: 4.6, oh: 0.75 });
-    var gar = volume(P, { id: id + 'g', x: 0, z: -7.2, w: 19.2, d: 7.35, wall: 7.2, rise: 2.45, oh: 0.6 });
-    var openings = '';
-    openings += win(P, 21.2, 2.85, 0, 6.2, 4.6, 2);
-    openings += win(P, 28.6, 2.85, 0, 4.8, 4.6, 2);
-    openings += sideLite(P, 35.0, 0, 0.8, 7.7);
-    openings += door(P, 35.95, 0, 3.4, 7.7);
-    openings += sideLite(P, 39.5, 0, 0.8, 7.7);
-    openings += win(P, 42.2, 2.85, 0, 5.2, 4.6, 2);
-    openings += vent(P, 31.5, 0, 12.35, 2.8, 1.15);
-    openings += winSide(P, 49.5, 3.2, 2.2, 3.1, 4.0);
-    openings += winSide(P, 49.5, 3.2, 9.4, 3.1, 4.0);
-    openings += garageDoor(P, 1.15, -7.2, 14.2, 6.2);
-    var plants = shrub(P(18.4, 0, -0.4), 12, 9) + shrub(P(47.5, 0, -0.3), 13, 10) + shrub(P(42.0, 0, -0.7), 8, 6);
-    var ground = walk(P, 34.8, -0.2, 5.6, 14) + driveway(P) + spill(P, 37.5, 0) + shadow(P(26, 0, 4)[0], 200);
-    return assemble(P, 'sg', cov, { vols: [main, gar], openings: openings, plants: plants, ground: ground });
-  }
-
-  function driveway(P) {
-    var a = P(1.3, 0, -7.25), b = P(15.2, 0, -7.25);
-    var bot = 360 - GROUND;
-    var mid = (a[0] + b[0]) / 2;
-    return '<polygon points="' + fmt([a, b, [mid + 78, bot], [mid - 70, bot]]) + '" fill="#262523"/>';
-  }
-
-  function twoStory(P, cov, id) {
-    var main = volume(P, { id: id + 'm', x: 0, z: 0, w: 38, d: 16, wall: 16.2, rise: 13.2, oh: 0.8 });
-    var left = volume(P, { id: id + 'l', x: 1.6, z: -6.6, w: 12.4, d: 6.6, wall: 10.6, rise: 3.5, oh: 0.62, skipBack: true });
-    var right = volume(P, { id: id + 'r', x: 24.0, z: -6.6, w: 12.4, d: 6.6, wall: 10.6, rise: 3.5, oh: 0.62, skipBack: true });
-    left.back = [];
-    right.back = [];
-    /* inner cheeks face the entry; the outer returns read as the sides */
-    left.side = [left.side[0]];
-    right.side = [right.side[1]];
-    var openings = '';
-    openings += belt(P, 14.05, 23.95, 0, 8.55);
-    openings += beltSide(P, 38, 0, 16, 8.55);
-    /* first floor bays */
-    openings += win(P, 3.0, 2.5, -6.6, 4.5, 4.6, 2);
-    openings += win(P, 8.2, 2.5, -6.6, 4.5, 4.6, 2);
-    openings += win(P, 25.4, 2.5, -6.6, 4.5, 4.6, 2);
-    openings += win(P, 30.6, 2.5, -6.6, 4.5, 4.6, 2);
-    /* center entry on the main wall */
-    openings += sideLite(P, 16.55, 0, 0.85, 7.7);
-    openings += door(P, 17.55, 0, 3.5, 7.7);
-    openings += sideLite(P, 21.2, 0, 0.85, 7.7);
-    /* second floor, center, clear of the bays */
-    openings += win(P, 15.15, 10.15, 0, 3.55, 4.35, 1);
-    openings += win(P, 19.55, 10.15, 0, 3.55, 4.35, 1);
-    /* gable windows tucked under the steep rake, above each bay */
-    openings += '<g clip-path="url(#' + id + 'm-f)">';
-    openings += win(P, 6.55, 16.55, 0, 3.3, 3.35, 1);
-    openings += win(P, 28.15, 16.55, 0, 3.3, 3.35, 1);
-    openings += win(P, 17.15, 22.2, 0, 3.7, 3.2, 2);
-    openings += '</g>';
-    openings += winSide(P, 38, 2.6, 2.2, 3.1, 4.2);
-    openings += winSide(P, 38, 10.2, 2.2, 3.1, 4.0);
-    var plants = shrub(P(0.8, 0, -0.2), 13, 10) + shrub(P(36.8, 0, -0.2), 13, 10) + shrub(P(23.6, 0, -0.5), 8, 6);
-    var ground = walk(P, 16.4, -0.2, 5.8, 15) + spill(P, 19.2, 0) + shadow(P(19, 0, 5)[0], 176);
-    return assemble(P, 'ts', cov, { vols: [main, right, left], openings: openings, plants: plants, ground: ground });
-  }
-
-  function beltSide(P, x, z0, z1, y) {
-    var a = P(x, y, z0), b = P(x, y, z1), c = P(x, y + 0.38, z1), d = P(x, y + 0.38, z0);
-    return '<polygon points="' + fmt([a, b, c, d]) + '" fill="#cbbda8"/>';
-  }
-
-  function defs(prefix) {
-    prefix = prefix || '';
+  function defs() {
     return '<defs>'
-      + '<linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">'
-      + '<stop offset="0" stop-color="#0c1426"/>'
-      + '<stop offset="0.38" stop-color="#172848"/>'
-      + '<stop offset="0.62" stop-color="#3a3a4c"/>'
-      + '<stop offset="0.78" stop-color="#6a5044"/>'
-      + '<stop offset="0.9" stop-color="#8d684c"/>'
-      + '<stop offset="1" stop-color="#2c2824"/>'
-      + '</linearGradient>'
-      + '<radialGradient id="duskGlow" cx="0.5" cy="0.78" r="0.7">'
-      + '<stop offset="0" stop-color="#e2a56e" stop-opacity="0.34"/>'
-      + '<stop offset="0.4" stop-color="#c4845a" stop-opacity="0.12"/>'
-      + '<stop offset="1" stop-color="#c4845a" stop-opacity="0"/>'
+      + '<radialGradient id="puckGlow" cx="50%" cy="50%" r="50%">'
+      + '<stop offset="0%" stop-color="#FFF1D6" stop-opacity="0.95"/>'
+      + '<stop offset="30%" stop-color="#FFE2B0" stop-opacity="0.4"/>'
+      + '<stop offset="100%" stop-color="#FFE2B0" stop-opacity="0"/>'
       + '</radialGradient>'
-      + '<linearGradient id="groundGrad" x1="0" y1="0" x2="0" y2="1">'
-      + '<stop offset="0" stop-color="#1c2420"/>'
-      + '<stop offset="0.45" stop-color="#141a17"/>'
-      + '<stop offset="1" stop-color="#0c100e"/>'
-      + '</linearGradient>'
-      + '<linearGradient id="wallFront" x1="0" y1="0" x2="0" y2="1">'
-      + '<stop offset="0" stop-color="#7d776f"/>'
-      + '<stop offset="0.5" stop-color="#6b655d"/>'
-      + '<stop offset="1" stop-color="#574f48"/>'
-      + '</linearGradient>'
-      + '<linearGradient id="wallSide" x1="0" y1="0" x2="1" y2="1">'
-      + '<stop offset="0" stop-color="#524c46"/>'
-      + '<stop offset="1" stop-color="#3a3632"/>'
-      + '</linearGradient>'
-      + '<linearGradient id="glass" x1="0" y1="0" x2="0" y2="1">'
-      + '<stop offset="0" stop-color="#fff4e0"/>'
-      + '<stop offset="0.42" stop-color="#ffc27a"/>'
-      + '<stop offset="1" stop-color="#e08a42"/>'
-      + '</linearGradient>'
-      + '<linearGradient id="gglass" x1="0" y1="0" x2="0" y2="1">'
-      + '<stop offset="0" stop-color="#d5dee8"/>'
-      + '<stop offset="1" stop-color="#6a7684"/>'
-      + '</linearGradient>'
-      + '<radialGradient id="spill" cx="0.5" cy="0.5" r="0.5">'
-      + '<stop offset="0" stop-color="#ffb06a" stop-opacity="0.22"/>'
-      + '<stop offset="1" stop-color="#ffb06a" stop-opacity="0"/>'
-      + '</radialGradient>'
-      + '<filter id="fitHalo" x="-70%" y="-70%" width="240%" height="240%">'
-      + '<feGaussianBlur stdDeviation="1.65"/>'
-      + '</filter>'
-      + '<filter id="fitWin" x="-90%" y="-90%" width="280%" height="280%">'
-      + '<feGaussianBlur stdDeviation="3.1"/>'
-      + '</filter>'
-      + '<filter id="fitShade" x="-60%" y="-60%" width="220%" height="220%">'
-      + '<feGaussianBlur stdDeviation="6"/>'
+      + '<filter id="fitWash" x="-40%" y="-40%" width="180%" height="180%">'
+      + '<feGaussianBlur stdDeviation="2.2"/>'
       + '</filter>'
       + '</defs>';
   }
-
-  function backdrop() {
-    return '<rect width="600" height="360" fill="url(#skyGrad)"/>'
-      + '<rect width="600" height="360" fill="url(#duskGlow)"/>'
-      + '<rect y="248" width="600" height="112" fill="url(#groundGrad)"/>'
-      + '<line x1="0" y1="248" x2="600" y2="248" stroke="rgba(185,161,132,.55)" stroke-width="1.15"/>';
+  function group(home, tier, lines) {
+    var pts = place(lines), i, p, h = '', wash;
+    for (i = 0; i < lines.length; i++) {
+      wash = [];
+      for (p = 0; p < lines[i].length; p++) wash.push([lines[i][p][0], lines[i][p][1] + 6]);
+      h += '<polyline points="' + fmt(wash) + '" fill="none" stroke="#FFE2B0" stroke-width="9" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.16" filter="url(#fitWash)"/>';
+    }
+    for (i = 0; i < pts.length; i++) {
+      p = pts[i];
+      h += '<circle cx="' + n(p[0]) + '" cy="' + n(p[1]) + '" r="5.5" fill="url(#puckGlow)"/>';
+      h += '<circle cx="' + n(p[0]) + '" cy="' + n(p[1]) + '" r="2.05" fill="#FFE2B0"/>';
+      h += '<circle cx="' + n(p[0]) + '" cy="' + n(p[1]) + '" r="1.15" fill="#FFF1D6"/>';
+    }
+    return '<g class="lg" data-home="' + home + '" data-tier="' + tier + '" opacity="0">' + h + '</g>';
   }
 
-  function all(home, cov) {
-    var h = defs() + backdrop();
-    var ids = ['ss', 'sg', 'ts'], i, P, built, op;
-    for (i = 0; i < ids.length; i++) {
-      P = makeP();
-      built = ids[i] === 'sg' ? garageHome(P, cov, 'f' + ids[i]) : ids[i] === 'ts' ? twoStory(P, cov, 'f' + ids[i]) : ranch(P, cov, 'f' + ids[i]);
-      op = ids[i] === home ? 1 : 0;
-      h += built.markup.replace('class="house"', 'class="house" opacity="' + op + '"');
+  /* Traced on the 1024x576 photographs. front = street fascia and front gables.
+     side = visible eave ends, side returns, and the garage junction. */
+  var EDGES = {
+    ss: {
+      front: [
+        [[108,314],[200,311],[300,308],[400,306],[432,305]],
+        [[432,305],[490,286],[540,264],[590,242],[630,226],[656,220]],
+        [[656,220],[700,234],[750,252],[800,270],[845,286],[875,296]],
+        [[655,301],[740,300],[820,300],[875,302]]
+      ],
+      side: [
+        [[88,308],[112,316]],
+        [[872,300],[888,308]]
+      ]
+    },
+    sg: {
+      front: [
+        [[82,283],[130,264],[180,240],[230,216],[272,204]],
+        [[282,206],[330,226],[380,248],[430,270],[456,281]],
+        [[108,285],[220,284],[340,283],[450,282]],
+        [[478,301],[620,300],[760,300],[900,301],[932,302]]
+      ],
+      side: [
+        [[66,276],[90,285]],
+        [[450,283],[478,301]],
+        [[922,302],[934,306]]
+      ]
+    },
+    ts: {
+      front: [
+        [[234,166],[286,138],[322,114],[350,92],[378,66]],
+        [[378,66],[406,114],[446,158],[484,192],[510,212]],
+        [[250,212],[380,212],[510,213]],
+        [[554,206],[600,158],[632,124],[660,88]],
+        [[660,88],[700,130],[740,172],[786,216]],
+        [[554,220],[680,219],[786,220]],
+        [[206,299],[420,299],[620,300],[758,301]]
+      ],
+      side: [
+        [[214,176],[234,162]],
+        [[786,216],[806,202]],
+        [[192,294],[210,300]],
+        [[754,301],[790,292]]
+      ]
+    }
+  };
+
+  function build() {
+    var h = defs(), homes = ['ss', 'sg', 'ts'], tiers = ['front', 'side'], i, j, lines;
+    for (i = 0; i < homes.length; i++) {
+      for (j = 0; j < tiers.length; j++) {
+        lines = EDGES[homes[i]][tiers[j]];
+        if (lines && lines.length) h += group(homes[i], tiers[j], lines);
+      }
     }
     return h;
   }
 
   var svg = document.getElementById('fitSvg');
+  var viz = document.getElementById('fitViz');
   if (!svg) return;
   var R = {ss:{front:[60,90],wrap:[120,160],full:[170,220]},sg:{front:[90,130],wrap:[150,200],full:[220,280]},ts:{front:[110,150],wrap:[180,240],full:[260,340]}};
   var NAME = {ss:'Single story',sg:'Single story + garage',ts:'Two story'};
@@ -1685,20 +1381,22 @@ section{position:relative}
     document.getElementById('fitNote').textContent=(hi?'':'Larger homes over 300 ft get a custom quote. ')+'$25 a foot, rounded up to the next 10 ft, $250 off every full 100 ft. 50% down ('+money(Math.round(lo/2))+'+) holds your install date.';
   }
   function apply(){
-    var houses = svg.querySelectorAll('.house'), i, on;
-    for (i = 0; i < houses.length; i++) {
-      on = houses[i].getAttribute('data-home') === st.home;
-      houses[i].style.opacity = on ? '1' : '0';
-      houses[i].setAttribute('aria-hidden', on ? 'false' : 'true');
+    var photos = viz.querySelectorAll('.fit-photo'), i, on;
+    for (i = 0; i < photos.length; i++) {
+      on = photos[i].getAttribute('data-home') === st.home;
+      photos[i].classList.toggle('on', on);
     }
-    var show = {front: true, side: st.cov !== 'front', back: st.cov === 'full'};
+    var show = {front: true, side: st.cov !== 'front'};
     var lgs = svg.querySelectorAll('.lg');
-    for (i = 0; i < lgs.length; i++) lgs[i].style.opacity = show[lgs[i].getAttribute('data-tier')] ? '1' : '0';
+    for (i = 0; i < lgs.length; i++) {
+      on = lgs[i].getAttribute('data-home') === st.home && show[lgs[i].getAttribute('data-tier')];
+      lgs[i].style.opacity = on ? '1' : '0';
+    }
     sync();
   }
-  svg.innerHTML = all(st.home, st.cov);
+  svg.innerHTML = build();
   apply();
-  requestAnimationFrame(function () { svg.classList.add('anim'); });
+  requestAnimationFrame(function () { svg.classList.add('anim'); viz.classList.add('anim'); });
   function bind(id, key) {
     var g = document.getElementById(id);
     g.addEventListener('click', function (e) {
