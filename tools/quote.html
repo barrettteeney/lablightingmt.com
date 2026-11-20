@@ -96,7 +96,7 @@ textarea{width:100%;min-height:120px;background:var(--ink);border:1px solid var(
           <div><span>Quote range</span><b id="tP">$0</b></div>
           <div><span>Deposit (50%)</span><b id="tD">$0</b></div>
         </div>
-        <div class="hint">Locked method: round up to the next 10 ft, $25/ft, $250 off per full 100 ft. Range = your footage to +10%. Over 300 ft = custom.</div>
+        <div class="hint">Locked method: round up to the next 10 ft, $25/ft. Range = your footage to +10%. Over 300 ft = custom.</div>
       </div>
     </div>
   </div>
@@ -135,7 +135,7 @@ var $ = function(id){return document.getElementById(id)};
 function ft(m){return m*3.28084}
 function money(n){return '$'+Math.round(n).toLocaleString()}
 function slope(p){return Math.sqrt(1+Math.pow(p/12,2))}
-function price(f){ if(f<=0) return {r:0,p:0}; var r=Math.ceil(f/10)*10; if(r>300) return {r:r,p:null}; return {r:r,p:r*25-Math.floor(r/100)*250}; }
+function price(f){ if(f<=0) return {r:0,p:0}; var r=Math.ceil(f/10)*10; if(r>300) return {r:r,p:null}; return {r:r,p:r*25}; }
 function status(h){ $('status').innerHTML=h; }
 
 // ---------- Maps load ----------
