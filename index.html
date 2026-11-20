@@ -321,15 +321,15 @@ section{position:relative}
 .fit-o.on{border-color:var(--tan);background:rgba(185,161,132,.09)}
 .fit-o.on b{color:#FFE2B0}
 .fit-out{border:1px solid var(--line);background:rgba(246,243,238,.025);padding:22px 24px}
-.fit-viz{background:#101820;border:1px solid var(--line);margin-bottom:18px;overflow:hidden}
-.fit-stage{position:relative;aspect-ratio:1024/576;background:#101820}
+.fit-viz{background:#101820;border:1px solid var(--line);margin-bottom:8px;overflow:hidden}
+.fit-stage{position:relative;aspect-ratio:556/342;background:#101820}
 .fit-photo{position:absolute;inset:0;margin:0;opacity:0}
 .fit-viz.anim .fit-photo{transition:opacity .45s ease}
 .fit-photo.on{opacity:1}
-.fit-photo img{display:block;width:100%;height:100%;object-fit:fill}
-.fit-stage svg{position:absolute;inset:0;width:100%;height:100%;display:block;pointer-events:none}
-.fit-stage svg.anim .lg{transition:opacity .45s ease}
-@media(prefers-reduced-motion:reduce){.fit-viz.anim .fit-photo,.fit-stage svg.anim .lg{transition:none}}
+.fit-photo img{display:block;width:100%;height:100%;object-fit:cover;object-position:center center}
+.fit-photo[data-home="ts"] img{object-fit:contain}
+.fit-cap{font-size:12px;color:rgba(246,243,238,.55);margin:0 0 14px}
+@media(prefers-reduced-motion:reduce){.fit-viz.anim .fit-photo{transition:none}}
 .fit-res{display:grid;grid-template-columns:1fr 1.3fr;gap:16px;border-bottom:1px solid var(--line);padding-bottom:16px}
 .fit-l{font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:var(--tan);font-weight:600}
 .fit-v{font-size:20px;font-weight:700;margin-top:6px}
@@ -606,8 +606,8 @@ section{position:relative}
         <div class="fit-q"><span>01</span> Your home</div>
         <div class="fit-opts" id="fitHome" role="radiogroup" aria-label="Your home">
           <button type="button" class="fit-o" data-v="ss" aria-pressed="false"><b>Single story</b><i>Ranch or rambler</i></button>
-          <button type="button" class="fit-o on" data-v="sg" aria-pressed="true"><b>Single story + garage</b><i>Garage wing out front</i></button>
-          <button type="button" class="fit-o" data-v="ts" aria-pressed="false"><b>Two story</b><i>Two levels, attached garage</i></button>
+          <button type="button" class="fit-o on" data-v="sg" aria-pressed="true"><b>Two story</b><i>Two levels, attached garage</i></button>
+          <button type="button" class="fit-o" data-v="ts" aria-pressed="false"><b>Large, multi-peak</b><i>Multiple peaks and rooflines</i></button>
         </div>
         <div class="fit-q" style="margin-top:26px"><span>02</span> How much light</div>
         <div class="fit-opts fit-opts-c" id="fitCov" role="radiogroup" aria-label="How much light">
@@ -620,20 +620,20 @@ section{position:relative}
         <div class="fit-viz" id="fitViz">
           <div class="fit-stage">
             <picture class="fit-photo" data-home="ss">
-              <source srcset="assets/fit/single-story-v2.webp" type="image/webp">
-              <img src="assets/fit/single-story-v2.jpg" alt="" width="1024" height="576">
+              <source srcset="assets/fit/fit-tier1-v3.webp" type="image/webp">
+              <img src="assets/fit/fit-tier1-v3.jpg" alt="Example single-story ranch with permanent lights" width="500" height="342">
             </picture>
             <picture class="fit-photo on" data-home="sg">
-              <source srcset="assets/fit/single-garage-v2.webp" type="image/webp">
-              <img src="assets/fit/single-garage-v2.jpg" alt="" width="1024" height="576">
+              <source srcset="assets/fit/fit-tier2-v3.webp" type="image/webp">
+              <img src="assets/fit/fit-tier2-v3.jpg" alt="Example two-story home with an attached garage and permanent lights" width="556" height="342">
             </picture>
             <picture class="fit-photo" data-home="ts">
-              <source srcset="assets/fit/two-story-garage-v2.webp" type="image/webp">
-              <img src="assets/fit/two-story-garage-v2.jpg" alt="" width="1024" height="576">
+              <source srcset="assets/fit/fit-tier3-v3.webp" type="image/webp">
+              <img src="assets/fit/fit-tier3-v3.jpg" alt="Example multi-peak home with permanent lights" width="343" height="343">
             </picture>
-            <svg id="fitSvg" viewBox="0 0 1024 576" preserveAspectRatio="none" role="img" aria-label="House preview showing which rooflines are lit"></svg>
           </div>
         </div>
+        <p class="fit-cap">Example installs. Your home is measured at a free design visit.</p>
         <div class="fit-res">
           <div><div class="fit-l">Typical footage</div><div class="fit-v" id="fitFt">90–130 ft</div></div>
           <div><div class="fit-l">Estimated installed</div><div class="fit-v big" id="fitPrice">$2,250–$3,000</div></div>
@@ -1222,165 +1222,12 @@ section{position:relative}
 })();
 </script>
 <script>
-/* Find Your Fit. Each house is a dusk photograph with permanent-light pucks
-   traced on the fascia. Tiers: front (street), side (eave returns), back. */
+/* Find Your Fit. Each tier is one real install. Coverage changes footage and price; the photo stays with the house. */
 (function () {
-  var STEP = 11;
-
-  function n(v) { return (Math.round(v * 10) / 10).toFixed(1); }
-  function fmt(pts) {
-    var s = '', i;
-    for (i = 0; i < pts.length; i++) s += (i ? ' ' : '') + n(pts[i][0]) + ',' + n(pts[i][1]);
-    return s;
-  }
-  function samples(pts, step) {
-    var i, apex = -1, total, dA, span;
-    function dist(a, b) {
-      var dx = b[0] - a[0], dy = b[1] - a[1];
-      return Math.sqrt(dx * dx + dy * dy);
-    }
-    function at(target) {
-      var acc = 0, j, L, t, a, b;
-      for (j = 0; j < pts.length - 1; j++) {
-        a = pts[j]; b = pts[j + 1];
-        L = dist(a, b);
-        if (acc + L >= target || j === pts.length - 2) {
-          t = L === 0 ? 0 : Math.max(0, Math.min(1, (target - acc) / L));
-          return [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t];
-        }
-        acc += L;
-      }
-      return pts[pts.length - 1].slice();
-    }
-    function lenTo(n) {
-      var t = 0, j;
-      for (j = 0; j < n; j++) t += dist(pts[j], pts[j + 1]);
-      return t;
-    }
-    /* A gable is one run through its apex. One puck sits on the apex, then
-       both rakes step away at a fixed gap so the peak is not doubled or bunched. */
-    for (i = 1; i < pts.length - 1; i++) {
-      if (pts[i][1] < pts[i - 1][1] && pts[i][1] <= pts[i + 1][1]) { apex = i; break; }
-    }
-    total = lenTo(pts.length - 1);
-    if (total < 1) return pts.slice();
-    function walk(span, origin, sign) {
-      var got = [], d = step, prev = 0;
-      while (d < span - step * 0.35) {
-        got.push(at(origin + sign * d));
-        prev = d;
-        d += step;
-      }
-      if (span - prev > step * 0.55) got.push(at(origin + sign * span));
-      return got;
-    }
-    if (apex < 0) return [pts[0].slice()].concat(walk(total, 0, 1));
-    dA = lenTo(apex);
-    return [pts[apex].slice()].concat(walk(dA, dA, -1), walk(total - dA, dA, 1));
-  }
-  function place(lines) {
-    var used = [], pts = [], i, j, p, u, dx, dy, ok, got;
-    for (i = 0; i < lines.length; i++) {
-      got = samples(lines[i], STEP);
-      for (j = 0; j < got.length; j++) {
-        p = got[j];
-        ok = true;
-        for (u = 0; u < used.length; u++) {
-          dx = used[u][0] - p[0];
-          dy = used[u][1] - p[1];
-          if (dx * dx + dy * dy < 36) { ok = false; break; }
-        }
-        if (ok) { used.push(p); pts.push(p); }
-      }
-    }
-    return pts;
-  }
-  function defs() {
-    return '<defs>'
-      + '<radialGradient id="puckGlow" cx="50%" cy="50%" r="50%">'
-      + '<stop offset="0%" stop-color="#FFF1D6" stop-opacity="0.95"/>'
-      + '<stop offset="30%" stop-color="#FFE2B0" stop-opacity="0.4"/>'
-      + '<stop offset="100%" stop-color="#FFE2B0" stop-opacity="0"/>'
-      + '</radialGradient>'
-      + '<filter id="fitWash" x="-40%" y="-40%" width="180%" height="180%">'
-      + '<feGaussianBlur stdDeviation="2.2"/>'
-      + '</filter>'
-      + '</defs>';
-  }
-  function group(home, tier, lines) {
-    var pts = place(lines), i, p, h = '', wash;
-    for (i = 0; i < lines.length; i++) {
-      wash = [];
-      for (p = 0; p < lines[i].length; p++) wash.push([lines[i][p][0], lines[i][p][1] + 6]);
-      h += '<polyline points="' + fmt(wash) + '" fill="none" stroke="#FFE2B0" stroke-width="9" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.16" filter="url(#fitWash)"/>';
-    }
-    for (i = 0; i < pts.length; i++) {
-      p = pts[i];
-      h += '<circle cx="' + n(p[0]) + '" cy="' + n(p[1]) + '" r="5.5" fill="url(#puckGlow)"/>';
-      h += '<circle cx="' + n(p[0]) + '" cy="' + n(p[1]) + '" r="2.05" fill="#FFE2B0"/>';
-      h += '<circle cx="' + n(p[0]) + '" cy="' + n(p[1]) + '" r="1.15" fill="#FFF1D6"/>';
-    }
-    return '<g class="lg" data-home="' + home + '" data-tier="' + tier + '" opacity="0">' + h + '</g>';
-  }
-
-  /* Traced on the 1024x576 photographs. Each gable is one run through its apex.
-     front = street fascia and front gables. side = eave returns and roof ends.
-     back = edges that show only on the full outline, such as the garage hip. */
-  var EDGES = {
-    ss: {
-      front: [
-        [[108,314],[200,311],[300,308],[400,306],[432,305]],
-        [[432,305],[490,286],[540,264],[590,242],[630,226],[656,218],[700,234],[750,252],[800,270],[845,286],[875,296]],
-        [[655,301],[740,300],[820,300],[875,302]]
-      ],
-      side: [
-        [[88,308],[112,316]],
-        [[872,300],[888,308]]
-      ]
-    },
-    sg: {
-      front: [
-        [[108,272],[140,258],[180,240],[230,216],[252,208],[276,204],[300,214],[330,226],[380,248],[430,270],[456,281]],
-        [[112,284],[220,284],[340,283],[450,282]],
-        [[478,301],[620,300],[760,300],[880,299],[916,299]]
-      ],
-      side: [
-        [[80,278],[108,282]],
-        [[450,283],[478,301]]
-      ]
-    },
-    ts: {
-      front: [
-        [[204,179],[224,161],[248,140],[272,121],[296,101],[312,90],[320,84],[332,95],[356,117],[380,139],[404,163],[428,184],[436,191]],
-        [[496,190],[516,176],[536,160],[556,138],[572,124],[580,117],[592,127],[612,145],[632,164],[652,183],[668,199]],
-        [[180,306],[400,306],[640,307],[780,308],[900,310]]
-      ],
-      side: [
-        [[184,184],[204,179]],
-        [[792,248],[848,264],[888,294],[900,310]]
-      ],
-      back: [
-        [[676,252],[792,250]]
-      ]
-    }
-  };
-
-  function build() {
-    var h = defs(), homes = ['ss', 'sg', 'ts'], tiers = ['front', 'side', 'back'], i, j, lines;
-    for (i = 0; i < homes.length; i++) {
-      for (j = 0; j < tiers.length; j++) {
-        lines = EDGES[homes[i]][tiers[j]];
-        if (lines && lines.length) h += group(homes[i], tiers[j], lines);
-      }
-    }
-    return h;
-  }
-
-  var svg = document.getElementById('fitSvg');
   var viz = document.getElementById('fitViz');
-  if (!svg) return;
+  if (!viz) return;
   var R = {ss:{front:[60,90],wrap:[120,160],full:[170,220]},sg:{front:[90,130],wrap:[150,200],full:[220,280]},ts:{front:[110,150],wrap:[180,240],full:[260,340]}};
-  var NAME = {ss:'Single story',sg:'Single story + garage',ts:'Two story'};
+  var NAME = {ss:'Single story',sg:'Two story',ts:'Large, multi-peak'};
   var COV = {front:['Front'],wrap:['Front','Sides'],full:['Whole house']};
   var CNAME = {front:'The Street View (front)',wrap:'The Wraparound (front + sides)',full:'The Full Outline (whole house)'};
   var st = {home:'sg',cov:'front'};
@@ -1398,17 +1245,10 @@ section{position:relative}
       on = photos[i].getAttribute('data-home') === st.home;
       photos[i].classList.toggle('on', on);
     }
-    var show = {front: true, side: st.cov !== 'front', back: st.cov === 'full'};
-    var lgs = svg.querySelectorAll('.lg');
-    for (i = 0; i < lgs.length; i++) {
-      on = lgs[i].getAttribute('data-home') === st.home && show[lgs[i].getAttribute('data-tier')];
-      lgs[i].style.opacity = on ? '1' : '0';
-    }
     sync();
   }
-  svg.innerHTML = build();
   apply();
-  requestAnimationFrame(function () { svg.classList.add('anim'); viz.classList.add('anim'); });
+  requestAnimationFrame(function () { viz.classList.add('anim'); });
   function bind(id, key) {
     var g = document.getElementById(id);
     g.addEventListener('click', function (e) {
