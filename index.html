@@ -321,17 +321,16 @@ section{position:relative}
 .fit-o.on{border-color:var(--tan);background:rgba(185,161,132,.09)}
 .fit-o.on b{color:#FFE2B0}
 .fit-out{border:1px solid var(--line);background:rgba(246,243,238,.025);padding:22px 24px}
-.fit-viz{background:radial-gradient(ellipse at 50% 0%,#1b2650 0%,#0e1430 70%);border:1px solid var(--line);margin-bottom:18px}
+.fit-viz{background:#0c1426;border:1px solid var(--line);margin-bottom:18px;overflow:hidden}
 .fit-viz svg{display:block;width:100%;height:auto}
+.fit-viz svg.anim .house,.fit-viz svg.anim .lg{transition:opacity .45s ease}
+@media(prefers-reduced-motion:reduce){.fit-viz svg.anim .house,.fit-viz svg.anim .lg{transition:none}}
 .fit-res{display:grid;grid-template-columns:1fr 1.3fr;gap:16px;border-bottom:1px solid var(--line);padding-bottom:16px}
 .fit-l{font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:var(--tan);font-weight:600}
 .fit-v{font-size:20px;font-weight:700;margin-top:6px}
 .fit-v.big{font-size:30px;color:#FFE2B0;letter-spacing:-.02em}
 .fit-note{font-size:12.5px;margin-top:14px}
 .fit-small{font-size:12px;color:rgba(246,243,238,.55);margin-top:12px}
-.fit-viz .lit{fill:none;stroke:#FFE7BE;stroke-width:6;stroke-linecap:round;stroke-dasharray:0 13;filter:url(#fitGlow);transition:opacity .35s}
-.fit-viz .off{fill:none;stroke:rgba(246,243,238,.16);stroke-width:1.5;transition:opacity .35s}
-.fit-viz .dim{opacity:.45}
 .field .lf-drop{text-transform:none;letter-spacing:0;font-weight:400;margin-bottom:0;color:inherit;font-size:12.5px}
 .lf-drop{position:relative;display:flex;gap:14px;align-items:center;border:1px dashed rgba(185,161,132,.55);padding:14px 16px;cursor:pointer;background:rgba(185,161,132,.05);transition:.18s}
 .lf-drop:hover{border-color:var(--tan);background:rgba(185,161,132,.1)}
@@ -1202,61 +1201,527 @@ section{position:relative}
 })();
 </script>
 <script>
-(function(){
-  var svg=document.getElementById('fitSvg'); if(!svg) return;
-  var R={ss:{front:[60,90],wrap:[120,160],full:[170,220]},sg:{front:[90,130],wrap:[150,200],full:[220,280]},ts:{front:[110,150],wrap:[180,240],full:[260,340]}};
-  var NAME={ss:'Single story',sg:'Single story + garage',ts:'Two story'};
-  var COV={front:['Front'],wrap:['Front','Sides'],full:['Whole house']};
-  var CNAME={front:'The Street View (front)',wrap:'The Wraparound (front + sides)',full:'The Full Outline (whole house)'};
-  var st={home:'sg',cov:'front'};
+/* Find Your Fit house illustrations.
+   Cabinet projection, front face undistorted, right side receding.
+   Lights are point bulbs on the fascia, grouped front / side / back. */
+(function () {
+  var S = 8.15, ZX = 0.6, ZY = 0.24, GROUND = 316;
+  var STEP = 12;
+
+  function n(v) { return (Math.round(v * 10) / 10).toFixed(1); }
+  function fmt(pts) {
+    var s = '', i;
+    for (i = 0; i < pts.length; i++) s += (i ? ' ' : '') + n(pts[i][0]) + ',' + n(pts[i][1]);
+    return s;
+  }
+  function lerp(a, b, t) { return [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t]; }
+
+  function along(pts, step) {
+    var segs = [], total = 0, i, dx, dy, len, s, dist, t, out, use, k;
+    for (i = 0; i < pts.length - 1; i++) {
+      dx = pts[i + 1][0] - pts[i][0];
+      dy = pts[i + 1][1] - pts[i][1];
+      len = Math.sqrt(dx * dx + dy * dy);
+      segs.push({ a: pts[i], dx: dx, dy: dy, len: len, start: total });
+      total += len;
+    }
+    if (total < 1) return pts.slice();
+    use = total / Math.max(1, Math.round(total / step));
+    out = [];
+    for (i = 0; i * use < total - 0.01; i++) {
+      dist = i * use;
+      s = segs[segs.length - 1];
+      for (k = 0; k < segs.length; k++) {
+        if (dist <= segs[k].start + segs[k].len + 0.01) { s = segs[k]; break; }
+      }
+      t = s.len ? (dist - s.start) / s.len : 0;
+      if (t < 0) t = 0;
+      if (t > 1) t = 1;
+      out.push([s.a[0] + s.dx * t, s.a[1] + s.dy * t]);
+    }
+    out.push(pts[pts.length - 1]);
+    return out;
+  }
+
+  function dedupe(pts) {
+    var kept = [], i, j, p, dx, dy, hit;
+    for (i = 0; i < pts.length; i++) {
+      p = pts[i]; hit = false;
+      for (j = 0; j < kept.length; j++) {
+        dx = kept[j][0] - p[0]; dy = kept[j][1] - p[1];
+        if (dx * dx + dy * dy < 20) { hit = true; break; }
+      }
+      if (!hit) kept.push(p);
+    }
+    return kept;
+  }
+
+  function linesBetween(a0, a1, b0, b1, count, color, width) {
+    var s = '', i, t, p, q;
+    for (i = 1; i < count; i++) {
+      t = i / count;
+      p = lerp(a0, b0, t); q = lerp(a1, b1, t);
+      s += '<line x1="' + n(p[0]) + '" y1="' + n(p[1]) + '" x2="' + n(q[0]) + '" y2="' + n(q[1]) + '" stroke="' + color + '" stroke-width="' + width + '"/>';
+    }
+    return s;
+  }
+
+  function hLines(poly, step, color) {
+    var minX = 1e9, maxX = -1e9, minY = 1e9, maxY = -1e9, i, y, s = '';
+    for (i = 0; i < poly.length; i++) {
+      if (poly[i][0] < minX) minX = poly[i][0];
+      if (poly[i][0] > maxX) maxX = poly[i][0];
+      if (poly[i][1] < minY) minY = poly[i][1];
+      if (poly[i][1] > maxY) maxY = poly[i][1];
+    }
+    for (y = Math.ceil((minY + 3) / step) * step; y < maxY - 2; y += step) {
+      s += '<line x1="' + n(minX - 4) + '" y1="' + n(y) + '" x2="' + n(maxX + 4) + '" y2="' + n(y) + '" stroke="' + color + '" stroke-width="1"/>';
+    }
+    return s;
+  }
+
+  function fascia(pts) {
+    var p = fmt(pts);
+    return '<polyline points="' + p + '" fill="none" stroke="#2a261f" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>'
+      + '<polyline points="' + p + '" fill="none" stroke="#a39886" stroke-width="2.15" stroke-linejoin="round" stroke-linecap="round"/>';
+  }
+
+  function bulbs(polylines) {
+    var raw = [], i, kept, halo = '', core = '', wash = '';
+    for (i = 0; i < polylines.length; i++) raw = raw.concat(along(polylines[i], STEP));
+    kept = dedupe(raw);
+    for (i = 0; i < polylines.length; i++) {
+      wash += '<polyline points="' + fmt(polylines[i]) + '" fill="none" stroke="#ffe7c4" stroke-width="1.15" stroke-linejoin="round" stroke-linecap="round" opacity="0.32"/>';
+    }
+    for (i = 0; i < kept.length; i++) {
+      halo += '<circle cx="' + n(kept[i][0]) + '" cy="' + n(kept[i][1]) + '" r="1.85" fill="#ffd7a8"/>';
+      core += '<circle cx="' + n(kept[i][0]) + '" cy="' + n(kept[i][1]) + '" r="2.05" fill="#ffe9cc"/>';
+      core += '<circle cx="' + n(kept[i][0]) + '" cy="' + n(kept[i][1]) + '" r="0.82" fill="#fffaf4"/>';
+    }
+    return wash + '<g filter="url(#fitHalo)">' + halo + '</g>' + core;
+  }
+
+  function lightGroup(tier, polylines, on) {
+    return '<g class="lg" data-tier="' + tier + '" opacity="' + (on ? '1' : '0') + '">' + bulbs(polylines) + '</g>';
+  }
+
+  function makeP() {
+    var pts = [];
+    function P(x, y, z) {
+      var s = [(x + z * ZX) * S, -(y + z * ZY) * S];
+      pts.push(s);
+      return s;
+    }
+    P.all = pts;
+    return P;
+  }
+
+  /* A front-gabled volume. Right wall is the visible side. */
+  function volume(P, o) {
+    var x0 = o.x, x1 = o.x + o.w, z0 = o.z, z1 = o.z + o.d;
+    var wall = o.wall, rise = o.rise, oh = o.oh == null ? 0.78 : o.oh;
+    var xm = (x0 + x1) / 2, peak = wall + rise, id = o.id;
+    var flg = P(x0, 0, z0), frg = P(x1, 0, z0), brg = P(x1, 0, z1);
+    var fle = P(x0, wall, z0), fre = P(x1, wall, z0), bre = P(x1, wall, z1), ble = P(x0, wall, z1);
+    var fp = P(xm, peak, z0);
+    var rfle = P(x0 - oh, wall, z0 - oh), rfre = P(x1 + oh, wall, z0 - oh);
+    var rble = P(x0 - oh, wall, z1 + oh * 0.4), rbre = P(x1 + oh, wall, z1 + oh * 0.4);
+    var rfp = P(xm, peak + oh * 0.18, z0 - oh), rbp = P(xm, peak + oh * 0.18, z1 + oh * 0.4);
+    var front = [flg, frg, fre, fp, fle];
+    var right = [frg, brg, bre, fre];
+    var roofL = [rfle, rfp, rbp, rble];
+    var roofR = [rfp, rfre, rbre, rbp];
+    var soffR = [fre, rfre, rbre, bre];
+    var h = '';
+    h += '<polygon points="' + fmt(right) + '" fill="url(#wallSide)"/>';
+    h += '<polygon points="' + fmt(soffR) + '" fill="#7a7268"/>';
+    h += '<polygon points="' + fmt(roofL) + '" fill="#34312d"/>';
+    h += '<polygon points="' + fmt(roofR) + '" fill="#282521"/>';
+    h += linesBetween(rfle, rble, rfp, rbp, 8, 'rgba(246,240,230,.075)', 0.8);
+    h += linesBetween(rfp, rbp, rfre, rbre, 8, 'rgba(246,240,230,.05)', 0.8);
+    h += '<polygon points="' + fmt(front) + '" fill="url(#wallFront)"/>';
+    h += '<clipPath id="' + id + '-f"><polygon points="' + fmt(front) + '"/></clipPath>';
+    h += '<g clip-path="url(#' + id + '-f)">' + hLines(front, 5.1, 'rgba(28,22,16,.34)') + '</g>';
+    h += '<clipPath id="' + id + '-s"><polygon points="' + fmt(right) + '"/></clipPath>';
+    h += '<g clip-path="url(#' + id + '-s)">' + linesBetween(fre, bre, frg, brg, 9, 'rgba(18,14,10,.38)', 1) + '</g>';
+    var fFront = [P(x0, 0, z0), P(x1, 0, z0), P(x1, 0.72, z0), P(x0, 0.72, z0)];
+    var fSide = [P(x1, 0, z0), P(x1, 0, z1), P(x1, 0.72, z1), P(x1, 0.72, z0)];
+    h += '<polygon points="' + fmt(fFront) + '" fill="#2a2724"/>';
+    h += '<polygon points="' + fmt(fSide) + '" fill="#211f1c"/>';
+    h += '<polyline points="' + fmt([flg, fle]) + '" fill="none" stroke="#d2c6b4" stroke-width="3.1" stroke-linecap="butt"/>';
+    h += '<polyline points="' + fmt([frg, fre]) + '" fill="none" stroke="#d2c6b4" stroke-width="3.1" stroke-linecap="butt"/>';
+    h += '<polyline points="' + fmt([fre, bre]) + '" fill="none" stroke="#cbbda8" stroke-width="2"/>';
+    h += fascia([rfle, rfp, rfre]);
+    h += fascia([rfre, rbre]);
+    h += fascia([rfle, rble]);
+    if (!o.skipBack) h += fascia([rble, rbp, rbre]);
+    h += '<polyline points="' + fmt([rfp, rbp]) + '" fill="none" stroke="#161412" stroke-width="2.2" stroke-linecap="round"/>';
+    h += '<polyline points="' + fmt([rfp, rbp]) + '" fill="none" stroke="#4a453e" stroke-width="0.7" stroke-linecap="round"/>';
+    return {
+      markup: h,
+      front: [[rfle, rfp, rfre]],
+      side: [[rfle, rble], [rfre, rbre]],
+      back: [[rble, rbp, rbre]],
+      fp: fp, fle: fle, fre: fre, flg: flg, frg: frg, xm: xm, wall: wall, peak: peak, x0: x0, x1: x1, z0: z0
+    };
+  }
+
+  function win(P, x, sill, z, w, h, cols) {
+    var bl = P(x, sill, z), tr = P(x + w, sill + h, z);
+    var rx = bl[0], ry = tr[1], rw = tr[0] - bl[0], rh = bl[1] - tr[1];
+    if (rw < 2 || rh < 2) return '';
+    var t = Math.max(1.5, Math.min(2.5, rw * 0.07));
+    var s = '';
+    s += '<rect x="' + n(rx - t) + '" y="' + n(ry - t) + '" width="' + n(rw + t * 2) + '" height="' + n(rh + t * 2) + '" fill="#d9d0c2"/>';
+    s += '<rect x="' + n(rx - rh * 0.28) + '" y="' + n(ry - rh * 0.22) + '" width="' + n(rw + rh * 0.56) + '" height="' + n(rh * 1.45) + '" fill="#ffb15a" opacity="0.16" filter="url(#fitWin)"/>';
+    s += '<rect x="' + n(rx) + '" y="' + n(ry) + '" width="' + n(rw) + '" height="' + n(rh) + '" fill="url(#glass)"/>';
+    s += '<rect x="' + n(rx) + '" y="' + n(ry) + '" width="' + n(rw) + '" height="' + n(rh * 0.14) + '" fill="#6a341c" opacity="0.32"/>';
+    var c = cols || 2, i, lx, my;
+    for (i = 1; i < c; i++) {
+      lx = rx + rw * i / c;
+      s += '<line x1="' + n(lx) + '" y1="' + n(ry) + '" x2="' + n(lx) + '" y2="' + n(ry + rh) + '" stroke="#2c241c" stroke-width="0.85"/>';
+    }
+    my = ry + rh * 0.5;
+    s += '<line x1="' + n(rx) + '" y1="' + n(my) + '" x2="' + n(rx + rw) + '" y2="' + n(my) + '" stroke="#2c241c" stroke-width="0.85"/>';
+    s += '<rect x="' + n(rx - t - 0.7) + '" y="' + n(ry + rh) + '" width="' + n(rw + (t + 0.7) * 2) + '" height="' + n(Math.max(1.5, t * 0.62)) + '" fill="#cfc3b0"/>';
+    return s;
+  }
+
+  function winSide(P, x, sill, z, d, h) {
+    var a = P(x, sill + h, z), b = P(x, sill + h, z + d), c = P(x, sill, z + d), e = P(x, sill, z);
+    var s = '<polygon points="' + fmt([a, b, c, e]) + '" fill="url(#glass)" stroke="#d9d0c2" stroke-width="1.7" stroke-linejoin="miter"/>';
+    var mt = lerp(a, b, 0.5), mb = lerp(e, c, 0.5);
+    var lm = lerp(a, e, 0.5), rm = lerp(b, c, 0.5);
+    s += '<line x1="' + n(mt[0]) + '" y1="' + n(mt[1]) + '" x2="' + n(mb[0]) + '" y2="' + n(mb[1]) + '" stroke="#2c241c" stroke-width="0.8"/>';
+    s += '<line x1="' + n(lm[0]) + '" y1="' + n(lm[1]) + '" x2="' + n(rm[0]) + '" y2="' + n(rm[1]) + '" stroke="#2c241c" stroke-width="0.8"/>';
+    return s;
+  }
+
+  function door(P, x, z, w, h) {
+    var bl = P(x, 0, z), tr = P(x + w, h, z);
+    var rx = bl[0], ry = tr[1], rw = tr[0] - bl[0], rh = bl[1] - tr[1];
+    var t = 2.3, s = '', gw, gh, gy, py, ph;
+    s += '<rect x="' + n(rx - t) + '" y="' + n(ry - t) + '" width="' + n(rw + t * 2) + '" height="' + n(rh + t) + '" fill="#d9d0c2"/>';
+    s += '<rect x="' + n(rx) + '" y="' + n(ry) + '" width="' + n(rw) + '" height="' + n(rh) + '" fill="#3a2b22"/>';
+    gw = rw * 0.3; gh = rh * 0.2; gy = ry + rh * 0.08;
+    s += '<rect x="' + n(rx + rw * 0.14) + '" y="' + n(gy) + '" width="' + n(gw) + '" height="' + n(gh) + '" fill="url(#glass)"/>';
+    s += '<rect x="' + n(rx + rw * 0.56) + '" y="' + n(gy) + '" width="' + n(gw) + '" height="' + n(gh) + '" fill="url(#glass)"/>';
+    py = ry + rh * 0.36; ph = rh * 0.22;
+    s += '<rect x="' + n(rx + rw * 0.14) + '" y="' + n(py) + '" width="' + n(gw) + '" height="' + n(ph) + '" fill="#2a1d18" stroke="#1a120e" stroke-width="0.7"/>';
+    s += '<rect x="' + n(rx + rw * 0.56) + '" y="' + n(py) + '" width="' + n(gw) + '" height="' + n(ph) + '" fill="#2a1d18" stroke="#1a120e" stroke-width="0.7"/>';
+    s += '<rect x="' + n(rx + rw * 0.14) + '" y="' + n(ry + rh * 0.66) + '" width="' + n(gw) + '" height="' + n(ph * 0.9) + '" fill="#2a1d18" stroke="#1a120e" stroke-width="0.7"/>';
+    s += '<rect x="' + n(rx + rw * 0.56) + '" y="' + n(ry + rh * 0.66) + '" width="' + n(gw) + '" height="' + n(ph * 0.9) + '" fill="#2a1d18" stroke="#1a120e" stroke-width="0.7"/>';
+    s += '<circle cx="' + n(rx + rw * 0.8) + '" cy="' + n(ry + rh * 0.58) + '" r="1.15" fill="#ead9b0"/>';
+    return s;
+  }
+
+  function sideLite(P, x, z, w, h) {
+    var bl = P(x, 0.55, z), tr = P(x + w, h * 0.7, z);
+    var rx = bl[0], ry = tr[1], rw = tr[0] - bl[0], rh = bl[1] - tr[1];
+    var my = ry + rh * 0.5;
+    return '<rect x="' + n(rx - 1.3) + '" y="' + n(ry - 1.3) + '" width="' + n(rw + 2.6) + '" height="' + n(rh + 1.3) + '" fill="#d9d0c2"/>'
+      + '<rect x="' + n(rx) + '" y="' + n(ry) + '" width="' + n(rw) + '" height="' + n(rh) + '" fill="url(#glass)"/>'
+      + '<line x1="' + n(rx) + '" y1="' + n(my) + '" x2="' + n(rx + rw) + '" y2="' + n(my) + '" stroke="#2c241c" stroke-width="0.7"/>';
+  }
+
+  function garageDoor(P, x, z, w, hgt) {
+    var bl = P(x, 0, z), tr = P(x + w, hgt, z);
+    var rx = bl[0], ry = tr[1], rw = tr[0] - bl[0], rh = bl[1] - tr[1];
+    var cols = 4, rows = 4, gap = 1.35, s = '', r, c, cw, ch, px, py;
+    s += '<rect x="' + n(rx - 2) + '" y="' + n(ry - 2) + '" width="' + n(rw + 4) + '" height="' + n(rh + 2) + '" fill="#d9d0c2"/>';
+    s += '<rect x="' + n(rx) + '" y="' + n(ry) + '" width="' + n(rw) + '" height="' + n(rh) + '" fill="#34322e"/>';
+    cw = (rw - gap * (cols + 1)) / cols;
+    ch = (rh - gap * (rows + 1)) / rows;
+    for (r = 0; r < rows; r++) {
+      for (c = 0; c < cols; c++) {
+        px = rx + gap + c * (cw + gap);
+        py = ry + gap + r * (ch + gap);
+        s += '<rect x="' + n(px) + '" y="' + n(py) + '" width="' + n(cw) + '" height="' + n(ch) + '" fill="' + (r === 0 ? 'url(#gglass)' : '#3c3a36') + '" stroke="#2a2724" stroke-width="0.6"/>';
+      }
+    }
+    return s;
+  }
+
+  function vent(P, xm, z, y, w, h) {
+    var bl = P(xm - w / 2, y, z), tr = P(xm + w / 2, y + h, z);
+    var rx = bl[0], ry = tr[1], rw = tr[0] - bl[0], rh = bl[1] - tr[1];
+    var s = '<rect x="' + n(rx - 1.4) + '" y="' + n(ry - 1.4) + '" width="' + n(rw + 2.8) + '" height="' + n(rh + 2.8) + '" fill="#d9d0c2"/>';
+    s += '<rect x="' + n(rx) + '" y="' + n(ry) + '" width="' + n(rw) + '" height="' + n(rh) + '" fill="#2a261f"/>';
+    var i, ly;
+    for (i = 1; i <= 3; i++) {
+      ly = ry + rh * i / 4;
+      s += '<line x1="' + n(rx + 1) + '" y1="' + n(ly) + '" x2="' + n(rx + rw - 1) + '" y2="' + n(ly) + '" stroke="#d9d0c2" stroke-width="0.7"/>';
+    }
+    return s;
+  }
+
+  function shrub(pt, rx, ry) {
+    var x = pt[0], y = pt[1];
+    return '<ellipse cx="' + n(x) + '" cy="' + n(y - ry * 0.15) + '" rx="' + n(rx) + '" ry="' + n(ry * 0.72) + '" fill="#121a16"/>'
+      + '<ellipse cx="' + n(x - rx * 0.08) + '" cy="' + n(y - ry * 0.72) + '" rx="' + n(rx * 0.78) + '" ry="' + n(ry * 0.7) + '" fill="#1c2820"/>'
+      + '<ellipse cx="' + n(x + rx * 0.22) + '" cy="' + n(y - ry * 0.55) + '" rx="' + n(rx * 0.48) + '" ry="' + n(ry * 0.48) + '" fill="#24352c"/>';
+  }
+
+  function belt(P, x0, x1, z, y) {
+    var a = P(x0, y, z), b = P(x1, y, z), c = P(x1, y + 0.38, z), d = P(x0, y + 0.38, z);
+    return '<polygon points="' + fmt([a, b, c, d]) + '" fill="#d9d0c2"/>';
+  }
+
+  function walk(P, x, z, w, flare) {
+    var a = P(x, 0, z), b = P(x + w, 0, z);
+    var mid = (a[0] + b[0]) / 2, half = Math.abs(b[0] - a[0]) / 2 + flare;
+    var bot = 360 - GROUND;
+    return '<polygon points="' + fmt([a, b, [mid + half, bot], [mid - half, bot]]) + '" fill="#2e2c29"/>';
+  }
+
+  function shadow(cx, rx) {
+    return '<ellipse cx="' + n(cx) + '" cy="8" rx="' + n(rx) + '" ry="12" fill="#000" opacity="0.38" filter="url(#fitShade)"/>';
+  }
+
+  function spill(P, x, z) {
+    var p = P(x, 0, z - 0.4);
+    return '<ellipse cx="' + n(p[0]) + '" cy="' + n(p[1] + 10) + '" rx="46" ry="14" fill="url(#spill)" opacity="0.9"/>';
+  }
+
+  function assemble(P, id, cov, parts) {
+    var front = [], side = [], back = [], body = '', i;
+    for (i = 0; i < parts.vols.length; i++) {
+      body += parts.vols[i].markup;
+      front = front.concat(parts.vols[i].front);
+      side = side.concat(parts.vols[i].side);
+      back = back.concat(parts.vols[i].back);
+    }
+    var h = '';
+    h += parts.ground || '';
+    h += body;
+    h += parts.openings || '';
+    h += parts.plants || '';
+    var showF = true, showS = cov !== 'front', showB = cov === 'full';
+    h += lightGroup('front', front, showF);
+    h += lightGroup('side', side, showS);
+    h += lightGroup('back', back, showB);
+    var xs = P.all, minX = 1e9, maxX = -1e9;
+    for (i = 0; i < xs.length; i++) {
+      if (xs[i][0] < minX) minX = xs[i][0];
+      if (xs[i][0] > maxX) maxX = xs[i][0];
+    }
+    var tx = 300 - (minX + maxX) / 2;
+    return { markup: '<g class="house" data-home="' + id + '" transform="translate(' + n(tx) + ' ' + GROUND + ')">' + h + '</g>', tx: tx };
+  }
+
+  function ranch(P, cov, id) {
+    var v = volume(P, { id: id, x: 0, z: 0, w: 40, d: 18, wall: 9.5, rise: 4.35, oh: 0.8 });
+    var openings = '';
+    openings += win(P, 3.1, 2.7, 0, 7.4, 4.5, 3);
+    openings += win(P, 12.0, 2.7, 0, 5.4, 4.5, 2);
+    openings += sideLite(P, 19.15, 0, 0.85, 7.5);
+    openings += door(P, 20.15, 0, 3.5, 7.5);
+    openings += sideLite(P, 23.8, 0, 0.85, 7.5);
+    openings += win(P, 26.4, 2.7, 0, 5.2, 4.5, 2);
+    openings += win(P, 33.0, 2.7, 0, 4.6, 4.5, 2);
+    openings += vent(P, 20, 0, 10.7, 3.2, 1.25);
+    openings += winSide(P, 40, 3.0, 3.2, 3.4, 3.6);
+    openings += winSide(P, 40, 3.0, 10.5, 3.4, 3.6);
+    var plants = shrub(P(1.2, 0, -0.3), 16, 11) + shrub(P(38.6, 0, -0.2), 14, 10) + shrub(P(26.2, 0, -0.6), 9, 7);
+    var ground = walk(P, 19.0, -0.15, 5.7, 16) + spill(P, 22, 0) + shadow(P(20, 0, 6)[0], 168);
+    return assemble(P, 'ss', cov, { vols: [v], openings: openings, plants: plants, ground: ground });
+  }
+
+  function garageHome(P, cov, id) {
+    var main = volume(P, { id: id + 'm', x: 13.5, z: 0, w: 36, d: 17.2, wall: 11.1, rise: 4.6, oh: 0.75 });
+    var gar = volume(P, { id: id + 'g', x: 0, z: -7.2, w: 19.2, d: 7.35, wall: 7.2, rise: 2.45, oh: 0.6 });
+    var openings = '';
+    openings += win(P, 21.2, 2.85, 0, 6.2, 4.6, 2);
+    openings += win(P, 28.6, 2.85, 0, 4.8, 4.6, 2);
+    openings += sideLite(P, 35.0, 0, 0.8, 7.7);
+    openings += door(P, 35.95, 0, 3.4, 7.7);
+    openings += sideLite(P, 39.5, 0, 0.8, 7.7);
+    openings += win(P, 42.2, 2.85, 0, 5.2, 4.6, 2);
+    openings += vent(P, 31.5, 0, 12.35, 2.8, 1.15);
+    openings += winSide(P, 49.5, 3.2, 2.2, 3.1, 4.0);
+    openings += winSide(P, 49.5, 3.2, 9.4, 3.1, 4.0);
+    openings += garageDoor(P, 1.15, -7.2, 14.2, 6.2);
+    var plants = shrub(P(18.4, 0, -0.4), 12, 9) + shrub(P(47.5, 0, -0.3), 13, 10) + shrub(P(42.0, 0, -0.7), 8, 6);
+    var ground = walk(P, 34.8, -0.2, 5.6, 14) + driveway(P) + spill(P, 37.5, 0) + shadow(P(26, 0, 4)[0], 200);
+    return assemble(P, 'sg', cov, { vols: [main, gar], openings: openings, plants: plants, ground: ground });
+  }
+
+  function driveway(P) {
+    var a = P(1.3, 0, -7.25), b = P(15.2, 0, -7.25);
+    var bot = 360 - GROUND;
+    var mid = (a[0] + b[0]) / 2;
+    return '<polygon points="' + fmt([a, b, [mid + 78, bot], [mid - 70, bot]]) + '" fill="#262523"/>';
+  }
+
+  function twoStory(P, cov, id) {
+    var main = volume(P, { id: id + 'm', x: 0, z: 0, w: 38, d: 16, wall: 16.2, rise: 13.2, oh: 0.8 });
+    var left = volume(P, { id: id + 'l', x: 1.6, z: -6.6, w: 12.4, d: 6.6, wall: 10.6, rise: 3.5, oh: 0.62, skipBack: true });
+    var right = volume(P, { id: id + 'r', x: 24.0, z: -6.6, w: 12.4, d: 6.6, wall: 10.6, rise: 3.5, oh: 0.62, skipBack: true });
+    left.back = [];
+    right.back = [];
+    /* inner cheeks face the entry; the outer returns read as the sides */
+    left.side = [left.side[0]];
+    right.side = [right.side[1]];
+    var openings = '';
+    openings += belt(P, 14.05, 23.95, 0, 8.55);
+    openings += beltSide(P, 38, 0, 16, 8.55);
+    /* first floor bays */
+    openings += win(P, 3.0, 2.5, -6.6, 4.5, 4.6, 2);
+    openings += win(P, 8.2, 2.5, -6.6, 4.5, 4.6, 2);
+    openings += win(P, 25.4, 2.5, -6.6, 4.5, 4.6, 2);
+    openings += win(P, 30.6, 2.5, -6.6, 4.5, 4.6, 2);
+    /* center entry on the main wall */
+    openings += sideLite(P, 16.55, 0, 0.85, 7.7);
+    openings += door(P, 17.55, 0, 3.5, 7.7);
+    openings += sideLite(P, 21.2, 0, 0.85, 7.7);
+    /* second floor, center, clear of the bays */
+    openings += win(P, 15.15, 10.15, 0, 3.55, 4.35, 1);
+    openings += win(P, 19.55, 10.15, 0, 3.55, 4.35, 1);
+    /* gable windows tucked under the steep rake, above each bay */
+    openings += '<g clip-path="url(#' + id + 'm-f)">';
+    openings += win(P, 6.55, 16.55, 0, 3.3, 3.35, 1);
+    openings += win(P, 28.15, 16.55, 0, 3.3, 3.35, 1);
+    openings += win(P, 17.15, 22.2, 0, 3.7, 3.2, 2);
+    openings += '</g>';
+    openings += winSide(P, 38, 2.6, 2.2, 3.1, 4.2);
+    openings += winSide(P, 38, 10.2, 2.2, 3.1, 4.0);
+    var plants = shrub(P(0.8, 0, -0.2), 13, 10) + shrub(P(36.8, 0, -0.2), 13, 10) + shrub(P(23.6, 0, -0.5), 8, 6);
+    var ground = walk(P, 16.4, -0.2, 5.8, 15) + spill(P, 19.2, 0) + shadow(P(19, 0, 5)[0], 176);
+    return assemble(P, 'ts', cov, { vols: [main, right, left], openings: openings, plants: plants, ground: ground });
+  }
+
+  function beltSide(P, x, z0, z1, y) {
+    var a = P(x, y, z0), b = P(x, y, z1), c = P(x, y + 0.38, z1), d = P(x, y + 0.38, z0);
+    return '<polygon points="' + fmt([a, b, c, d]) + '" fill="#cbbda8"/>';
+  }
+
+  function defs(prefix) {
+    prefix = prefix || '';
+    return '<defs>'
+      + '<linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">'
+      + '<stop offset="0" stop-color="#0c1426"/>'
+      + '<stop offset="0.38" stop-color="#172848"/>'
+      + '<stop offset="0.62" stop-color="#3a3a4c"/>'
+      + '<stop offset="0.78" stop-color="#6a5044"/>'
+      + '<stop offset="0.9" stop-color="#8d684c"/>'
+      + '<stop offset="1" stop-color="#2c2824"/>'
+      + '</linearGradient>'
+      + '<radialGradient id="duskGlow" cx="0.5" cy="0.78" r="0.7">'
+      + '<stop offset="0" stop-color="#e2a56e" stop-opacity="0.34"/>'
+      + '<stop offset="0.4" stop-color="#c4845a" stop-opacity="0.12"/>'
+      + '<stop offset="1" stop-color="#c4845a" stop-opacity="0"/>'
+      + '</radialGradient>'
+      + '<linearGradient id="groundGrad" x1="0" y1="0" x2="0" y2="1">'
+      + '<stop offset="0" stop-color="#1c2420"/>'
+      + '<stop offset="0.45" stop-color="#141a17"/>'
+      + '<stop offset="1" stop-color="#0c100e"/>'
+      + '</linearGradient>'
+      + '<linearGradient id="wallFront" x1="0" y1="0" x2="0" y2="1">'
+      + '<stop offset="0" stop-color="#7d776f"/>'
+      + '<stop offset="0.5" stop-color="#6b655d"/>'
+      + '<stop offset="1" stop-color="#574f48"/>'
+      + '</linearGradient>'
+      + '<linearGradient id="wallSide" x1="0" y1="0" x2="1" y2="1">'
+      + '<stop offset="0" stop-color="#524c46"/>'
+      + '<stop offset="1" stop-color="#3a3632"/>'
+      + '</linearGradient>'
+      + '<linearGradient id="glass" x1="0" y1="0" x2="0" y2="1">'
+      + '<stop offset="0" stop-color="#fff4e0"/>'
+      + '<stop offset="0.42" stop-color="#ffc27a"/>'
+      + '<stop offset="1" stop-color="#e08a42"/>'
+      + '</linearGradient>'
+      + '<linearGradient id="gglass" x1="0" y1="0" x2="0" y2="1">'
+      + '<stop offset="0" stop-color="#d5dee8"/>'
+      + '<stop offset="1" stop-color="#6a7684"/>'
+      + '</linearGradient>'
+      + '<radialGradient id="spill" cx="0.5" cy="0.5" r="0.5">'
+      + '<stop offset="0" stop-color="#ffb06a" stop-opacity="0.22"/>'
+      + '<stop offset="1" stop-color="#ffb06a" stop-opacity="0"/>'
+      + '</radialGradient>'
+      + '<filter id="fitHalo" x="-70%" y="-70%" width="240%" height="240%">'
+      + '<feGaussianBlur stdDeviation="1.65"/>'
+      + '</filter>'
+      + '<filter id="fitWin" x="-90%" y="-90%" width="280%" height="280%">'
+      + '<feGaussianBlur stdDeviation="3.1"/>'
+      + '</filter>'
+      + '<filter id="fitShade" x="-60%" y="-60%" width="220%" height="220%">'
+      + '<feGaussianBlur stdDeviation="6"/>'
+      + '</filter>'
+      + '</defs>';
+  }
+
+  function backdrop() {
+    return '<rect width="600" height="360" fill="url(#skyGrad)"/>'
+      + '<rect width="600" height="360" fill="url(#duskGlow)"/>'
+      + '<rect y="248" width="600" height="112" fill="url(#groundGrad)"/>'
+      + '<line x1="0" y1="248" x2="600" y2="248" stroke="rgba(185,161,132,.55)" stroke-width="1.15"/>';
+  }
+
+  function all(home, cov) {
+    var h = defs() + backdrop();
+    var ids = ['ss', 'sg', 'ts'], i, P, built, op;
+    for (i = 0; i < ids.length; i++) {
+      P = makeP();
+      built = ids[i] === 'sg' ? garageHome(P, cov, 'f' + ids[i]) : ids[i] === 'ts' ? twoStory(P, cov, 'f' + ids[i]) : ranch(P, cov, 'f' + ids[i]);
+      op = ids[i] === home ? 1 : 0;
+      h += built.markup.replace('class="house"', 'class="house" opacity="' + op + '"');
+    }
+    return h;
+  }
+
+  var svg = document.getElementById('fitSvg');
+  if (!svg) return;
+  var R = {ss:{front:[60,90],wrap:[120,160],full:[170,220]},sg:{front:[90,130],wrap:[150,200],full:[220,280]},ts:{front:[110,150],wrap:[180,240],full:[260,340]}};
+  var NAME = {ss:'Single story',sg:'Single story + garage',ts:'Two story'};
+  var COV = {front:['Front'],wrap:['Front','Sides'],full:['Whole house']};
+  var CNAME = {front:'The Street View (front)',wrap:'The Wraparound (front + sides)',full:'The Full Outline (whole house)'};
+  var st = {home:'sg',cov:'front'};
   function price(f){var r=Math.ceil(f/10)*10;return r*25-Math.floor(r/100)*250;}
   function money(n){return '$'+n.toLocaleString('en-US');}
-  function P(a){return a.map(function(p){return p[0]+','+p[1];}).join(' ');}
-  function line(pts,on,cls){return '<polyline class="'+(on?'lit':'off')+(cls?' '+cls:'')+'" points="'+P(pts)+'"/>';}
-  function draw(){
-    var G=318,two=st.home==='ts',wing=st.home==='sg';
-    var x0=wing?190:150,x1=wing?410:400,eh=two?165:92,ey=G-eh,cx=(x0+x1)/2,ay=ey-(two?70:62),dx=118,dy=-40;
-    var A=[cx,ay],B=[cx+dx,ay+dy],L=[x0,ey],Rt=[x1,ey],Rb=[x1+dx,ey+dy],Lb=[x0+dx,ey+dy];
-    var f=st.cov, fr=true, sd=f!=='front', bk=f==='full';
-    var h='<defs><filter id="fitGlow" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="3.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>';
-    h+='<rect x="-400" y="'+G+'" width="1400" height="200" fill="#0b1210"/>';
-    // roofs and walls
-    h+='<polygon points="'+P([A,B,Rb,Rt])+'" fill="#20232c"/>';
-    h+='<polygon points="'+P([Rt,Rb,[x1+dx,G+dy],[x1,G]])+'" fill="#24252b"/>';
-    h+='<polygon points="'+P([L,A,Rt,[x1,G],[x0,G]])+'" fill="#2c2d33"/>';
-    if(two){h+='<line x1="'+x0+'" y1="'+(ey+eh/2)+'" x2="'+x1+'" y2="'+(ey+eh/2)+'" stroke="rgba(246,243,238,.07)"/>';}
-    var wy=two?[ey+30,ey+70,ey+110]:[ey+30];
-    wy.forEach(function(y){[x0+28,x1-68].forEach(function(x){h+='<rect x="'+x+'" y="'+y+'" width="40" height="30" fill="#4a3d27" opacity=".75"/>';});});
-    h+='<rect x="'+(cx-14)+'" y="'+(G-58)+'" width="28" height="58" fill="#1a1612"/>';
-    var gpts=null;
-    if(wing){var gx0=40,gx1=x0,gey=G-78,gcx=(gx0+gx1)/2,gay=gey-42;gpts=[[gx0,gey],[gcx,gay],[gx1,gey]];
-      h+='<polygon points="'+P([[gx0,gey],[gcx,gay],[gx1,gey],[gx1,G],[gx0,G]])+'" fill="#2c2d33"/>';
-      h+='<rect x="'+(gx0+16)+'" y="'+(G-56)+'" width="'+(gx1-gx0-32)+'" height="56" fill="#34353b"/>';
-      for(var i=1;i<5;i++)h+='<line x1="'+(gx0+16)+'" y1="'+(G-56+i*11)+'" x2="'+(gx1-16)+'" y2="'+(G-56+i*11)+'" stroke="#2a2b30"/>';}
-    // unlit outlines first
-    h+=line([L,A,Rt],false)+line([Rt,Rb],false)+line([A,B,Rb],false)+line([L,Lb],false,'dim');
-    if(gpts)h+=line(gpts,false);
-    // lit
-    if(bk){h+=line([B,Rb],true)+line([Lb,B],true,'dim');}
-    if(sd){h+=line([Rt,Rb],true)+line([L,Lb],true,'dim');}
-    if(fr){h+=line([L,A,Rt],true);if(gpts)h+=line(gpts,true);}
-    svg.innerHTML=h;
-    var mnx=(wing?40:x0)-36,mxx=x1+dx+36,mny=B[1]-34,mxy=G+26,w=mxx-mnx,hh=mxy-mny,asp=600/360;
-    if(w/hh<asp){var nw=hh*asp;mnx-=(nw-w)/2;w=nw;}else{var nh=w/asp;mny-=(nh-hh)/2;hh=nh;}
-    svg.setAttribute('viewBox',mnx+' '+mny+' '+w+' '+hh);
+  function sync(){
     var r=R[st.home][st.cov],lo=price(r[0]),hi=r[1]>300?null:price(r[1]);
-    document.getElementById('fitFt').textContent=r[0]+'–'+r[1]+' ft';
-    document.getElementById('fitPrice').textContent=hi?money(lo)+'–'+money(hi):'From '+money(lo);
+    document.getElementById('fitFt').textContent=r[0]+'\u2013'+r[1]+' ft';
+    document.getElementById('fitPrice').textContent=hi?money(lo)+'\u2013'+money(hi):'From '+money(lo);
     document.getElementById('fitNote').textContent=(hi?'':'Larger homes over 300 ft get a custom quote. ')+'$25 a foot, rounded up to the next 10 ft, $250 off every full 100 ft. 50% down ('+money(Math.round(lo/2))+'+) holds your install date.';
   }
-  function bind(id,key){var g=document.getElementById(id);g.addEventListener('click',function(e){var b=e.target.closest('.fit-o');if(!b)return;st[key]=b.getAttribute('data-v');
-    g.querySelectorAll('.fit-o').forEach(function(x){var on=x===b;x.classList.toggle('on',on);x.setAttribute('aria-pressed',on?'true':'false');});draw();});}
-  bind('fitHome','home');bind('fitCov','cov');
-  document.getElementById('fitGo').addEventListener('click',function(){
-    document.querySelectorAll('input[name="areas"]').forEach(function(c){c.checked=COV[st.cov].indexOf(c.value)>-1;});
-    var n=document.getElementById('lf-notes');if(n&&!n.value)n.value=NAME[st.home]+' · '+CNAME[st.cov];
+  function apply(){
+    var houses = svg.querySelectorAll('.house'), i, on;
+    for (i = 0; i < houses.length; i++) {
+      on = houses[i].getAttribute('data-home') === st.home;
+      houses[i].style.opacity = on ? '1' : '0';
+      houses[i].setAttribute('aria-hidden', on ? 'false' : 'true');
+    }
+    var show = {front: true, side: st.cov !== 'front', back: st.cov === 'full'};
+    var lgs = svg.querySelectorAll('.lg');
+    for (i = 0; i < lgs.length; i++) lgs[i].style.opacity = show[lgs[i].getAttribute('data-tier')] ? '1' : '0';
+    sync();
+  }
+  svg.innerHTML = all(st.home, st.cov);
+  apply();
+  requestAnimationFrame(function () { svg.classList.add('anim'); });
+  function bind(id, key) {
+    var g = document.getElementById(id);
+    g.addEventListener('click', function (e) {
+      var b = e.target.closest('.fit-o');
+      if (!b) return;
+      st[key] = b.getAttribute('data-v');
+      var xs = g.querySelectorAll('.fit-o'), i, on;
+      for (i = 0; i < xs.length; i++) {
+        on = xs[i] === b;
+        xs[i].classList.toggle('on', on);
+        xs[i].setAttribute('aria-pressed', on ? 'true' : 'false');
+      }
+      apply();
+    });
+  }
+  bind('fitHome', 'home');
+  bind('fitCov', 'cov');
+  document.getElementById('fitGo').addEventListener('click', function () {
+    var boxes = document.querySelectorAll('input[name="areas"]'), i;
+    for (i = 0; i < boxes.length; i++) boxes[i].checked = COV[st.cov].indexOf(boxes[i].value) > -1;
+    var note = document.getElementById('lf-notes');
+    if (note && !note.value) note.value = NAME[st.home] + ' \u00b7 ' + CNAME[st.cov];
   });
-  draw();
 })();
 </script>
 </body>
