@@ -636,9 +636,9 @@ section{position:relative}
         <p class="fit-cap">Example installs. Your home is measured at a free design visit.</p>
         <div class="fit-res">
           <div><div class="fit-l">Typical footage</div><div class="fit-v" id="fitFt">90–130 ft</div></div>
-          <div><div class="fit-l">Estimated installed</div><div class="fit-v big" id="fitPrice">$2,250–$3,000</div></div>
+          <div><div class="fit-l">Estimated installed</div><div class="fit-v big" id="fitPrice">$2,250–$3,250</div></div>
         </div>
-        <p class="fit-note" id="fitNote">$25 a foot, rounded up to the next 10 ft, $250 off every full 100 ft. 50% down holds your install date.</p>
+        <p class="fit-note" id="fitNote">$25 a foot, rounded up to the next 10 ft. 50% down ($1,125+) holds your install date.</p>
         <a href="#book" class="btn" id="fitGo" style="margin-top:18px">Design My House Free</a>
         <p class="fit-or">Or <a href="#book" id="fitPhoto">upload a photo of your house</a> and we'll send it back lit up at night.</p>
         <p class="fit-small">We draw your actual house lit up at night and give you a written quote by section. Add sides or the back any time.</p>
@@ -668,8 +668,8 @@ section{position:relative}
         <div class="field"><label for="ft">Roofline Length (linear feet)</label><input id="ft" type="number" min="40" max="900" step="5" value="150" autocomplete="off"></div>
         
         <div class="out">
-          <div class="big" id="est">$3,500</div>
-          <div class="sm" id="detail">150 ft at $25/ft, less $250 · 50% deposit of $1,750 reserves your install date</div>
+          <div class="big" id="est">$3,750</div>
+          <div class="sm" id="detail">150 ft at $25/ft · 50% deposit of $1,875 reserves your install date</div>
           <a href="#book" class="btn" style="margin-top:22px">Book My Measurement</a>
         </div>
       </div>
@@ -1011,9 +1011,9 @@ section{position:relative}
     var f=Math.max(0,parseFloat(ft.value)||0);
     var r=Math.ceil(f/10)*10;
     if(r>300){est.textContent='Custom quote';det.textContent=f.toFixed(0)+' ft · homes over 300 ft get a custom quote after a free measurement';return;}
-    var off=Math.floor(r/100)*250, total=r*25-off;
+    var total=r*25;
     est.textContent=money(total);
-    det.textContent=r+' ft at $25/ft'+(off?', less '+money(off):'')+' · 50% deposit of '+money(total/2)+' reserves your install date';
+    det.textContent=r+' ft at $25/ft · 50% deposit of '+money(total/2)+' reserves your install date';
   }
   ft.addEventListener('input',calc);ft.addEventListener('change',calc);
   preset();calc();
@@ -1231,13 +1231,13 @@ section{position:relative}
   var COV = {front:['Front'],wrap:['Front','Sides'],full:['Whole house']};
   var CNAME = {front:'The Street View (front)',wrap:'The Wraparound (front + sides)',full:'The Full Outline (whole house)'};
   var st = {home:'sg',cov:'front'};
-  function price(f){var r=Math.ceil(f/10)*10;return r*25-Math.floor(r/100)*250;}
+  function price(f){var r=Math.ceil(f/10)*10;return r*25;}
   function money(n){return '$'+n.toLocaleString('en-US');}
   function sync(){
     var r=R[st.home][st.cov],lo=price(r[0]),hi=r[1]>300?null:price(r[1]);
     document.getElementById('fitFt').textContent=r[0]+'\u2013'+r[1]+' ft';
     document.getElementById('fitPrice').textContent=hi?money(lo)+'\u2013'+money(hi):'From '+money(lo);
-    document.getElementById('fitNote').textContent=(hi?'':'Larger homes over 300 ft get a custom quote. ')+'$25 a foot, rounded up to the next 10 ft, $250 off every full 100 ft. 50% down ('+money(Math.round(lo/2))+'+) holds your install date.';
+    document.getElementById('fitNote').textContent=(hi?'':'Larger homes over 300 ft get a custom quote. ')+'$25 a foot, rounded up to the next 10 ft. 50% down ('+money(Math.round(lo/2))+'+) holds your install date.';
   }
   function apply(){
     var photos = viz.querySelectorAll('.fit-photo'), i, on;
