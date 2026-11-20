@@ -344,15 +344,16 @@ section{position:relative}
 .fit-o:focus-visible{outline:2px solid var(--tan);outline-offset:2px}
 .fit-o.on{border-color:var(--tan);background:rgba(185,161,132,.09)}
 .fit-o.on b{color:#FFE2B0}
-.fit-out{border:1px solid var(--line);background:rgba(246,243,238,.025);padding:22px 24px}
-.fit-viz{background:#101820;border:1px solid var(--line);margin-bottom:8px;overflow:hidden}
-.fit-stage{position:relative;aspect-ratio:556/342;background:#101820}
+.fit-out{border:1px solid var(--line);background:rgba(246,243,238,.025);padding:0 0 22px;overflow:hidden}
+.fit-viz{width:100%;background:#101820;border:0;margin:0;overflow:hidden}
+.fit-stage{position:relative;width:100%;aspect-ratio:4/3;background:#101820}
 .fit-photo{position:absolute;inset:0;margin:0;opacity:0}
 .fit-viz.anim .fit-photo{transition:opacity .45s ease}
 .fit-photo.on{opacity:1}
 .fit-photo img{display:block;width:100%;height:100%;object-fit:cover;object-position:center center}
-.fit-photo[data-home="ts"] img{object-fit:contain}
-.fit-cap{font-size:12px;color:rgba(246,243,238,.55);margin:0 0 14px}
+.fit-cap{font-size:12px;color:rgba(246,243,238,.55);margin:12px 24px 14px}
+.fit-out .fit-res,.fit-out .fit-note,.fit-out .fit-or,.fit-out .fit-small{margin-left:24px;margin-right:24px}
+.fit-out>.btn{margin-left:24px;margin-right:24px}
 @media(prefers-reduced-motion:reduce){.fit-viz.anim .fit-photo{transition:none}}
 .fit-res{display:grid;grid-template-columns:1fr 1.3fr;gap:16px;border-bottom:1px solid var(--line);padding-bottom:16px}
 .fit-l{font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:var(--tan);font-weight:600}
@@ -644,16 +645,16 @@ section{position:relative}
         <div class="fit-viz" id="fitViz">
           <div class="fit-stage">
             <picture class="fit-photo" data-home="ss">
-              <source srcset="assets/fit/fit-tier1-v3.webp" type="image/webp">
-              <img src="assets/fit/fit-tier1-v3.jpg" alt="Example single-story ranch with permanent lights" width="500" height="342">
+              <source srcset="assets/fit/fit-tier1-v3.webp?v=4" type="image/webp">
+              <img src="assets/fit/fit-tier1-v3.jpg?v=4" alt="Example single-story ranch with permanent lights" width="500" height="342">
             </picture>
             <picture class="fit-photo on" data-home="sg">
-              <source srcset="assets/fit/fit-tier2-v3.webp" type="image/webp">
-              <img src="assets/fit/fit-tier2-v3.jpg" alt="Example two-story home with an attached garage and permanent lights" width="556" height="342">
+              <source srcset="assets/fit/fit-tier2-v3.webp?v=4" type="image/webp">
+              <img src="assets/fit/fit-tier2-v3.jpg?v=4" alt="Example two-story home with an attached garage and permanent lights" width="556" height="342">
             </picture>
             <picture class="fit-photo" data-home="ts">
-              <source srcset="assets/fit/fit-tier3-v3.webp" type="image/webp">
-              <img src="assets/fit/fit-tier3-v3.jpg" alt="Example multi-peak home with permanent lights" width="343" height="343">
+              <source srcset="assets/fit/fit-tier3-v3.webp?v=4" type="image/webp">
+              <img src="assets/fit/fit-tier3-v3.jpg?v=4" alt="Example multi-peak home with permanent lights" width="343" height="343">
             </picture>
           </div>
         </div>
