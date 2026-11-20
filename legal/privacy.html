@@ -1,6 +1,30 @@
 <!doctype html>
 <html lang="en">
 <head>
+<!-- Meta Pixel Code -->
+<script>
+!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '1125681833186931');
+fbq('track', 'PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=1125681833186931&ev=PageView&noscript=1" /></noscript>
+<script>
+document.addEventListener('click', function (e) {
+  var a = e.target && e.target.closest ? e.target.closest('a') : null;
+  if (!a || !window.fbq) return;
+  var href = a.getAttribute('href') || '';
+  if (href.indexOf('tel:') === 0 || href.indexOf('sms:') === 0) fbq('track', 'Contact');
+});
+</script>
+<!-- End Meta Pixel Code -->
+
 <!-- DRAFT for Barrett Teeney's review only. Not published. Not legal advice. -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -73,6 +97,7 @@ address{font-style:normal}
 <h2>Website visitors and quote forms</h2>
 <p>If you request a measurement or quote on <a href="https://lablightingmt.com">lablightingmt.com</a>, or contact us by phone, text, or email, we may collect the information you give us — typically your name, phone number, email address if you provide one, home address, and notes about your home or the lighting you want. We use that to follow up, measure, and prepare a written quote, and to serve you if you hire us.</p>
 <p>The website may use cookies or similar tools needed to run the site and understand basic use of the pages. We do not sell the personal information you submit. You can ask to see, correct, or delete personal information we hold, or opt out of marketing, by emailing us.</p>
+<p>This website uses the Meta Pixel to measure how our ads perform and to show you relevant ads. Meta may collect cookie and device data when you visit. You can opt out in your Facebook ad preferences at <a href="https://www.facebook.com/adpreferences">https://www.facebook.com/adpreferences</a>, and you can also control cookies in your browser settings.</p>
 
 <h2>Children</h2>
 <p>Our services are for homeowners and adults. We do not knowingly collect information from children under 13.</p>
