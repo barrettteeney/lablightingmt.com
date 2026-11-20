@@ -1,6 +1,30 @@
 <!DOCTYPE html>
 <html lang="en" class="cine-pre">
 <head>
+<!-- Meta Pixel Code -->
+<script>
+!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '1125681833186931');
+fbq('track', 'PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=1125681833186931&ev=PageView&noscript=1" /></noscript>
+<script>
+document.addEventListener('click', function (e) {
+  var a = e.target && e.target.closest ? e.target.closest('a') : null;
+  if (!a || !window.fbq) return;
+  var href = a.getAttribute('href') || '';
+  if (href.indexOf('tel:') === 0 || href.indexOf('sms:') === 0) fbq('track', 'Contact');
+});
+</script>
+<!-- End Meta Pixel Code -->
+
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <link rel="icon" href="favicon.ico?v=3" sizes="any">
@@ -775,7 +799,7 @@ section{position:relative}
         var fd=new FormData();Object.keys(mail).forEach(function(k){fd.append(k,mail[k]);});
         if(blob)fd.append('attachment',blob,'front-of-home.jpg');else fd.set('Photo','Customer chose a photo but it was too large to send. Ask them to text it.');
         return fetch('https://formsubmit.co/info@lablightingmt.com',{method:'POST',mode:'no-cors',body:fd});
-      }).then(function(){f.reset();resetPhoto();say('Sent with your photo! We\'ll light up your house and text you the mockup and price within one business day.','ok');})
+      }).then(function(){if(window.fbq)fbq('track','Lead');f.reset();resetPhoto();say('Sent with your photo! We\'ll light up your house and text you the mockup and price within one business day.','ok');})
         .catch(function(){say(FALLBACK,'err');})
         .then(function(){btn.disabled=false;btn.textContent='Request my free measurement';});
       return;
@@ -783,6 +807,7 @@ section{position:relative}
     fetch(LEAD_EMAIL_ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify(mail)})
       .then(function(r){if(!r.ok)throw new Error(r.status);return r.json();})
       .then(function(j){if(!j||String(j.success)!=='true')throw new Error('not sent');
+        if(window.fbq)fbq('track','Lead');
         delete A.dataset.verified;delete A.dataset.verifiedValue;var ok=document.querySelector('.addr-ok');if(ok)ok.remove();say('Sent! We\'ll reach out within one business day. To get your design started, we\'d love a few more details: exactly where you want lights (front, sides, back, porch, garage), how many stories your home is, your trim color, and anything else we should know, like HOA rules or a date you\'re hoping for. Just reply to our text or call (406) 955-3400.','ok');f.reset();})
       .catch(function(){say(FALLBACK,'err');})
       .then(function(){btn.disabled=false;btn.textContent='Request my free measurement';});
