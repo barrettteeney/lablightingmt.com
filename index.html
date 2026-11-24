@@ -156,10 +156,14 @@ th,td{text-align:left;padding:14px 12px;border-bottom:1px solid var(--line)}
 .fig figcaption{font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:rgba(246,243,238,.55);padding:10px 12px;background:var(--carbon);border-top:1px solid var(--line)}
 .fig.light figcaption{margin:10px -10px -10px}
 .duo{display:grid;grid-template-columns:.62fr 1fr;gap:14px;align-items:start}
-.chat{border:1px solid var(--line);background:rgba(246,243,238,.03);padding:22px 18px;display:flex;flex-direction:column;gap:10px}
-.chat .b{max-width:82%;font-size:14px;line-height:1.45;padding:11px 14px;border-radius:16px}
-.chat .in{align-self:flex-start;background:#2a2a2a;color:var(--white);border-bottom-left-radius:4px}
-.chat .out{align-self:flex-end;background:var(--tan);color:var(--carbon);border-bottom-right-radius:4px}
+.appt{border:1px solid var(--line);background:rgba(246,243,238,.03);padding:22px 20px 12px}
+.appt-top{display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:9.5px;letter-spacing:.22em;text-transform:uppercase;font-weight:600;color:var(--tan)}
+.appt-top b{border:1px solid rgba(185,161,132,.4);padding:5px 9px;font-weight:600}
+.appt-t{font-size:19px;font-weight:600;line-height:1.3;color:var(--white);margin:14px 0 16px}
+.appt dl{margin:0}
+.appt dl div{display:flex;justify-content:space-between;align-items:baseline;gap:16px;padding:11px 0;border-top:1px solid var(--line)}
+.appt dt{font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:rgba(246,243,238,.55)}
+.appt dd{margin:0;font-size:14px;text-align:right;color:var(--white)}
 @media(max-width:880px){.fstep{grid-template-columns:44px 1fr;gap:16px 18px}.fmedia{grid-column:2}.duo{grid-template-columns:1fr}}
 
 th{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--tan);font-weight:600}
@@ -531,22 +535,26 @@ section{position:relative}
 <section id="process">
   <div class="wrap">
     <div class="eyebrow">06 — How It Works</div>
-    <h2>From first message to lights on.</h2>
-    <p style="max-width:640px;margin-top:14px">Here's exactly what happens after you reach out. The images below are the real plan and preview we made for a Flathead Valley home, with the address and prices hidden.</p>
+    <h2>From first visit to lights on.</h2>
+    <p style="max-width:640px;margin-top:14px">Four steps, start to finish. The images below are the real plan and preview we made for a Flathead Valley home.</p>
     <div class="flow">
 
       <div class="fstep">
         <div class="fnum">01</div>
         <div class="ftext">
-          <div class="fchip">Within one business day</div>
-          <h3>You reach out. We get in touch.</h3>
-          <p>Fill out the form below, or call or text <a href="tel:+14069553400">(406) 955-3400</a>. A real person, not a call center, gets back to you to learn about your home and what you'd like lit.</p>
+          <div class="fchip">A real person, not a call center</div>
+          <h3>We schedule an appointment.</h3>
+          <p>Fill out the form below, or call or text <a href="tel:+14069553400">(406) 955-3400</a>, and we'll set up a free visit to your home.</p>
         </div>
         <div class="fmedia">
-          <div class="chat">
-            <div class="b in">Hi! I'd love to get permanent lights on our house before the holidays.</div>
-            <div class="b out">Thanks for reaching out! We'd be glad to help. Which parts of the house would you want lit: just the front, or the whole roofline?</div>
-            <div class="b in">Mostly the front and the garage.</div>
+          <div class="appt">
+            <div class="appt-top"><span>Design visit</span><b>Free</b></div>
+            <div class="appt-t">We come to you.</div>
+            <dl>
+              <div><dt>Where</dt><dd>Your home</dd></div>
+              <div><dt>Who</dt><dd>The people who install it</dd></div>
+              <div><dt>Cost</dt><dd>Free, no pressure</dd></div>
+            </dl>
           </div>
         </div>
       </div>
@@ -554,19 +562,19 @@ section{position:relative}
       <div class="fstep">
         <div class="fnum">02</div>
         <div class="ftext">
-          <div class="fchip">Before anyone climbs a ladder</div>
-          <h3>We measure your roof from above.</h3>
-          <p>We order a satellite measurement report of your home. Every eave, gable and roof edge is measured to the foot, so your plan and price are built on real numbers instead of guesses.</p>
+          <div class="fchip">Free design visit</div>
+          <h3>We come out and photograph your home.</h3>
+          <p>You show us what you'd like lit, we match your trim color, and we take the photo your design starts from.</p>
         </div>
-        <div class="fmedia"><figure class="fig light"><img src="img/process-measure.png?v=4" alt="Sample roof measurement report for an example home, with the length of every roof edge in feet" loading="lazy" decoding="async"><figcaption>Sample satellite measurement report</figcaption></figure></div>
+        <div class="fmedia"><figure class="fig"><img src="img/process-day.jpg?v=4" alt="Example home at dusk, before any lights are installed" loading="lazy" decoding="async"><figcaption>Example home, before the lights</figcaption></figure></div>
       </div>
 
       <div class="fstep">
         <div class="fnum">03</div>
         <div class="ftext">
-          <div class="fchip">Sent with your estimate</div>
-          <h3>Your lighting plan, and your home at night.</h3>
-          <p>You get a map of your home showing every run we'd light and its length, with optional add-ons marked separately so you can choose. We also show you a preview of your own house at night, so you know exactly what you're getting before you decide.</p>
+          <div class="fchip">Before you decide</div>
+          <h3>We measure from the photo and show you the mockups.</h3>
+          <p>We take your measurements off that photo, then show you your own home lit up at night, along with your written estimate.</p>
         </div>
         <div class="fmedia"><div class="planwrap"><figure class="fig doc"><img src="img/process-plan.jpg?v=4" alt="Sample lighting plan for an example home, with each lit roofline and gable labeled with its length" loading="lazy" decoding="async"><figcaption>Sample lighting plan</figcaption></figure></div></div>
         <div class="fwide"><figure class="fig dusk">
@@ -582,19 +590,9 @@ section{position:relative}
       <div class="fstep">
         <div class="fnum">04</div>
         <div class="ftext">
-          <div class="fchip">Sign online, no paperwork</div>
-          <h3>Approve your estimate and reserve your date.</h3>
-          <p>Your written estimate lists every run, its footage and its price. Approve it online, and a 50% deposit reserves your install date and orders your track, color-matched to your trim. Before install day we confirm the measurements and trim color in person. The balance isn't due until your lights are up and working.</p>
-        </div>
-        <div class="fmedia"><figure class="fig doc"><img src="img/process-estimate.jpg?v=4" alt="Line-by-line estimate listing each roofline run and its footage" loading="lazy" decoding="async"><figcaption>Sample line-by-line estimate (prices hidden)</figcaption></figure></div>
-      </div>
-
-      <div class="fstep">
-        <div class="fnum">05</div>
-        <div class="ftext">
           <div class="fchip">About two weeks after your deposit</div>
-          <h3>Your lights go up.</h3>
-          <p>Most homes take a single day, weather permitting. Track fastens to the fascia or soffit (never through your roof), wiring stays hidden, and before we leave we set up the app on your phone and build your first scenes with you.</p>
+          <h3>We do the install.</h3>
+          <p>Most homes take a single day, weather permitting, and we set up the app on your phone before we leave.</p>
         </div>
         <div class="fmedia"><figure class="fig"><img src="img/warm-white.jpg" alt="Home with warm white permanent lights along the roofline at dusk" loading="lazy" decoding="async"><figcaption>Warm white, every night</figcaption></figure></div>
       </div>
@@ -710,9 +708,9 @@ section{position:relative}
         <h2>Free measurement.<br>Written quote.</h2>
         <p>Tell us a little about your home. We'll reach out to set up a free, no-pressure visit, measure your roofline, match your trim color and give you a written quote.</p>
         <ol class="next3">
-          <li><b>We reply within one business day</b><span>A real person, not a call center.</span></li>
-          <li><b>We measure from above</b><span>A satellite roof report, before anyone climbs a ladder.</span></li>
-          <li><b>You get your plan and preview</b><span>A map of every run, and your home shown at night.</span></li>
+          <li><b>We reply within one business day</b><span>A real person, not a call center, to set up your visit.</span></li>
+          <li><b>We come out and photograph your home</b><span>Your measurements come from that photo.</span></li>
+          <li><b>We show you the mockups</b><span>A map of every run, and your home shown at night.</span></li>
         </ol>
         <div class="direct">
           <a href="tel:+14069553400"><small>Call or text</small>(406) 955-3400</a>
