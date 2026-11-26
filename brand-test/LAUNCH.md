@@ -91,10 +91,12 @@ git mv -f brand-test/sitemap.xml sitemap.xml
 git mv -f brand-test/brand/logo-light.png logo-light.png
 git mv -f brand-test/brand/logo-dark.png logo-dark.png
 
-# 6. Keep the notes out of the public site, then remove the now-empty folder
-mkdir -p docs
-git mv brand-test/LAUNCH.md docs/LAUNCH.md
-git mv brand-test/PHOTO-SOURCES.md docs/PHOTO-SOURCES.md
+# 6. Keep the notes out of the public site, then remove the now-empty folder.
+#    GitHub Pages does not publish folders whose names start with an underscore;
+#    a plain "docs" folder would be turned into public web pages.
+mkdir -p _docs
+git mv brand-test/LAUNCH.md _docs/LAUNCH.md
+git mv brand-test/PHOTO-SOURCES.md _docs/PHOTO-SOURCES.md
 git rm -r -q --ignore-unmatch brand-test
 rm -rf brand-test          # clears the empty folders git leaves behind
 ```
@@ -160,7 +162,7 @@ git push origin main
 ```bash
 git checkout main
 git checkout pre-rebrand -- .
-git rm -r -q --ignore-unmatch media docs favicon.svg icon-512.png
+git rm -r -q --ignore-unmatch media _docs favicon.svg icon-512.png
 git commit -m "Roll back to the previous homepage"
 git push origin main
 ```
