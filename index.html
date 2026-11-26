@@ -520,7 +520,7 @@ details[open] .pm::after{display:none}
 /* Footer ------------------------------------------------------------- */
 .foot{padding-block:clamp(56px,7vw,112px) 28px;position:relative}
 .foot .wrap{position:relative;z-index:1}
-.foot-lockup svg{width:min(100%,1040px);height:auto}
+.foot-lockup svg{width:min(100%,971px);height:auto;background:var(--bg)}
 .foot-tag{margin-top:clamp(24px,3vw,40px);font-weight:600;font-stretch:125%;text-transform:uppercase;letter-spacing:.2em;font-size:clamp(.75rem,1.3vw,1rem)}
 .foot-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));row-gap:28px;margin-top:clamp(40px,6vw,88px);padding-top:20px;border-top:1px solid var(--fg)}
 .foot-grid>div:nth-child(odd){padding-right:var(--inset)}
@@ -550,18 +550,20 @@ details[open] .pm::after{display:none}
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
   <defs>
-    <!-- Logo mark (v4 "Eave L"): a solid L under a sloped eave and fascia, with two lamp tabs under the eave -->
-    <g id="mark" fill="currentColor">
+    <!-- Logo mark (v4 "Eave L"): a solid L under a sloped eave and fascia, with two lamp tabs under the eave.
+         Four closed shapes only, no strokes: eave + fascia bracket, the L, and the two tabs. -->
+    <g id="mark" fill="currentColor" stroke="none">
       <g transform="translate(20.95 20.00) scale(0.77135) translate(-17.029 -12.572)">
         <path d="M206.00,220.00 L222.00,220.00 L222.00,92.18 L22.97,12.57 L17.03,27.43 L206.00,103.02 Z M20.00,220.00 L176.00,220.00 L176.00,160.00 L80.00,160.00 L80.00,88.62 L20.00,64.62 Z"/>
-        <path class="mk-tab" fill="#C5322D" d="M120.00,89.62 L120.00,68.62 L161.00,85.02 L156.00,85.02 L156.00,112.02 L176.00,112.02 L176.00,91.02 L206.00,103.02 L17.03,27.43 L105.00,62.62 L100.00,62.62 L100.00,89.62 Z"/>
+        <path class="mk-tab" fill="#C5322D" d="M100,62.62 L105,62.62 L120,68.62 L120,89.62 L100,89.62 Z M156,85.02 L161,85.02 L176,91.02 L176,112.02 L156,112.02 Z"/>
       </g>
     </g>
-    <!-- Lockup: LIGHTING is spaced to exactly the inked width of LAB -->
-    <symbol id="lockup" viewBox="-25.3 7.8 682.7 185.0">
-      <use href="#mark" transform="translate(-42.53 -15.32) scale(1.15649)"/>
+    <!-- Lockup: the icon sits one LAB stem width (40 units) from the wordmark; LIGHTING is spaced to the inked width of LAB.
+         The viewBox is the inked bounds, so the lockup is flush with its box on every side. -->
+    <symbol id="lockup" viewBox="13.16 7.81 637.54 185.04">
+      <use href="#mark" transform="translate(-11.07 -15.32) scale(1.15649)"/>
       <text class="lk-lab" x="224.7" y="125.8" textLength="432.5" lengthAdjust="spacing">LAB</text>
-      <rect class="lk-rule" x="236.5" y="137" width="414" height="5.5"/>
+      <rect class="lk-rule" stroke="none" x="236.5" y="137" width="414" height="5.5"/>
       <text class="lk-lig" x="231.9" y="186" textLength="422.5" lengthAdjust="spacing">LIGHTING</text>
     </symbol>
   </defs>
@@ -570,7 +572,7 @@ details[open] .pm::after{display:none}
 <header class="nav ink">
   <div class="wrap nav-in">
     <a class="brand" href="#top" aria-label="Lab Lighting, back to top">
-      <svg viewBox="0 0 642 174" aria-hidden="true"><use href="#lockup"/></svg>
+      <svg viewBox="0 0 637.54 185.04" aria-hidden="true"><use href="#lockup"/></svg>
     </a>
     <nav class="nav-links" aria-label="Primary">
       <a href="#work">Work</a>
@@ -1218,7 +1220,7 @@ details[open] .pm::after{display:none}
   <div class="gl" aria-hidden="true"><div class="wrap"><i></i><i></i><i></i><i></i></div></div>
   <div class="wrap">
     <div class="foot-lockup">
-      <svg viewBox="0 0 642 174" role="img" aria-label="Lab Lighting"><use href="#lockup"/></svg>
+      <svg viewBox="0 0 637.54 185.04" role="img" aria-label="Lab Lighting"><use href="#lockup"/></svg>
     </div>
     <p class="foot-tag">Light, by Design<i class="dot">.</i></p>
     <div class="foot-grid">
