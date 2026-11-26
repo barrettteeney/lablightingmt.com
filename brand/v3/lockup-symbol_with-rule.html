@@ -1,0 +1,12 @@
+<!-- Drop-in replacement for the #lockup symbol in /index.html on main (official v3 logo: red rule between LAB and LIGHTING).
+     Only change vs the live symbol: one <rect class="lk-rule">. The icon and type stay currentColor (monochrome). -->
+<symbol id="lockup" viewBox="9 13 642 174">
+  <use href="#mark"/>
+  <text class="lk-lab" x="224.7" y="125.8" textLength="432.5" lengthAdjust="spacing">LAB</text>
+  <rect class="lk-rule" x="236.5" y="137" width="414" height="5.5"/>
+  <text class="lk-lig" x="231.9" y="186" textLength="422.5" lengthAdjust="spacing">LIGHTING</text>
+</symbol>
+<!-- CSS to add:
+  .lk-rule{fill:var(--red)}   /* --red is #C5322D on the live site */
+  For a one-color logo (e.g. print stylesheet), use: .lk-rule{fill:currentColor}
+-->
