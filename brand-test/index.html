@@ -39,6 +39,7 @@ img,svg{display:block;max-width:100%}
 a{color:inherit}
 h1,h2,h3,p,ul,ol,dl,dd,figure{margin:0}
 ul,ol{padding:0;list-style:none}
+[hidden]{display:none!important}
 button,input{font:inherit;color:inherit;border-radius:0}
 :focus-visible{outline:2px solid currentColor;outline-offset:3px}
 ::selection{background:var(--ink);color:var(--paper)}
@@ -52,7 +53,7 @@ button,input{font:inherit;color:inherit;border-radius:0}
 .paper{--bg:var(--paper);--fg:var(--ink);--mute:rgba(21,21,21,.74);--hair:rgba(21,21,21,.28);--faint:rgba(21,21,21,.07);--fill:rgba(21,21,21,.045)}
 .ink,.paper{background:var(--bg);color:var(--fg)}
 
-/* Placeholder-photo palettes (flat tones only) ---------------------- */
+/* Placeholder-photo palettes (solid tones only) ---------------------- */
 .night{--sky:#151515;--mtn2:#191918;--mtn:#1e1d1c;--tree:#0f0f0f;--ground:#111110;--gline:rgba(246,243,238,.3);
   --wall:#262524;--wall2:#2d2c2b;--wall3:#2a2928;--trim:#0b0b0b;--glass:#121212;--frame:#060606;--door:#1b1a1a;
   --light:var(--lamp);--anno:rgba(246,243,238,.88)}
@@ -369,11 +370,20 @@ button,input{font:inherit;color:inherit;border-radius:0}
 
 /* Pricing ------------------------------------------------------------ */
 .price{row-gap:clamp(40px,5vw,72px);align-items:start}
-.price-big{font-weight:900;font-stretch:125%;text-transform:uppercase;font-size:clamp(3rem,15.5vw,6.5rem);line-height:.86;letter-spacing:-.02em}
-.price-big span{display:block}
-.price .lede{margin-top:28px}
+.price-big{font-weight:900;font-stretch:125%;text-transform:uppercase;font-size:12vw;line-height:.9;letter-spacing:-.02em;margin-bottom:clamp(36px,5vw,80px)}
+.price-big>span,.pb-l>span{display:block}
+.price-big .pb-d{display:none}
+.pb-s{font-size:.7em;margin-top:.14em}
+@media (min-width:700px){
+  .price-big{font-size:clamp(3rem,8.4vw,8.75rem)}
+  .pb-l>span{display:inline}
+  .price-big .pb-m{display:none}
+  .price-big .pb-d{display:inline}
+  .pb-s{font-size:1em;margin-top:0}
+}
+.stamp{display:inline-block;background:var(--fg);color:var(--bg);font-family:var(--mono);font-weight:500;font-size:.625rem;line-height:1;letter-spacing:.08em;text-transform:uppercase;padding:5px 7px 4px;white-space:nowrap}
 .terms{margin-top:36px;border-top:1px solid var(--fg)}
-.terms div{display:grid;grid-template-columns:minmax(96px,32%) 1fr;gap:16px;padding:12px 0;border-bottom:1px solid var(--hair)}
+.terms div{display:grid;grid-template-columns:minmax(112px,34%) 1fr;gap:16px;padding:12px 0;border-bottom:1px solid var(--hair)}
 .terms dt{color:var(--mute)}
 .calc{border:1px solid var(--fg);background:var(--bg)}
 .calc-head{display:flex;justify-content:space-between;gap:12px;padding:14px 18px;border-bottom:1px solid var(--fg)}
@@ -391,12 +401,22 @@ button,input{font:inherit;color:inherit;border-radius:0}
 .calc-rows{padding:8px 18px 4px}
 .calc-rows div{display:flex;justify-content:space-between;align-items:baseline;gap:16px;padding:12px 0;border-bottom:1px solid var(--hair)}
 .calc-rows dt{color:var(--mute)}
-.calc-rows dd{font-family:var(--mono);font-weight:500;font-size:.875rem;text-align:right}
-.calc-total{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;padding:20px 18px 22px}
-.calc-total output{font-weight:900;font-stretch:125%;font-size:clamp(2rem,6vw,3.25rem);line-height:.9;letter-spacing:-.01em;text-align:right;text-transform:uppercase}
+.calc-rows dd{font-family:var(--mono);font-weight:500;font-size:.875rem;text-align:right;white-space:nowrap}
+.calc-rows div:last-child{border-bottom:0}
+.calc-est{display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:52px;padding:14px 18px;border-top:1px solid var(--fg)}
+.calc-range{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--hair);font-size:clamp(1.375rem,7.6vw,3.25rem)}
+.calc-cell{display:grid;align-content:start;gap:12px;padding:14px 10px 20px 18px;min-width:0}
+.calc-cell+.calc-cell{padding-left:14px}
+.calc-cell+.calc-cell{border-left:1px solid var(--hair)}
+.calc-cell .mono{color:var(--mute);font-size:.6875rem}
+.calc-cell b{font-weight:900;font-stretch:125%;font-size:1em;line-height:.9;letter-spacing:-.01em;text-transform:uppercase;white-space:nowrap}
+.calc-range.custom{grid-template-columns:1fr}
+.calc-range.custom .calc-cell+.calc-cell{display:none}
+.calc-range.custom b{font-size:.86em}
+@media (min-width:700px){.calc-cell,.calc-cell+.calc-cell{padding:16px 18px 24px}}
+@media (min-width:1100px){.calc-range{font-size:clamp(2rem,3.3vw,3.25rem)}}
 .calc-note{padding:14px 18px;border-top:1px solid var(--fg);color:var(--mute);font-size:.6875rem}
 @media (min-width:1100px){
-  .price-big{font-size:clamp(5rem,8.2vw,9rem)}
   .terms div{grid-template-columns:1fr 1fr;gap:0}
   .terms dd{padding-left:var(--inset)}
 }
@@ -632,7 +652,7 @@ details[open] .pm::after{display:none}
   </div>
   <div class="titleblock"><div class="wrap">
     <dl>
-      <div><dt class="mono">Rate</dt><dd class="label">$25 / ft, flat</dd></div>
+      <div><dt class="mono">Price</dt><dd class="label">$25 to $30 / ft, all-inclusive</dd></div>
       <div><dt class="mono">System</dt><dd class="label">Celebright, 24V</dd></div>
       <div><dt class="mono">Parts warranty</dt><dd class="label">10 years, transfers with the home</dd></div>
       <div><dt class="mono">Monthly fees</dt><dd class="label">None</dd></div>
@@ -872,9 +892,12 @@ details[open] .pm::after{display:none}
             <tr><th scope="row"><span>S-08</span>Monthly fees</th><td>None</td></tr>
             <tr><th scope="row"><span>S-09</span>Parts warranty</th><td>10 years, Celebright. Transfers with the home.</td></tr>
             <tr><th scope="row"><span>S-10</span>Workmanship</th><td>1 year, Lab Lighting</td></tr>
-            <tr><th scope="row"><span>S-11</span>Light spacing</th><td class="tbd">To be confirmed <span class="tag">[VERIFY]</span></td></tr>
-            <tr><th scope="row"><span>S-12</span>Power draw</th><td class="tbd">To be confirmed <span class="tag">[VERIFY]</span></td></tr>
-            <tr><th scope="row"><span>S-13</span>Weather rating</th><td class="tbd">To be confirmed <span class="tag">[VERIFY]</span></td></tr>
+            <tr><th scope="row"><span>S-11</span>Price</th><td>$25 to $30 per foot, all-inclusive</td></tr>
+            <tr><th scope="row"><span>S-12</span>Included</th><td>Lights, track, controller, color-matched install, app setup</td></tr>
+            <tr><th scope="row"><span>S-13</span>Extra charges</th><td>None. No hidden fees.</td></tr>
+            <tr><th scope="row"><span>S-14</span>Light spacing</th><td class="tbd">To be confirmed <span class="tag">[VERIFY]</span></td></tr>
+            <tr><th scope="row"><span>S-15</span>Power draw</th><td class="tbd">To be confirmed <span class="tag">[VERIFY]</span></td></tr>
+            <tr><th scope="row"><span>S-16</span>Weather rating</th><td class="tbd">To be confirmed <span class="tag">[VERIFY]</span></td></tr>
           </tbody>
         </table>
       </div>
@@ -886,18 +909,20 @@ details[open] .pm::after{display:none}
 <section class="sec paper" id="pricing" aria-labelledby="h-pricing">
   <div class="gl" aria-hidden="true"><div class="wrap"><i></i><i></i><i></i><i></i></div></div>
   <div class="wrap">
-    <div class="sheet"><span class="mono">A-05</span><span class="label">Pricing</span><span class="mono">Rate schedule</span></div>
+    <div class="sheet"><span class="mono">A-05</span><span class="label">Pricing</span><span class="mono">Price schedule</span></div>
+    <h2 class="price-big" id="h-pricing"><span class="pb-l"><span>$25 to $30</span> <span class="pb-d">/ ft.</span><span class="pb-m">per foot.</span></span> <span class="pb-s">All-inclusive.</span></h2>
     <div class="q price">
       <div class="price-side half-l">
-        <h2 class="price-big" id="h-pricing"><span>$25 / ft.</span><span>Flat.</span></h2>
-        <p class="lede">One price per foot. No discounts. No hidden fees. Your footage sets the price, and you can check the math yourself.</p>
+        <p class="lede">One range, and it covers everything: lights, track, controller, color-matched install and app setup. Nothing is added on top. Your footage sets the estimate, and you can check the math yourself.</p>
         <dl class="terms">
-          <div><dt class="mono">Rate</dt><dd>$25 per foot, flat</dd></div>
+          <div><dt class="mono">Price</dt><dd>$25 to $30 per foot, all-inclusive</dd></div>
+          <div><dt class="mono">Included</dt><dd>Lights, track, controller, color-matched install, app setup</dd></div>
+          <div><dt class="mono">Added on top</dt><dd>Nothing. No hidden fees, no extra charges.</dd></div>
+          <div><dt class="mono">Within the range</dt><dd>What sets your number: to be confirmed <span class="tag">[VERIFY]</span></dd></div>
           <div><dt class="mono">Rounding</dt><dd>Each run up to the whole foot. Total up to the next 10 ft.</dd></div>
           <div><dt class="mono">Over 300 ft</dt><dd>Custom quote</dd></div>
           <div><dt class="mono">Deposit</dt><dd>50%, due 14 days before install</dd></div>
           <div><dt class="mono">Discounts</dt><dd>None</dd></div>
-          <div><dt class="mono">Hidden fees</dt><dd>None</dd></div>
         </dl>
       </div>
       <div class="calc half-r" id="calc">
@@ -913,11 +938,14 @@ details[open] .pm::after{display:none}
         <div class="calc-dim" aria-hidden="true"><div class="dim" id="calc-dim"><i></i><b id="calc-dim-t">120 FT</b><i></i></div></div>
         <dl class="calc-rows">
           <div><dt class="mono">Rounded up to next 10 ft</dt><dd id="o-ft">120 ft</dd></div>
-          <div><dt class="mono">Rate</dt><dd>$25 / ft</dd></div>
-          <div><dt class="mono">50% deposit, 14 days before install</dt><dd id="o-dep">$1,500</dd></div>
+          <div><dt class="mono">Price range</dt><dd id="o-rate">$25 to $30 / ft</dd></div>
         </dl>
-        <p class="calc-total"><span class="mono">Total</span><output id="o-total" for="ft" aria-live="polite">$3,000</output></p>
-        <p class="calc-note mono" id="o-note">120 ft &times; $25. No discounts. No hidden fees.</p>
+        <p class="calc-est mono"><span id="o-est-l">Estimated range</span><span class="stamp" id="o-stamp">All-inclusive</span></p>
+        <output class="calc-range" id="o-range" for="ft" aria-live="polite">
+          <span class="calc-cell"><span class="mono" id="o-lo-l">120 ft &times; $25</span><b id="o-lo">$3,000</b></span>
+          <span class="calc-cell"><span class="mono" id="o-hi-l">120 ft &times; $30</span><b id="o-hi">$3,600</b></span>
+        </output>
+        <p class="calc-note mono" id="o-note">Lights, track, controller, color-matched install, app setup. Nothing added on top.</p>
       </div>
     </div>
   </div>
@@ -983,8 +1011,12 @@ details[open] .pm::after{display:none}
           <div class="faq-a"><p>It is a 24V low-voltage system.</p><p><span class="tag">[VERIFY]</span> Add measured watts per foot and a typical monthly cost before publishing.</p></div>
         </details>
         <details>
-          <summary><span class="mono">N-08</span><span class="faq-q">How is my price calculated?</span><span class="pm" aria-hidden="true"></span></summary>
-          <div class="faq-a"><p>We measure every run of your roofline from aerial photos, street photos and roof pitch. Each run rounds up to the whole foot and the total rounds up to the next 10 ft. Then it is $25 per foot, flat. No discounts, no hidden fees.</p><p>Over 300 ft is a custom quote. A 50% deposit is due 14 days before install.</p></div>
+          <summary><span class="mono">N-08</span><span class="faq-q">What does the price include?</span><span class="pm" aria-hidden="true"></span></summary>
+          <div class="faq-a"><p>Everything. <strong>$25 to $30 per foot is all-inclusive:</strong> lights, track, controller, color-matched install and app setup.</p><p>Nothing is added on top. No hidden fees, no extra charges.</p></div>
+        </details>
+        <details>
+          <summary><span class="mono">N-09</span><span class="faq-q">How is my price calculated?</span><span class="pm" aria-hidden="true"></span></summary>
+          <div class="faq-a"><p>We measure every run of your roofline from aerial photos, street photos and roof pitch. Each run rounds up to the whole foot and the total rounds up to the next 10 ft. Your estimate is that footage at $25 to $30 per foot, all-inclusive. No discounts.</p><p>Over 300 ft is a custom quote. A 50% deposit is due 14 days before install.</p></div>
         </details>
       </div>
     </div>
@@ -999,7 +1031,7 @@ details[open] .pm::after{display:none}
     <h2 class="h2 cta-h" id="h-measure"><span>See it at</span> <span>your house.</span></h2>
     <div class="q cta">
       <div class="cta-side half-l">
-        <p class="lede">Send your address. We measure your roofline run by run. Your footage sets your price: $25 per foot, flat.</p>
+        <p class="lede">Send your address. We measure your roofline run by run. Your footage sets your estimate: $25 to $30 per foot, all-inclusive.</p>
         <div class="owners">
           <div><span class="mono">Co-owner</span><b>Barrett Teeney</b></div>
           <div><span class="mono">Co-owner</span><b>Malakai Peerman</b></div>
@@ -1065,28 +1097,35 @@ details[open] .pm::after{display:none}
   var dn=document.getElementById('dn'),range=document.getElementById('dn-range');
   range.addEventListener('input',function(){dn.style.setProperty('--pos',range.value+'%')});
 
-  // Footage calculator: round up to the next 10 ft, $25 per ft, over 300 ft is a custom quote
-  var RATE=25,MAX=300;
-  var ft=document.getElementById('ft'),oFt=document.getElementById('o-ft'),oDep=document.getElementById('o-dep'),
-      oTotal=document.getElementById('o-total'),oNote=document.getElementById('o-note'),
+  // Footage calculator: round up to the next 10 ft, show ft x $25 to ft x $30 (all-inclusive); over 300 ft is a custom quote
+  var LO=25,HI=30,MAX=300;
+  var ft=document.getElementById('ft'),oFt=document.getElementById('o-ft'),oNote=document.getElementById('o-note'),
+      range=document.getElementById('o-range'),oLo=document.getElementById('o-lo'),oHi=document.getElementById('o-hi'),
+      oLoL=document.getElementById('o-lo-l'),oHiL=document.getElementById('o-hi-l'),
+      oRate=document.getElementById('o-rate'),oEstL=document.getElementById('o-est-l'),oStamp=document.getElementById('o-stamp'),
       dim=document.getElementById('calc-dim'),dimT=document.getElementById('calc-dim-t');
+  var INCLUDED='Lights, track, controller, color-matched install, app setup. Nothing added on top.';
   function usd(n){return '$'+n.toLocaleString('en-US')}
   function calc(){
     var raw=parseFloat(ft.value);
+    range.classList.remove('custom');oStamp.hidden=false;
+    oRate.textContent='$'+LO+' to $'+HI+' / ft';oEstL.textContent='Estimated range';
     if(!isFinite(raw)||raw<=0){
-      oFt.textContent='—';oDep.textContent='—';oTotal.textContent='—';dimT.textContent='0 FT';
+      oFt.textContent='\u2014';oLo.textContent='\u2014';oHi.textContent='\u2014';
+      oLoL.textContent='ft \u00d7 $'+LO;oHiL.textContent='ft \u00d7 $'+HI;dimT.textContent='0 FT';
       dim.style.setProperty('--w','0%');oNote.textContent='Enter your measured roofline in feet.';return;
     }
     var billed=Math.ceil(raw/10)*10;
     oFt.textContent=billed.toLocaleString('en-US')+' ft';
     dim.style.setProperty('--w',Math.min(billed,MAX)/MAX*100+'%');
     if(billed>MAX){
-      oTotal.textContent='Custom quote';oDep.textContent='With quote';dimT.textContent='OVER 300 FT';
-      oNote.textContent='Over 300 ft is a custom quote. No discounts. No hidden fees.';
+      range.classList.add('custom');oStamp.hidden=true;oRate.textContent='Custom quote';oEstL.textContent='Estimate';
+      oLoL.textContent='Over 300 ft';oLo.textContent='Custom quote';oHiL.textContent='';oHi.textContent='';
+      dimT.textContent='OVER 300 FT';oNote.textContent='Over 300 ft is a custom quote.';
     }else{
-      var total=billed*RATE;
-      oTotal.textContent=usd(total);oDep.textContent=usd(total/2);dimT.textContent=billed+' FT';
-      oNote.textContent=billed+' ft × $'+RATE+'. No discounts. No hidden fees.';
+      oLoL.textContent=billed+' ft \u00d7 $'+LO;oLo.textContent=usd(billed*LO);
+      oHiL.textContent=billed+' ft \u00d7 $'+HI;oHi.textContent=usd(billed*HI);
+      dimT.textContent=billed+' FT';oNote.textContent=INCLUDED;
     }
   }
   function step(d){var v=parseFloat(ft.value);if(!isFinite(v))v=0;ft.value=Math.max(1,Math.min(999,Math.round(v)+d));calc()}
