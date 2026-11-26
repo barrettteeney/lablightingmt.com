@@ -54,7 +54,7 @@ The day/night section needs a matched pair. The repo has no true daytime photo t
 | File | What it is |
 |------|------------|
 | `media/og.jpg` (1200 x 630) | Share image: photo 1 with the Lab Lighting lockup, tagline and "Kalispell, MT / Flathead Valley" set over it. |
-| `favicon.svg`, `favicon.ico`, `favicon-32.png`, `apple-touch-icon.png`, `icon-512.png` | The Lattice L mark on the brand's near black. Drawn for this project. |
+| `favicon.svg`, `favicon.ico`, `favicon-32.png`, `apple-touch-icon.png`, `icon-512.png` | The Eave L logo mark (v4) on the brand's near black; the 16 and 32 px sizes are the one-color grid version. Drawn for this project. |
 | `brand/logo-light.png`, `brand/logo-dark.png` | The new lockup as transparent PNGs, for the optional logo swap on the legal, QuickBooks and tool pages (see `LAUNCH.md`). |
 | Inline SVG drawings in `index.html` | Logo, eave section, takeoff, scenes, finish match and app schematic. Drawn for this project. |
 
