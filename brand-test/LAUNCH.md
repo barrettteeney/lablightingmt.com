@@ -61,7 +61,7 @@ Later, if you want the stubs or the legal pages rebuilt in the new look, that is
 
 ## The swap
 
-Run from a clone of the repo. Lines starting with `#` are comments.
+These exact commands, plus the merge-revert and restore-from-tag rollbacks below, were dry-run in a throwaway copy of the repo; both rollbacks returned the files to exactly the pre-launch state. Run them from a clone of the repo. Lines starting with `#` are comments.
 
 ```bash
 # 1. Start from the current live code and mark it so you can always get back
@@ -96,11 +96,12 @@ mkdir -p docs
 git mv brand-test/LAUNCH.md docs/LAUNCH.md
 git mv brand-test/PHOTO-SOURCES.md docs/PHOTO-SOURCES.md
 git rm -r -q --ignore-unmatch brand-test
+rm -rf brand-test          # clears the empty folders git leaves behind
 ```
 
 Then open `sitemap.xml` and set the first `<lastmod>` to today's date.
 
-If you skip step 5, delete the unused logo files instead: `git rm -r brand-test/brand` (step 6 does this for you).
+If you skip step 5, there is nothing extra to do: step 6 removes the unused logo files along with the rest of the folder.
 
 ```bash
 # 7. Look at it before it goes anywhere
@@ -141,7 +142,7 @@ Nothing outside the repo changes at launch: same domain, same form inbox, same p
 ```bash
 git checkout main
 git pull
-git revert -m 1 HEAD        # HEAD must be the launch merge; otherwise use its hash
+git revert -m 1 HEAD --no-edit   # HEAD must be the launch merge; otherwise use its hash in place of HEAD
 git push origin main
 ```
 
@@ -150,7 +151,7 @@ git push origin main
 ```bash
 git checkout main
 git pull
-git revert HEAD
+git revert HEAD --no-edit
 git push origin main
 ```
 
