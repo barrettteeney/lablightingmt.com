@@ -347,16 +347,23 @@ button,input{font:inherit;color:inherit;border-radius:0}
 @media (min-width:700px){.price-inc span+span::before{content:"/";margin-right:14px;font-weight:400;opacity:.5}}
 .price{row-gap:clamp(40px,5vw,72px);align-items:start}
 .stamp{display:inline-block;background:var(--fg);color:var(--bg);font-family:var(--mono);font-weight:500;font-size:.625rem;line-height:1;letter-spacing:.08em;text-transform:uppercase;padding:5px 7px 4px;white-space:nowrap}
-.ranges{width:100%;border-collapse:collapse;margin-top:clamp(28px,3vw,40px)}
+.ranges{width:100%;border-collapse:separate;border-spacing:0;margin-top:clamp(28px,3vw,40px)}
 .ranges caption{text-align:left;padding-bottom:14px}
 .ranges caption span{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px 12px}
 .ranges thead th{font-family:var(--mono);font-weight:400;font-size:.6875rem;letter-spacing:.04em;text-transform:uppercase;color:var(--mute);text-align:left;padding:10px 0;border-block:1px solid var(--fg)}
 .ranges thead th:last-child{text-align:right}
-.ranges tbody tr{border-bottom:1px solid var(--hair)}
-.ranges tbody tr:last-child{border-bottom-color:var(--fg)}
+.ranges tbody th,.ranges tbody td{border-bottom:1px solid var(--hair)}
+.ranges tbody tr:last-child th,.ranges tbody tr:last-child td{border-bottom-color:var(--fg)}
 .ranges tbody th{font-family:var(--mono);font-weight:500;font-size:.8125rem;letter-spacing:.04em;text-transform:uppercase;text-align:left;padding:14px 12px 14px 0;white-space:nowrap}
 .ranges tbody td{text-align:right;font-weight:900;font-stretch:125%;font-size:clamp(1rem,5.2vw,2.125rem);line-height:1;letter-spacing:-.01em;text-transform:uppercase;white-space:nowrap;padding:13px 0}
 .ranges tbody td small{font-size:.5em;font-weight:600;letter-spacing:.12em;margin-inline:.5em;vertical-align:.32em}
+/* The typical-home row: inverted box that reaches past the table edges, with its own tag */
+.ranges tbody tr.typ th,.ranges tbody tr.typ td{background:var(--fg);color:var(--bg);border-bottom-color:var(--fg);padding-block:16px 18px;vertical-align:bottom}
+.ranges tbody tr.typ th{box-shadow:-12px 0 0 var(--fg)}
+.ranges tbody tr.typ td{box-shadow:12px 0 0 var(--fg)}
+.typ-tag{display:block;width:max-content;margin-bottom:10px;background:var(--bg);color:var(--fg);font-family:var(--mono);font-weight:500;font-size:.5625rem;line-height:1;letter-spacing:.08em;text-transform:uppercase;padding:5px 6px 4px}
+@media (min-width:700px){.ranges tbody tr.typ td{font-size:clamp(1.25rem,6.1vw,2.5rem)}.typ-tag{font-size:.625rem}}
+@media (min-width:1100px){.ranges tbody tr.typ th{box-shadow:none;padding-left:14px}.ranges tbody tr.typ td{box-shadow:none;padding-right:14px;font-size:clamp(1.75rem,2.7vw,2.5rem)}}
 .calc{border:1px solid var(--fg);background:var(--bg)}
 .calc-head{display:flex;justify-content:space-between;gap:12px;padding:14px 18px;border-bottom:1px solid var(--fg)}
 .calc-head .mono:last-child{color:var(--mute)}
@@ -369,7 +376,7 @@ button,input{font:inherit;color:inherit;border-radius:0}
 .calc-field input::-webkit-outer-spin-button,.calc-field input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
 .calc-field input:focus-visible,.calc-field button:focus-visible{outline-offset:-5px}
 .calc-dim{padding:22px 18px 6px}
-.calc-dim .dim{width:var(--w,40%);min-width:96px;transition:width .25s}
+.calc-dim .dim{width:var(--w,50%);min-width:96px;transition:width .25s}
 .calc-rows{padding:8px 18px 4px}
 .calc-rows div{display:flex;justify-content:space-between;align-items:baseline;gap:16px;padding:12px 0}
 .calc-rows dt{color:var(--mute)}
@@ -850,7 +857,7 @@ details[open] .pm::after{display:none}
           <tbody>
             <tr><th scope="row">50 ft</th><td>$1,250<small>to</small>$1,500</td></tr>
             <tr><th scope="row">100 ft</th><td>$2,500<small>to</small>$3,000</td></tr>
-            <tr><th scope="row">150 ft</th><td>$3,750<small>to</small>$4,500</td></tr>
+            <tr class="typ"><th scope="row"><span class="typ-tag">Typical home</span>150 ft</th><td>$3,750<small>to</small>$4,500</td></tr>
             <tr><th scope="row">200 ft</th><td>$5,000<small>to</small>$6,000</td></tr>
             <tr><th scope="row">250 ft</th><td>$6,250<small>to</small>$7,500</td></tr>
             <tr><th scope="row">300 ft</th><td>$7,500<small>to</small>$9,000</td></tr>
@@ -859,23 +866,23 @@ details[open] .pm::after{display:none}
         </table>
       </div>
       <div class="calc half-r" id="calc">
-        <p class="calc-head mono"><span>Footage calculator</span><span>Example: 112 ft</span></p>
+        <p class="calc-head mono"><span>Footage calculator</span><span>Example: 150 ft</span></p>
         <div class="calc-in">
           <label class="mono" for="ft">Measured roofline, ft</label>
           <div class="calc-field">
             <button type="button" id="ft-dn" aria-label="Subtract 10 feet">&minus;</button>
-            <input id="ft" type="number" inputmode="decimal" min="1" max="999" step="1" value="112">
+            <input id="ft" type="number" inputmode="decimal" min="1" max="999" step="1" value="150">
             <button type="button" id="ft-up" aria-label="Add 10 feet">+</button>
           </div>
         </div>
-        <div class="calc-dim" aria-hidden="true"><div class="dim" id="calc-dim"><i></i><b id="calc-dim-t">120 FT</b><i></i></div></div>
+        <div class="calc-dim" aria-hidden="true"><div class="dim" id="calc-dim"><i></i><b id="calc-dim-t">150 FT</b><i></i></div></div>
         <dl class="calc-rows">
-          <div><dt class="mono">Rounded up to next 10 ft</dt><dd id="o-ft">120 ft</dd></div>
+          <div><dt class="mono">Rounded up to next 10 ft</dt><dd id="o-ft">150 ft</dd></div>
         </dl>
         <p class="calc-est mono"><span id="o-est-l">Estimated total</span><span class="stamp" id="o-stamp">All-inclusive</span></p>
         <output class="calc-range" id="o-range" for="ft" aria-live="polite">
-          <span class="calc-cell"><span class="mono" id="o-lo-l">Low</span><b id="o-lo">$3,000</b></span>
-          <span class="calc-cell"><span class="mono" id="o-hi-l">High</span><b id="o-hi">$3,600</b></span>
+          <span class="calc-cell"><span class="mono" id="o-lo-l">Low</span><b id="o-lo">$3,750</b></span>
+          <span class="calc-cell"><span class="mono" id="o-hi-l">High</span><b id="o-hi">$4,500</b></span>
         </output>
         <p class="calc-note mono" id="o-note">Lights, track, controller, color-matched install, app setup. Nothing added on top.</p>
       </div>
