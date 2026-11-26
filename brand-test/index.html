@@ -106,6 +106,7 @@ button,input{font:inherit;color:inherit;border-radius:0}
   .cell:nth-child(4n){padding-right:0}
   .half-l{grid-column:1/span 2;padding-right:var(--inset)}
   .half-r{grid-column:3/span 2}
+  .half-l .h2{font-size:clamp(3rem,4.6vw,4rem)}
 }
 
 /* Sheet header: every section is a numbered sheet */
@@ -127,7 +128,7 @@ button,input{font:inherit;color:inherit;border-radius:0}
 .btn--line{background:transparent;color:var(--fg)}
 .btn--line:hover{background:var(--fg);color:var(--bg)}
 .btn svg{width:18px;height:10px;flex:none}
-.btn--sm{min-height:40px;padding:8px 14px;font-size:.625rem;gap:12px}
+.btn--sm{min-height:40px;padding:8px 14px;font-size:.625rem;gap:12px;white-space:nowrap}
 
 /* Dimension line: extension lines, slash ticks, centered callout */
 .dim{position:relative;display:flex;justify-content:center;align-items:center;height:26px;border-inline:1px solid currentColor}
@@ -161,7 +162,10 @@ button,input{font:inherit;color:inherit;border-radius:0}
 .menu{border-top:1px solid var(--hair);padding-bottom:20px}
 .menu a.m-link{display:flex;justify-content:space-between;align-items:baseline;padding:18px 0;border-bottom:1px solid var(--hair);font-size:.8125rem}
 .menu a.m-link span{font-family:var(--mono);font-weight:400;font-stretch:100%;letter-spacing:.04em;color:var(--mute);font-size:.6875rem}
-@media (min-width:420px){.nav .btn--sm .lg{display:inline}.nav .btn--sm .sm{display:none}}
+.menu .btn{width:100%;margin-top:20px}
+@media (max-width:379.98px){.nav-in>.btn--sm{display:none}.nav-toggle{margin-left:auto}}
+@media (min-width:380px){.menu .btn{display:none}}
+@media (min-width:480px){.nav .btn--sm .lg{display:inline}.nav .btn--sm .sm{display:none}}
 @media (min-width:1000px){
   .brand svg{height:38px}
   .nav-links{display:flex}
@@ -244,7 +248,8 @@ button,input{font:inherit;color:inherit;border-radius:0}
 .stat-l{display:grid;justify-items:start;gap:10px;margin-top:18px}
 .stat-note{display:grid;align-content:space-between;gap:16px}
 .stat-note .mono{color:var(--mute)}
-.reviews li{padding-block:22px 26px;border-bottom:1px solid var(--hair);min-height:210px;display:flex;flex-direction:column;justify-content:space-between;gap:26px}
+.reviews li{padding-block:20px 22px;border-bottom:1px solid var(--hair);display:flex;flex-direction:column;justify-content:space-between;gap:20px}
+@media (min-width:700px){.reviews li{min-height:210px;padding-block:22px 26px;gap:26px}}
 .review-top{display:flex;justify-content:space-between;align-items:center;gap:12px;color:var(--mute)}
 .bars{display:grid;gap:10px}
 .bars i{display:block;height:10px;background:var(--fill)}
@@ -264,7 +269,12 @@ button,input{font:inherit;color:inherit;border-radius:0}
 .dn-layer{position:absolute;inset:0}
 .dn-layer svg{width:100%;height:100%}
 .dn-night{clip-path:inset(0 0 0 var(--pos))}
-.dn-cap{position:absolute;top:0;padding:14px 16px;display:grid;gap:4px;font-size:.6875rem}
+.dn-cap{position:absolute;bottom:0;padding:10px 12px;display:grid;gap:4px;font-size:.6875rem}
+.dn-cap span{display:none}
+@media (min-width:700px){
+  .dn-cap{top:0;bottom:auto;padding:14px 16px}
+  .dn-cap span{display:inline}
+}
 .dn-cap b{font-family:var(--sans);font-weight:900;font-stretch:125%;font-size:.9375rem;letter-spacing:.02em}
 .dn-day .dn-cap{left:0;color:var(--ink)}
 .dn-night .dn-cap{right:0;text-align:right;color:var(--paper)}
@@ -276,7 +286,8 @@ button,input{font:inherit;color:inherit;border-radius:0}
 .dn-range::-webkit-slider-thumb{-webkit-appearance:none;width:44px;height:400px}
 .dn-range::-moz-range-thumb{width:44px;height:400px;border:0}
 .dn-range:focus-visible~.dn-bar .dn-knob{outline:2px solid var(--paper);outline-offset:3px}
-.dn-foot{display:flex;justify-content:space-between;gap:16px;margin-top:12px;color:var(--mute)}
+.dn-foot{display:grid;gap:8px;margin-top:12px;color:var(--mute)}
+@media (min-width:700px){.dn-foot{display:flex;justify-content:space-between;gap:16px}}
 .dn-call path{fill:none;stroke:var(--ink);stroke-width:1;vector-effect:non-scaling-stroke}
 .dn-call rect{fill:var(--paper);stroke:var(--ink);stroke-width:1;vector-effect:non-scaling-stroke}
 .dn-call text{font-family:var(--mono);font-weight:500;font-size:12.5px;letter-spacing:.04em;fill:var(--ink);text-anchor:middle}
@@ -314,7 +325,7 @@ button,input{font:inherit;color:inherit;border-radius:0}
 .takeoff th,.takeoff td{padding:6px 0;border-top:1px solid var(--hair);text-align:right;font-weight:400}
 .takeoff th:first-child,.takeoff td:first-child{text-align:left}
 .takeoff tfoot td{font-weight:600;border-top-color:var(--fg)}
-.keys{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:18px;color:var(--mute);font-size:.6875rem}
+.keys{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin-top:18px;color:var(--mute);font-size:.6875rem}
 @media (min-width:700px){
   .step:nth-child(2){border-top:0}
 }
@@ -584,6 +595,9 @@ details[open] .pm::after{display:none}
       <a class="m-link" href="#system">System <span>A-04</span></a>
       <a class="m-link" href="#pricing">Pricing <span>A-05</span></a>
       <a class="m-link" href="#faq">FAQ <span>A-07</span></a>
+      <a class="btn" href="#measure">Get your measurement
+        <svg viewBox="0 0 18 10" aria-hidden="true"><path d="M0 5h17M12.5.5L17 5l-4.500 4.500" fill="none" stroke="currentColor"/></svg>
+      </a>
     </nav>
   </div>
 </header>
@@ -701,7 +715,7 @@ details[open] .pm::after{display:none}
         <input class="dn-range" id="dn-range" type="range" min="0" max="100" value="50" step="1" aria-label="Drag to compare day and night">
         <div class="dn-bar" aria-hidden="true"><span class="dn-knob"><svg viewBox="0 0 20 10"><path d="M5.5.5L1 5l4.500 4.500M14.500.5L19 5l-4.500 4.500" fill="none" stroke="currentColor"/></svg></span></div>
       </div>
-      <figcaption class="dn-foot mono"><span><span class="tag">Placeholder photo</span>&nbsp; Replace with a matched day and night pair</span><span>Drag to compare</span></figcaption>
+      <figcaption class="dn-foot mono"><span>Drag to compare</span><span><span class="tag">Placeholder photo</span>&nbsp; Replace with a matched day and night pair</span></figcaption>
     </figure>
     <ul class="q facts">
       <li class="cell"><span class="mono">01 / Track finish</span><p>Color-matched to your soffit and fascia trim, in Gentek and Kaycan trim colors. Custom colors are possible.</p></li>
@@ -773,11 +787,11 @@ details[open] .pm::after{display:none}
         <p class="step-n" aria-hidden="true">02</p>
         <h3 class="h3">Design</h3>
         <p class="body">Everyday is warm white on your architecture. Holidays, game days and events are scenes you switch on when you want them.</p>
-        <p class="keys mono"><span>Drawn in one ink.</span><span>Runs in color.</span></p>
+        <p class="keys mono"><span>Drawn in one ink. Runs in color.</span><span class="tag">[VERIFY]</span></p>
       </li>
       <li class="cell step">
         <p class="step-top mono"><span>Detail 03</span><span>Eave section</span></p>
-        <svg class="dwg" viewBox="0 0 400 300" role="img" aria-label="Section drawing through an eave: the track sits under the soffit at its outside edge, behind the fascia. Nothing is mounted on the wall.">
+        <svg class="dwg" viewBox="0 0 400 300" role="img" aria-label="Section drawing through an eave: the track sits under the soffit at its outside edge, behind the fascia. The track is not on the wall.">
           <defs>
             <pattern id="hatch" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="7" stroke="currentColor" stroke-width="1" opacity=".5"/></pattern>
           </defs>
@@ -797,7 +811,7 @@ details[open] .pm::after{display:none}
           <text x="273" y="241">TRIM-MATCHED</text>
           <text class="mid" x="150" y="207">SOFFIT</text>
           <text x="89" y="256">WALL</text>
-          <text x="89" y="274">NO HARDWARE</text>
+          <text x="89" y="274">NO TRACK</text>
         </svg>
         <p class="step-n" aria-hidden="true">03</p>
         <h3 class="h3">Install</h3>
@@ -981,7 +995,7 @@ details[open] .pm::after{display:none}
 <section class="sec ink" id="measure" aria-labelledby="h-measure">
   <div class="gl" aria-hidden="true"><div class="wrap"><i></i><i></i><i></i><i></i></div></div>
   <div class="wrap">
-    <div class="sheet"><span class="mono">A-08</span><span class="label">Get your measurement</span><span class="mono">Start here</span></div>
+    <div class="sheet"><span class="mono">A-08</span><span class="label">Measurement</span><span class="mono">Start here</span></div>
     <h2 class="h2 cta-h" id="h-measure"><span>See it at</span> <span>your house.</span></h2>
     <div class="q cta">
       <div class="cta-side half-l">
@@ -1067,7 +1081,7 @@ details[open] .pm::after{display:none}
     oFt.textContent=billed.toLocaleString('en-US')+' ft';
     dim.style.setProperty('--w',Math.min(billed,MAX)/MAX*100+'%');
     if(billed>MAX){
-      oTotal.textContent='Custom quote';oDep.textContent='50% of quote';dimT.textContent='OVER 300 FT';
+      oTotal.textContent='Custom quote';oDep.textContent='With quote';dimT.textContent='OVER 300 FT';
       oNote.textContent='Over 300 ft is a custom quote. No discounts. No hidden fees.';
     }else{
       var total=billed*RATE;
