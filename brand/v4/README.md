@@ -1,6 +1,9 @@
 # Lab Lighting: website + bid-app handoff (v4 official logo, Nov 26, 2026)
 
-Official logo (v4): the Eave L with 2 lamp tabs in Red #C5322D, plus the red rule between LAB and LIGHTING.
+On the `brand-v4-logo` branch this folder is packaged as `brand/v4/lab-logo-v4.1.tgz.b64`. That is the v4.1 slope-fix of the official Eave L; do not use the earlier `lab-logo-v4.tgz.b64` once this is applied.
+
+
+Official logo (v4 / v4.1): the Eave L with 2 lamp tabs in Red #C5322D, plus the red rule between LAB and LIGHTING. v4.1 (Nov 26, 2026): tab tops follow the sloped eave underside (no background wedge). In `lockup-symbol_v4.html`, the `.mk-tab` path is drawn before the eave/L path so the tabs sit under the eave.
 The wordmark, tagline, palette and fonts are unchanged. One-color: the tabs and the rule take the logo color.
 On a dark ground below about 40 px, use the 1-color 16-px grid mark.
 **Staged only.** Nothing here has been pushed, deployed or copied into the website or bid-app repos.
